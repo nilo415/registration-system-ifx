@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.inflex</groupId>
-	<artifactId>cadastro-sistema</artifactId>
+	<artifactId>registration-system</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
 	<description/>
