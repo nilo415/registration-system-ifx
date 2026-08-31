@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function Step1Operation() {
   return (
     <div className="flex flex-col gap-6">
@@ -7,11 +5,11 @@ export default function Step1Operation() {
         <label className="text-sm font-semibold" style={{ color: 'var(--text-main)' }}>
           Tipo de Cadastro <span className="text-red-500">*</span>
         </label>
-        
+
         <div className="relative max-w-md">
-          <select 
+          <select
             className="w-full h-10 px-3 rounded-md text-sm appearance-none outline-none transition-colors cursor-pointer"
-            style={{ 
+            style={{
               background: 'transparent',
               color: 'var(--text-main)',
               border: '1px solid var(--border-color)',
@@ -29,7 +27,7 @@ export default function Step1Operation() {
             </svg>
           </div>
         </div>
-        
+
         <p className="text-[11px] font-medium" style={{ color: 'var(--text-muted)' }}>
           Define os documentos exigidos e a necessidade de referências comerciais.
         </p>

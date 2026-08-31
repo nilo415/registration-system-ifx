@@ -29,66 +29,81 @@
 
 /* ─── Light Mode (default) ─── */
 :root {
-    --primary:   #1E3A8A; /* Dark blue for active stepper and Next button */
-    --secondary: #709BFE; /* Lighter blue for active sidebar nav item */
-    --tertiary:  #E0E7FF; /* Light blue background for Back button */
+    --primary: #1E3A8A;
+    /* Dark blue for active stepper and Next button */
+    --secondary: #709BFE;
+    /* Lighter blue for active sidebar nav item */
+    --tertiary: #E0E7FF;
+    /* Light blue background for Back button */
 
-    --bg-base:    #F8FAFC; /* Light gray/blue main background */
-    --bg-surface: #FFFFFF; /* White for cards */
+    --bg-base: #F8FAFC;
+    /* Light gray/blue main background */
+    --bg-surface: #FFFFFF;
+    /* White for cards */
 
     /* Sidebar */
-    --bg-sidebar:        #F4F7FC; /* Very light blueish gray */
-    --bg-sidebar-hover:  #E2E8F0;
-    --bg-sidebar-active: #709BFE; /* Light blue active state */
-    --border-sidebar:    #E2E8F0;
+    --bg-sidebar: #F4F7FC;
+    /* Very light blueish gray */
+    --bg-sidebar-hover: #E2E8F0;
+    --bg-sidebar-active: #709BFE;
+    /* Light blue active state */
+    --border-sidebar: #E2E8F0;
 
-    --text-sidebar:        #64748B;
+    --text-sidebar: #64748B;
     --text-sidebar-active: #FFFFFF;
 
     /* Header */
-    --bg-header: #F8FAFC; /* Matches base */
+    --bg-header: #F8FAFC;
+    /* Matches base */
 
     /* Text */
-    --text-main:  #1E293B; /* Slate 800 */
-    --text-muted: #64748B; /* Slate 500 */
+    --text-main: #1E293B;
+    /* Slate 800 */
+    --text-muted: #64748B;
+    /* Slate 500 */
 
     /* Misc */
-    --border-color: #E2E8F0; /* Slate 200 */
+    --border-color: #E2E8F0;
+    /* Slate 200 */
 }
 
 /* ─── Dark Mode ─── */
 .dark {
-    --primary:   #3B82F6;
+    --primary: #3B82F6;
     --secondary: #60A5FA;
-    --tertiary:  #93C5FD;
+    --tertiary: #93C5FD;
 
-    --bg-base:    #09090B;
+    --bg-base: #09090B;
     --bg-surface: #09090B;
 
     /* Sidebar */
-    --bg-sidebar:        #18181B;
-    --bg-sidebar-hover:  #27272A;
+    --bg-sidebar: #18181B;
+    --bg-sidebar-hover: #27272A;
     --bg-sidebar-active: #3B82F6;
-    --border-sidebar:    #27272A;
+    --border-sidebar: #27272A;
 
     /* Header */
     --bg-header: #09090B;
 
-    --text-sidebar:        #A1A1AA;
+    --text-sidebar: #A1A1AA;
     --text-sidebar-active: #FFFFFF;
 
-    --text-main:  #FAFAFA;
+    --text-main: #FAFAFA;
     --text-muted: #A1A1AA;
 
     --border-color: #27272A;
 }
 
 /* ─── Global Reset ─── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
-html, body, #root {
+html,
+body,
+#root {
     height: 100%;
     margin: 0;
     padding: 0;
@@ -98,5 +113,4 @@ body {
     background-color: var(--bg-base);
     color: var(--text-main);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    @apply transition-colors duration-300;
 }
