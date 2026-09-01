@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Stepper from '../../components/ui/Stepper';
 import Step1Operation from './steps/Step1Operation';
+import Step2Company from './steps/Step2Company';
 
 const STEPS = [
   'OPERAÇÃO',
@@ -82,7 +83,8 @@ export default function RegisterWizard() {
         {/* Step Content */}
         <div className="px-8 py-8 flex-1">
           {currentStep === 0 && <Step1Operation />}
-          {currentStep > 0 && (
+          {currentStep === 1 && <Step2Company />}
+          {currentStep > 1 && (
             <div className="text-center mt-10">
               <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                 Os campos deste passo serão construídos na próxima fase.
