@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function Step2Company() {
   const inputStyle = {
     background: 'transparent',
@@ -35,7 +33,7 @@ export default function Step2Company() {
             <path d="M8 10h.01"></path>
             <path d="M8 14h.01"></path>
           </svg>
-          
+
           <h3 className="text-2xl font-bold mb-2">Dados Corporativos</h3>
           <p className="text-sm opacity-90 leading-relaxed">
             Preencha as informações legais e comerciais da empresa. Esses dados
@@ -64,7 +62,7 @@ export default function Step2Company() {
 
       {/* ── Right Panel: Form Fields ── */}
       <div className="w-full md:w-2/3 flex flex-col gap-6">
-        
+
         {/* CNPJ Row */}
         <div className="flex flex-col gap-2">
           <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
@@ -182,7 +180,7 @@ export default function Step2Company() {
             </svg>
             Classificação
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="flex flex-col gap-2">
               <label className="text-[11px] font-bold uppercase tracking-wide" style={labelStyle}>
@@ -239,7 +237,6 @@ export default function Step2Company() {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
