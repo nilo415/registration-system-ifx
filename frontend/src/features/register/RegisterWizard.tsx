@@ -3,6 +3,7 @@ import Stepper from '../../components/ui/Stepper';
 import Step1Operation from './steps/Step1Operation';
 import Step2Company from './steps/Step2Company';
 import Step3Address from './steps/Step3Address';
+import Step4Tax from './steps/Step4Tax';
 
 const STEPS = [
   'OPERAÇÃO',
@@ -86,7 +87,8 @@ export default function RegisterWizard() {
           {currentStep === 0 && <Step1Operation />}
           {currentStep === 1 && <Step2Company />}
           {currentStep === 2 && <Step3Address />}
-          {currentStep > 2 && (
+          {currentStep === 3 && <Step4Tax />}
+          {currentStep > 3 && (
             <div className="text-center mt-10">
               <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                 Os campos deste passo serão construídos na próxima fase.
