@@ -16,10 +16,10 @@ export default function Step4Tax() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-6">
-      
+
       {/* ── Left Column: Form Sections ── */}
       <div className="flex-1 flex flex-col gap-6">
-        
+
         {/* Regime Tributário */}
         <div className="p-6 rounded-xl" style={cardStyle}>
           <div className="flex items-center gap-3 mb-6">
@@ -134,7 +134,7 @@ export default function Step4Tax() {
 
       {/* ── Right Column: Info Cards ── */}
       <div className="w-full lg:w-80 flex flex-col gap-6">
-        
+
         {/* Conformidade Fiscal Card */}
         <div className="rounded-xl p-6 text-white shadow-lg flex flex-col justify-between" style={{ background: 'linear-gradient(180deg, var(--primary) 0%, #1e3a8a 100%)', minHeight: '260px' }}>
           <div>
@@ -159,19 +159,19 @@ export default function Step4Tax() {
         </div>
 
         {/* Dica Card */}
-        <div 
-          className="rounded-xl p-6 text-white shadow-lg relative overflow-hidden flex flex-col justify-end" 
+        <div
+          className="rounded-xl p-6 text-white shadow-lg relative overflow-hidden flex flex-col justify-end"
           style={{ minHeight: '220px' }}
         >
           {/* Background Image */}
-          <div 
-            className="absolute inset-0 z-0 bg-cover bg-center" 
-            style={{ 
+          <div
+            className="absolute inset-0 z-0 bg-cover bg-center"
+            style={{
               backgroundImage: 'url(/tax_tip_bg.jpg)',
-              filter: 'brightness(0.6) saturate(1.2)' 
-            }} 
+              filter: 'brightness(0.6) saturate(1.2)'
+            }}
           />
-          
+
           {/* Gradient Overlay for Text Readability */}
           <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
