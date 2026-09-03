@@ -5,6 +5,7 @@ import Step2Company from './steps/Step2Company';
 import Step3Address from './steps/Step3Address';
 import Step4Tax from './steps/Step4Tax';
 import Step5References from './steps/Step5References';
+import Step6Documents from './steps/Step6Documents';
 
 const STEPS = [
   'OPERAÇÃO',
@@ -92,7 +93,8 @@ export default function RegisterWizard() {
           {currentStep === 2 && <Step3Address />}
           {currentStep === 3 && <Step4Tax />}
           {currentStep === 4 && <Step5References />}
-          {currentStep > 4 && (
+          {currentStep === 5 && <Step6Documents />}
+          {currentStep > 5 && (
             <div className="text-center mt-10">
               <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                 Os campos deste passo serão construídos na próxima fase.
