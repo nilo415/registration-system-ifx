@@ -129,7 +129,7 @@ export default function Sidebar() {
             style={{
               width: '110px',
               height: '110px',
-              background: isDark ? 'var(--bg-sidebar)' : 'transparent',
+              background: 'transparent',
             }}
           >
             <img
