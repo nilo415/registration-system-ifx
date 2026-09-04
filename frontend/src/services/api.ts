@@ -9,7 +9,23 @@ export interface Representative {
   signatory?: boolean;
 }
 
+export interface BankReference {
+  bankName?: string;
+  agency?: string;
+  account?: string;
+  contact?: string;
+}
+
+export interface CommercialReference {
+  companyName?: string;
+  contactName?: string;
+  phone?: string;
+  email?: string;
+}
+
+
 export interface RegistrationPayload {
+  operationType?: string; // e.g., 'VENDA_A_PRAZO', 'VENDA_A_VISTA', etc.
   cnpj?: string;
   companyName?: string;
   tradeName?: string;
@@ -35,6 +51,8 @@ export interface RegistrationPayload {
   municipalRegistration?: string;
 
   representatives?: Representative[];
+  bankReferences?: BankReference[];
+  commercialReferences?: CommercialReference[];
   documentFileNames?: string[];
 
   status?: string;

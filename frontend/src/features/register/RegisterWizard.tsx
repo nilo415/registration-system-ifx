@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import Stepper from '../../components/ui/Stepper';
+import { saveDraft } from '../../services/api';
+import { useRegistration } from '../../contexts/RegistrationContext';
 import Step1Operation from './steps/Step1Operation';
 import Step2Company from './steps/Step2Company';
 import Step3Address from './steps/Step3Address';
@@ -27,6 +29,18 @@ const STEP_TITLES = [
 
 export default function RegisterWizard() {
   const [currentStep, setCurrentStep] = useState(0);
+  const { formData } = useRegistration();
+
+  const handleSaveDraft = async () => {
+    try {
+      const response = await saveDraft(formData);
+      console.log('Sucesso ao salvar rascunho:', response);
+      alert('Rascunho salvo com sucesso no servidor local!');
+    } catch (error) {
+      console.error('Erro ao salvar o rascunho:', error);
+      alert('Falha ao salvar rascunho. Veja o console.');
+    }
+  };
 
   return (
     <div className="p-6 max-w-[1000px] mx-auto flex flex-col gap-6">
@@ -88,12 +102,12 @@ export default function RegisterWizard() {
 
         {/* Step Content */}
         <div className="px-8 py-8 flex-1">
-          {currentStep === 0 && <Step1Operation />}
-          {currentStep === 1 && <Step2Company />}
-          {currentStep === 2 && <Step3Address />}
-          {currentStep === 3 && <Step4Tax />}
-          {currentStep === 4 && <Step5References />}
-          {currentStep === 5 && <Step6Documents />}
+          <div style={{ display: currentStep === 0 ? 'block' : 'none' }}><Step1Operation /></div>
+          <div style={{ display: currentStep === 1 ? 'block' : 'none' }}><Step2Company /></div>
+          <div style={{ display: currentStep === 2 ? 'block' : 'none' }}><Step3Address /></div>
+          <div style={{ display: currentStep === 3 ? 'block' : 'none' }}><Step4Tax /></div>
+          <div style={{ display: currentStep === 4 ? 'block' : 'none' }}><Step5References /></div>
+          <div style={{ display: currentStep === 5 ? 'block' : 'none' }}><Step6Documents /></div>
           {currentStep > 5 && (
             <div className="text-center mt-10">
               <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -137,7 +151,7 @@ export default function RegisterWizard() {
                 color: 'var(--primary)',
                 border: '1.5px solid var(--primary)',
               }}
-              onClick={() => alert('Rascunho salvo!')}
+              onClick={handleSaveDraft}
             >
               Salvar Rascunho
             </button>
