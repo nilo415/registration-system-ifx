@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useRegistration } from '../../../contexts/RegistrationContext';
 
 export default function Step4Tax() {
-  const [isSuframa, setIsSuframa] = useState(true);
+  const { formData, updateFormData } = useRegistration();
 
   const cardStyle = {
     background: 'var(--bg-surface)',
@@ -38,11 +38,14 @@ export default function Step4Tax() {
               <p className="text-[11px] font-medium mt-1" style={{ color: 'var(--text-muted)' }}>Cliente enquadrado no regime compartilhado de arrecadação.</p>
             </div>
             <label className="flex items-center cursor-pointer relative">
-              <input type="checkbox" className="peer sr-only" />
+              <input
+                type="checkbox"
+                className="peer sr-only"
+                checked={formData.simplesNacional ?? false}
+                onChange={(e) => updateFormData({ simplesNacional: e.target.checked })}
+              />
               <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all" style={{ backgroundColor: 'var(--border-color)' }}></div>
-              <style>{`
-                input:checked + div { background-color: var(--primary) !important; }
-              `}</style>
+              <style>{`input:checked + div { background-color: var(--primary) !important; }`}</style>
             </label>
           </div>
         </div>
@@ -66,7 +69,12 @@ export default function Step4Tax() {
                 <p className="text-[11px] font-medium mt-1" style={{ color: 'var(--text-muted)' }}>Isenção temporária do imposto sobre Produtos Industrializados.</p>
               </div>
               <label className="flex items-center cursor-pointer relative">
-                <input type="checkbox" className="peer sr-only" />
+                <input
+                  type="checkbox"
+                  className="peer sr-only"
+                  checked={formData.ipiExemption ?? false}
+                  onChange={(e) => updateFormData({ ipiExemption: e.target.checked })}
+                />
                 <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all" style={{ backgroundColor: 'var(--border-color)' }}></div>
               </label>
             </div>
@@ -79,12 +87,17 @@ export default function Step4Tax() {
                 <p className="text-[11px] font-medium mt-1" style={{ color: 'var(--text-muted)' }}>Incentivos fiscais da Zona Franca de Manaus.</p>
               </div>
               <label className="flex items-center cursor-pointer relative">
-                <input type="checkbox" className="peer sr-only" checked={isSuframa} onChange={(e) => setIsSuframa(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  className="peer sr-only"
+                  checked={formData.suframaDiscount ?? false}
+                  onChange={(e) => updateFormData({ suframaDiscount: e.target.checked })}
+                />
                 <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all" style={{ backgroundColor: 'var(--border-color)' }}></div>
               </label>
             </div>
 
-            {isSuframa && (
+            {formData.suframaDiscount && (
               <div className="bg-black/5 dark:bg-white/5 p-4 rounded-lg mt-2">
                 <label className="text-[10px] font-bold uppercase tracking-wide mb-2 block" style={{ color: 'var(--text-main)' }}>Número da Inscrição Suframa</label>
                 <div className="relative">
@@ -96,10 +109,35 @@ export default function Step4Tax() {
                       <line x1="3" y1="10" x2="21" y2="10"></line>
                     </svg>
                   </div>
-                  <input type="text" placeholder="00.0000.00-0" className="w-full h-10 pl-10 pr-3 rounded-md text-sm outline-none transition-colors" style={inputStyle} />
+                  <input
+                    type="text"
+                    placeholder="00.0000.00-0"
+                    className="w-full h-10 pl-10 pr-3 rounded-md text-sm outline-none transition-colors"
+                    style={inputStyle}
+                    value={formData.suframaNumber ?? ''}
+                    onChange={(e) => updateFormData({ suframaNumber: e.target.value })}
+                  />
                 </div>
               </div>
             )}
+
+            <div className="w-full h-px" style={{ background: 'var(--border-color)' }} />
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-bold text-sm" style={{ color: 'var(--text-main)' }}>Incentivo CDI?</p>
+                <p className="text-[11px] font-medium mt-1" style={{ color: 'var(--text-muted)' }}>Benefício de indexação ao CDI para clientes.</p>
+              </div>
+              <label className="flex items-center cursor-pointer relative">
+                <input
+                  type="checkbox"
+                  className="peer sr-only"
+                  checked={formData.cdiIncentive ?? false}
+                  onChange={(e) => updateFormData({ cdiIncentive: e.target.checked })}
+                />
+                <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all" style={{ backgroundColor: 'var(--border-color)' }}></div>
+              </label>
+            </div>
           </div>
         </div>
 
@@ -112,7 +150,6 @@ export default function Step4Tax() {
                 <polyline points="14 2 14 8 20 8"></polyline>
                 <line x1="16" y1="13" x2="8" y2="13"></line>
                 <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
               </svg>
             </div>
             <h3 className="font-bold text-lg" style={{ color: 'var(--text-main)' }}>Regras Comerciais</h3>
@@ -124,7 +161,12 @@ export default function Step4Tax() {
               <p className="text-[11px] font-medium mt-1" style={{ color: 'var(--text-muted)' }}>Exigir número de OC no momento do faturamento.</p>
             </div>
             <label className="flex items-center cursor-pointer relative">
-              <input type="checkbox" className="peer sr-only" />
+              <input
+                type="checkbox"
+                className="peer sr-only"
+                checked={formData.requiresPurchaseOrder ?? false}
+                onChange={(e) => updateFormData({ requiresPurchaseOrder: e.target.checked })}
+              />
               <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all" style={{ backgroundColor: 'var(--border-color)' }}></div>
             </label>
           </div>
@@ -134,8 +176,6 @@ export default function Step4Tax() {
 
       {/* ── Right Column: Info Cards ── */}
       <div className="w-full lg:w-80 flex flex-col gap-6">
-
-        {/* Conformidade Fiscal Card */}
         <div className="rounded-xl p-6 text-white shadow-lg flex flex-col justify-between" style={{ background: 'linear-gradient(180deg, var(--primary) 0%, #1e3a8a 100%)', minHeight: '260px' }}>
           <div>
             <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center mb-5 backdrop-blur-sm">
@@ -148,7 +188,6 @@ export default function Step4Tax() {
               As informações prestadas nesta etapa passam por validação automatizada junto à SEFAZ em tempo real.
             </p>
           </div>
-
           <div className="mt-8 bg-white/10 rounded-lg p-4 flex items-center justify-between backdrop-blur-md border border-white/10">
             <span className="text-xs font-semibold opacity-90">Status de Validação</span>
             <div className="flex items-center gap-2 bg-black/30 px-3 py-1.5 rounded-full">
@@ -157,35 +196,6 @@ export default function Step4Tax() {
             </div>
           </div>
         </div>
-
-        {/* Dica Card */}
-        <div
-          className="rounded-xl p-6 text-white shadow-lg relative overflow-hidden flex flex-col justify-end"
-          style={{ minHeight: '220px' }}
-        >
-          {/* Background Image */}
-          <div
-            className="absolute inset-0 z-0 bg-cover bg-center"
-            style={{
-              backgroundImage: 'url(/tax_tip_bg.jpg)',
-              filter: 'brightness(0.6) saturate(1.2)'
-            }}
-          />
-
-          {/* Gradient Overlay for Text Readability */}
-          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-
-          {/* Content */}
-          <div className="relative z-20">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-orange-400 mb-2 block">
-              Dica
-            </span>
-            <p className="text-sm font-semibold leading-relaxed">
-              Mantenha os dados fiscais atualizados para evitar rejeição de notas fiscais.
-            </p>
-          </div>
-        </div>
-
       </div>
 
     </div>

@@ -1,27 +1,31 @@
 import { useState } from 'react';
 import BankReferenceModal, { type BankReference } from './BankReferenceModal';
 import SupplierReferenceModal, { type SupplierReference } from './SupplierReferenceModal';
+import { useRegistration } from '../../../contexts/RegistrationContext';
 
 export default function Step5References() {
-  const [banks, setBanks] = useState<BankReference[]>([]);
-  const [suppliers, setSuppliers] = useState<SupplierReference[]>([]);
+  const { formData, updateFormData } = useRegistration();
   const [showBankModal, setShowBankModal] = useState(false);
   const [showSupplierModal, setShowSupplierModal] = useState(false);
 
+  // Read lists from global context (cast to local types)
+  const banks = (formData.bankReferences ?? []) as BankReference[];
+  const suppliers = (formData.commercialReferences ?? []) as SupplierReference[];
+
   const handleAddBank = (bank: BankReference) => {
-    setBanks((prev) => [...prev, bank]);
+    updateFormData({ bankReferences: [...banks, bank] });
   };
 
   const handleRemoveBank = (id: string) => {
-    setBanks((prev) => prev.filter((b) => b.id !== id));
+    updateFormData({ bankReferences: banks.filter((b) => b.id !== id) });
   };
 
   const handleAddSupplier = (supplier: SupplierReference) => {
-    setSuppliers((prev) => [...prev, supplier]);
+    updateFormData({ commercialReferences: [...suppliers, supplier] });
   };
 
   const handleRemoveSupplier = (id: string) => {
-    setSuppliers((prev) => prev.filter((s) => s.id !== id));
+    updateFormData({ commercialReferences: suppliers.filter((s) => s.id !== id) });
   };
 
   const cardStyle = {

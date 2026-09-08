@@ -1,13 +1,15 @@
+import { useRegistration } from '../../../contexts/RegistrationContext';
+
 export default function Step2Company() {
+  const { formData, updateFormData } = useRegistration();
+
   const inputStyle = {
     background: 'transparent',
     color: 'var(--text-main)',
     border: '1px solid var(--border-color)',
   };
 
-  const labelStyle = {
-    color: 'var(--text-main)',
-  };
+  const labelStyle = { color: 'var(--text-main)' };
 
   return (
     <div className="flex flex-col md:flex-row gap-8">
@@ -23,23 +25,16 @@ export default function Step2Company() {
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mb-2">
             <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
             <path d="M9 22v-4h6v4"></path>
-            <path d="M8 6h.01"></path>
-            <path d="M16 6h.01"></path>
-            <path d="M12 6h.01"></path>
-            <path d="M12 10h.01"></path>
-            <path d="M12 14h.01"></path>
-            <path d="M16 10h.01"></path>
-            <path d="M16 14h.01"></path>
-            <path d="M8 10h.01"></path>
-            <path d="M8 14h.01"></path>
+            <path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path>
+            <path d="M12 10h.01"></path><path d="M12 14h.01"></path>
+            <path d="M16 10h.01"></path><path d="M16 14h.01"></path>
+            <path d="M8 10h.01"></path><path d="M8 14h.01"></path>
           </svg>
-
           <h3 className="text-2xl font-bold mb-2">Dados Corporativos</h3>
           <p className="text-sm opacity-90 leading-relaxed">
             Preencha as informações legais e comerciais da empresa. Esses dados
             são essenciais para faturamento e conformidade fiscal.
           </p>
-
           <div className="mt-8 bg-black/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
             <div className="flex items-center gap-2 font-semibold text-sm mb-2">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -54,8 +49,6 @@ export default function Step2Company() {
             </p>
           </div>
         </div>
-
-        {/* Decorative elements for the card background */}
         <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute -top-20 -right-20 w-48 h-48 bg-black/10 rounded-full blur-2xl pointer-events-none"></div>
       </div>
@@ -83,6 +76,8 @@ export default function Step2Company() {
                 placeholder="00.000.000/0000-00"
                 className="w-full h-10 pl-10 pr-3 rounded-md text-sm outline-none transition-colors"
                 style={inputStyle}
+                value={formData.cnpj ?? ''}
+                onChange={(e) => updateFormData({ cnpj: e.target.value })}
               />
             </div>
             <button
@@ -109,6 +104,8 @@ export default function Step2Company() {
             placeholder="Empresa Fictícia S/A"
             className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
             style={inputStyle}
+            value={formData.companyName ?? ''}
+            onChange={(e) => updateFormData({ companyName: e.target.value })}
           />
         </div>
 
@@ -122,6 +119,23 @@ export default function Step2Company() {
             placeholder="Nome Comercial"
             className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
             style={inputStyle}
+            value={formData.tradeName ?? ''}
+            onChange={(e) => updateFormData({ tradeName: e.target.value })}
+          />
+        </div>
+
+        {/* Data de Abertura */}
+        <div className="flex flex-col gap-2">
+          <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
+            Data de Abertura
+          </label>
+          <input
+            type="text"
+            placeholder="DD/MM/AAAA"
+            className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
+            style={inputStyle}
+            value={formData.openingDate ?? ''}
+            onChange={(e) => updateFormData({ openingDate: e.target.value })}
           />
         </div>
 
@@ -132,16 +146,14 @@ export default function Step2Company() {
               <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
                 Inscrição Estadual (IE)
               </label>
-              <label className="text-[11px] flex items-center gap-1.5 cursor-pointer font-medium" style={{ color: 'var(--text-muted)' }}>
-                <input type="checkbox" className="rounded-sm border-gray-400 accent-primary w-3.5 h-3.5 cursor-pointer" />
-                Isento
-              </label>
             </div>
             <input
               type="text"
               placeholder="Isento ou Número"
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
               style={inputStyle}
+              value={formData.stateRegistration ?? ''}
+              onChange={(e) => updateFormData({ stateRegistration: e.target.value })}
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -153,90 +165,42 @@ export default function Step2Company() {
               placeholder="Número da IM"
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
               style={inputStyle}
+              value={formData.municipalRegistration ?? ''}
+              onChange={(e) => updateFormData({ municipalRegistration: e.target.value })}
             />
           </div>
         </div>
 
-        {/* Registro Junta Comercial */}
+        {/* Natureza Jurídica */}
         <div className="flex flex-col gap-2">
           <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
-            Registro na Junta Comercial (Opcional)
+            Natureza Jurídica
           </label>
           <input
             type="text"
-            placeholder="Número do Registro"
+            placeholder="Ex: Sociedade Ltda."
             className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
             style={inputStyle}
+            value={formData.legalNature ?? ''}
+            onChange={(e) => updateFormData({ legalNature: e.target.value })}
           />
         </div>
 
-        {/* Classificação */}
-        <div className="mt-2">
-          <div className="flex items-center gap-2 mb-4 font-bold" style={{ color: 'var(--text-main)' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2l9 4.9V17L12 22l-9-4.9V7z"></path>
-              <path d="M12 22v-10"></path>
-              <path d="M12 12L3 7l9-5 9 5-9 5z"></path>
-            </svg>
-            Classificação
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-[11px] font-bold uppercase tracking-wide" style={labelStyle}>
-                Representante
-              </label>
-              <div className="relative">
-                <select className="w-full h-10 px-3 rounded-md text-sm appearance-none outline-none transition-colors cursor-pointer" style={inputStyle} defaultValue="">
-                  <option value="" disabled hidden>Selecione...</option>
-                  <option value="rep1" style={{ background: 'var(--bg-surface)', color: 'var(--text-main)' }}>João Silva</option>
-                  <option value="rep2" style={{ background: 'var(--bg-surface)', color: 'var(--text-main)' }}>Maria Santos</option>
-                </select>
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--text-muted)' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="text-[11px] font-bold uppercase tracking-wide" style={labelStyle}>
-                Segmento
-              </label>
-              <div className="relative">
-                <select className="w-full h-10 px-3 rounded-md text-sm appearance-none outline-none transition-colors cursor-pointer" style={inputStyle} defaultValue="">
-                  <option value="" disabled hidden>Selecione...</option>
-                  <option value="varejo" style={{ background: 'var(--bg-surface)', color: 'var(--text-main)' }}>Varejo</option>
-                  <option value="atacado" style={{ background: 'var(--bg-surface)', color: 'var(--text-main)' }}>Atacado</option>
-                </select>
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--text-muted)' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="text-[11px] font-bold uppercase tracking-wide" style={labelStyle}>
-                Grupo Cliente
-              </label>
-              <div className="relative">
-                <select className="w-full h-10 px-3 rounded-md text-sm appearance-none outline-none transition-colors cursor-pointer" style={inputStyle} defaultValue="">
-                  <option value="" disabled hidden>Selecione...</option>
-                  <option value="vip" style={{ background: 'var(--bg-surface)', color: 'var(--text-main)' }}>VIP</option>
-                  <option value="padrao" style={{ background: 'var(--bg-surface)', color: 'var(--text-main)' }}>Padrão</option>
-                </select>
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--text-muted)' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Segmento (CNAE) */}
+        <div className="flex flex-col gap-2">
+          <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
+            Segmento de Mercado (CNAE)
+          </label>
+          <input
+            type="text"
+            placeholder="Ex: Comércio Varejista"
+            className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
+            style={inputStyle}
+            value={formData.businessActivity ?? ''}
+            onChange={(e) => updateFormData({ businessActivity: e.target.value })}
+          />
         </div>
+
       </div>
     </div>
   );

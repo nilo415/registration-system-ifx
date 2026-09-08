@@ -39,10 +39,14 @@ public class FileManagerService {
     /** Resolved path to the local storage directory. */
     private final Path storageDir;
 
-    public FileManagerService(@Value("${app.storage.directory:./local_data}") String storagePath) {
+    private final PdfGeneratorService pdfGeneratorService;
+
+    public FileManagerService(@Value("${app.storage.directory:./local_data}") String storagePath,
+                              PdfGeneratorService pdfGeneratorService) {
         this.storageDir = Paths.get(storagePath).toAbsolutePath().normalize();
         this.mapper = new ObjectMapper()
                 .enable(SerializationFeature.INDENT_OUTPUT); // pretty-print JSON
+        this.pdfGeneratorService = pdfGeneratorService;
         ensureDirectoryExists();
     }
 
@@ -68,6 +72,10 @@ public class FileManagerService {
 
         log.info("Registration saved → {} | CNPJ: {} | Status: {}",
                 jsonPath, payload.getCnpj(), payload.getStatus());
+
+        if ("FINALIZED".equalsIgnoreCase(payload.getStatus())) {
+            pdfGeneratorService.generateRegistrationPdf(payload, storageDir);
+        }
     }
 
     /**

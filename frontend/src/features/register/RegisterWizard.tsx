@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Stepper from '../../components/ui/Stepper';
-import { saveDraft } from '../../services/api';
+import { saveDraft, finalizeRegistration, fetchCurrentRegistration } from '../../services/api';
 import { useRegistration } from '../../contexts/RegistrationContext';
+import WizardFooter from './components/WizardFooter';
 import Step1Operation from './steps/Step1Operation';
 import Step2Company from './steps/Step2Company';
 import Step3Address from './steps/Step3Address';
@@ -27,23 +28,158 @@ const STEP_TITLES = [
   'Documentos',
 ];
 
+interface Toast {
+  type: 'success' | 'error' | 'warning' | 'info';
+  message: string;
+}
+
 export default function RegisterWizard() {
   const [currentStep, setCurrentStep] = useState(0);
-  const { formData } = useRegistration();
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [isFinalizing, setIsFinalizing] = useState(false);
+  const [toast, setToast] = useState<Toast | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const { formData, updateFormData, resetForm } = useRegistration();
+
+  const showToast = (type: Toast['type'], message: string) => {
+    setToast({ type, message });
+    setTimeout(() => {
+      setToast(null);
+    }, 5000);
+  };
+
+  // Carregar rascunho existente no backend ao montar o componente
+  useEffect(() => {
+    let isMounted = true;
+    const loadDraft = async () => {
+      try {
+        const existingData = await fetchCurrentRegistration();
+        if (existingData && isMounted) {
+          updateFormData(existingData);
+          showToast('info', 'Rascunho recuperado do servidor local.');
+        }
+      } catch (error) {
+        console.warn('Nenhum cadastro prévio ou backend offline:', error);
+      }
+    };
+    loadDraft();
+    return () => {
+      isMounted = false;
+    };
+  }, [updateFormData]);
 
   const handleSaveDraft = async () => {
+    setIsSavingDraft(true);
     try {
-      const response = await saveDraft(formData);
-      console.log('Sucesso ao salvar rascunho:', response);
-      alert('Rascunho salvo com sucesso no servidor local!');
+      await saveDraft(formData);
+      showToast('success', 'Rascunho salvo com sucesso no servidor local!');
     } catch (error) {
-      console.error('Erro ao salvar o rascunho:', error);
-      alert('Falha ao salvar rascunho. Veja o console.');
+      console.error('Erro ao salvar rascunho:', error);
+      showToast('error', 'Falha ao salvar rascunho. Verifique se o backend está em execução.');
+    } finally {
+      setIsSavingDraft(false);
     }
   };
 
+  const handleFinalize = async () => {
+    // Validações básicas de negócio
+    if (!formData.operationType) {
+      showToast('warning', 'Por favor, selecione o Tipo de Cadastro no passo 1 (Operação).');
+      setCurrentStep(0);
+      return;
+    }
+    if (!formData.cnpj || formData.cnpj.trim() === '') {
+      showToast('warning', 'Por favor, preencha o CNPJ no passo 2 (Empresa).');
+      setCurrentStep(1);
+      return;
+    }
+    if (!formData.companyName || formData.companyName.trim() === '') {
+      showToast('warning', 'Por favor, preencha a Razão Social no passo 2 (Empresa).');
+      setCurrentStep(1);
+      return;
+    }
+
+    setIsFinalizing(true);
+    try {
+      await finalizeRegistration(formData);
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error('Erro ao finalizar cadastro:', error);
+      showToast('error', 'Falha ao finalizar cadastro. Verifique a conexão com o servidor.');
+    } finally {
+      setIsFinalizing(false);
+    }
+  };
+
+  const handleReset = () => {
+    if (window.confirm('Deseja reiniciar o formulário? Todos os dados atuais serão apagados da tela.')) {
+      resetForm();
+      setCurrentStep(0);
+      showToast('info', 'Formulário reiniciado.');
+    }
+  };
+
+  const handleNewRegistration = () => {
+    setShowSuccessModal(false);
+    resetForm();
+    setCurrentStep(0);
+  };
+
   return (
-    <div className="p-6 max-w-[1000px] mx-auto flex flex-col gap-6">
+    <div className="p-6 max-w-[1000px] mx-auto flex flex-col gap-6 relative">
+      {/* Toast Alert */}
+      {toast && (
+        <div
+          className="fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-xl transition-all duration-300 text-sm font-medium"
+          style={{
+            background:
+              toast.type === 'success'
+                ? '#16a34a'
+                : toast.type === 'error'
+                ? '#dc2626'
+                : toast.type === 'warning'
+                ? '#d97706'
+                : 'var(--primary)',
+            color: '#ffffff',
+          }}
+        >
+          {toast.type === 'success' && (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          )}
+          {toast.type === 'error' && (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="15" y1="9" x2="9" y2="15" />
+              <line x1="9" y1="9" x2="15" y2="15" />
+            </svg>
+          )}
+          {toast.type === 'warning' && (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+          )}
+          {toast.type === 'info' && (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+          )}
+          <span>{toast.message}</span>
+          <button
+            onClick={() => setToast(null)}
+            className="ml-3 hover:opacity-75 cursor-pointer"
+            title="Fechar"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* ── Top Card: Header & Stepper ── */}
       <div
@@ -62,10 +198,12 @@ export default function RegisterWizard() {
               Preencha os dados abaixo para cadastrar um novo cliente no sistema.
             </p>
           </div>
-          {/* Reset/Action Button Placeholder */}
+          {/* Botão Reiniciar Cadastro */}
           <button
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:opacity-80 cursor-pointer"
+            type="button"
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:opacity-80 cursor-pointer"
             style={{ background: 'var(--border-color)', color: 'var(--text-muted)' }}
+            onClick={handleReset}
             title="Reiniciar Cadastro"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -108,78 +246,71 @@ export default function RegisterWizard() {
           <div style={{ display: currentStep === 3 ? 'block' : 'none' }}><Step4Tax /></div>
           <div style={{ display: currentStep === 4 ? 'block' : 'none' }}><Step5References /></div>
           <div style={{ display: currentStep === 5 ? 'block' : 'none' }}><Step6Documents /></div>
-          {currentStep > 5 && (
-            <div className="text-center mt-10">
-              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                Os campos deste passo serão construídos na próxima fase.
-              </p>
-            </div>
-          )}
         </div>
 
         <div className="w-full h-px" style={{ background: 'var(--border-color)' }} />
 
-        {/* Footer / Navigation */}
-        <div className="flex items-center justify-between px-8 py-5">
-          {currentStep > 0 ? (
-            <button
-              id="wizard-back-btn"
-              className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors duration-200 cursor-pointer flex items-center gap-2"
-              style={{
-                background: 'var(--tertiary)',
-                color: 'var(--primary)',
-                border: 'none',
-              }}
-              onClick={() => setCurrentStep((s) => s - 1)}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="19" y1="12" x2="5" y2="12"></line>
-                <polyline points="12 19 5 12 12 5"></polyline>
+        {/* Modular Wizard Footer */}
+        <WizardFooter
+          currentStep={currentStep}
+          totalSteps={STEPS.length}
+          onBack={() => setCurrentStep((s) => Math.max(s - 1, 0))}
+          onNext={() => setCurrentStep((s) => Math.min(s + 1, STEPS.length - 1))}
+          onSaveDraft={handleSaveDraft}
+          onFinalize={handleFinalize}
+          isSavingDraft={isSavingDraft}
+          isFinalizing={isFinalizing}
+        />
+      </div>
+
+      {/* ── Success Modal ── */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div
+            className="w-full max-w-md rounded-2xl p-8 flex flex-col items-center text-center shadow-2xl border"
+            style={{
+              background: 'var(--bg-surface)',
+              borderColor: 'var(--border-color)',
+            }}
+          >
+            <div className="w-16 h-16 rounded-full bg-green-500/15 flex items-center justify-center text-green-500 mb-5">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
               </svg>
-              Voltar
-            </button>
-          ) : (
-            <div></div> /* Empty div to keep flex-between alignment if there is no back button */
-          )}
+            </div>
 
-          <div className="flex gap-4">
-            <button
-              id="wizard-save-draft-btn"
-              className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors duration-200 cursor-pointer"
-              style={{
-                background: 'transparent',
-                color: 'var(--primary)',
-                border: '1.5px solid var(--primary)',
-              }}
-              onClick={handleSaveDraft}
-            >
-              Salvar Rascunho
-            </button>
+            <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-main)' }}>
+              Cadastro Finalizado com Sucesso!
+            </h3>
+            <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-muted)' }}>
+              Os dados foram registrados no servidor local e o documento PDF (ficha cadastral) foi gerado na pasta de armazenamento.
+            </p>
 
-            <button
-              id="wizard-next-btn"
-              className="px-7 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer hover:opacity-90 flex items-center gap-2"
-              style={{
-                background: currentStep === STEPS.length - 1 ? '#16a34a' : 'var(--primary)',
-                color: '#ffffff',
-                border: 'none',
-              }}
-              onClick={() => {
-                if (currentStep < STEPS.length - 1) setCurrentStep((s) => s + 1);
-                else alert('Cadastro finalizado!');
-              }}
-            >
-              {currentStep === STEPS.length - 1 ? 'Concluir' : 'Próximo'}
-              {currentStep !== STEPS.length - 1 && (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                  <polyline points="12 5 19 12 12 19"></polyline>
-                </svg>
-              )}
-            </button>
+            <div className="w-full flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                onClick={handleNewRegistration}
+                className="flex-1 py-3 px-4 rounded-xl text-sm font-semibold text-white bg-primary hover:opacity-90 transition-opacity cursor-pointer"
+                style={{ background: 'var(--primary)' }}
+              >
+                Novo Cadastro
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSuccessModal(false)}
+                className="py-3 px-5 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
+                style={{
+                  background: 'var(--tertiary)',
+                  color: 'var(--text-main)',
+                }}
+              >
+                Fechar
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,8 @@
+import { useRegistration } from '../../../contexts/RegistrationContext';
+
 export default function Step1Operation() {
+  const { formData, updateFormData } = useRegistration();
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
@@ -14,12 +18,13 @@ export default function Step1Operation() {
               color: 'var(--text-main)',
               border: '1px solid var(--border-color)',
             }}
-            defaultValue=""
+            value={formData.operationType ?? ''}
+            onChange={(e) => updateFormData({ operationType: e.target.value })}
           >
             <option value="" disabled hidden>Selecione o tipo de operação...</option>
-            <option value="Venda a Prazo" style={{ background: 'var(--bg-surface)', color: 'var(--text-main)' }}>Venda a Prazo</option>
-            <option value="Venda a Vista" style={{ background: 'var(--bg-surface)', color: 'var(--text-main)' }}>Venda a Vista</option>
-            <option value="Amostra/Remessa" style={{ background: 'var(--bg-surface)', color: 'var(--text-main)' }}>Amostra/Remessa</option>
+            <option value="VENDA_A_PRAZO" style={{ background: 'var(--bg-surface)', color: 'var(--text-main)' }}>Venda a Prazo</option>
+            <option value="VENDA_A_VISTA" style={{ background: 'var(--bg-surface)', color: 'var(--text-main)' }}>Venda a Vista</option>
+            <option value="AMOSTRA_REMESSA" style={{ background: 'var(--bg-surface)', color: 'var(--text-main)' }}>Amostra/Remessa</option>
           </select>
           <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--text-muted)' }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -1,9 +1,12 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
+import { useRegistration } from '../../../contexts/RegistrationContext';
+import { uploadFile } from '../../../services/api';
 
 interface DocumentFile {
   name: string;
   size: number;
-  file: File;
+  file?: File;
+  uploading?: boolean;
 }
 
 interface DocumentCard {
@@ -131,9 +134,16 @@ function UploadCard({ doc, file, onFileSelect, onRemove }: {
           transition: 'all 0.2s',
         }}>
           {file ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            file.uploading ? (
+              <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2.5">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.25"></circle>
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeLinecap="round"></path>
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            )
           ) : doc.icon}
         </div>
         <div style={{ flex: 1 }}>
@@ -169,15 +179,22 @@ function UploadCard({ doc, file, onFileSelect, onRemove }: {
           border: '1px solid rgba(34,197,94,0.2)',
           borderRadius: '8px', padding: '10px 14px',
         }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-          </svg>
+          {file.uploading ? (
+            <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2.5">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.25"></circle>
+              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeLinecap="round"></path>
+            </svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+          )}
           <span style={{ color: 'var(--text-main)', fontSize: '12px', fontWeight: 600, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {file.name}
           </span>
           <span style={{ color: 'var(--text-muted)', fontSize: '11px', flexShrink: 0 }}>
-            {formatSize(file.size)}
+            {file.uploading ? 'Enviando...' : (file.size ? formatSize(file.size) : 'Anexado')}
           </span>
           <button
             onClick={() => onRemove(doc.id)}
@@ -243,21 +260,67 @@ function UploadCard({ doc, file, onFileSelect, onRemove }: {
 }
 
 export default function Step6Documents() {
+  const { formData, updateFormData } = useRegistration();
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, DocumentFile>>({});
 
-  const handleFileSelect = (id: string, file: File) => {
+  // Sync with formData.documentFileNames on load if present
+  useEffect(() => {
+    if (formData.documentFileNames && formData.documentFileNames.length > 0) {
+      setUploadedFiles((prev) => {
+        const next = { ...prev };
+        formData.documentFileNames?.forEach((fileName, index) => {
+          const docId = DOCUMENTS[index % DOCUMENTS.length]?.id;
+          if (docId && !next[docId]) {
+            next[docId] = { name: fileName, size: 0 };
+          }
+        });
+        return next;
+      });
+    }
+  }, [formData.documentFileNames]);
+
+  const handleFileSelect = async (id: string, file: File) => {
     setUploadedFiles((prev) => ({
       ...prev,
-      [id]: { name: file.name, size: file.size, file },
+      [id]: { name: file.name, size: file.size, file, uploading: true },
     }));
+
+    const cleanCnpj = formData.cnpj?.replace(/\D/g, '') || '00000000000000';
+    let finalFileName = file.name;
+
+    try {
+      const res = await uploadFile(file, cleanCnpj);
+      if (res && res.fileName) {
+        finalFileName = res.fileName;
+      }
+    } catch (err) {
+      console.warn('Upload backend deferred, retaining file locally:', err);
+    } finally {
+      setUploadedFiles((prev) => ({
+        ...prev,
+        [id]: { name: finalFileName, size: file.size, file, uploading: false },
+      }));
+
+      const existingNames = formData.documentFileNames ?? [];
+      if (!existingNames.includes(finalFileName)) {
+        updateFormData({ documentFileNames: [...existingNames, finalFileName] });
+      }
+    }
   };
 
   const handleRemove = (id: string) => {
+    const fileToRemove = uploadedFiles[id];
     setUploadedFiles((prev) => {
       const next = { ...prev };
       delete next[id];
       return next;
     });
+
+    if (fileToRemove && formData.documentFileNames) {
+      updateFormData({
+        documentFileNames: formData.documentFileNames.filter((name) => name !== fileToRemove.name),
+      });
+    }
   };
 
   const required = DOCUMENTS.filter((d) => !d.optional);

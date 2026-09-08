@@ -18,6 +18,8 @@ const initialFormData: RegistrationPayload = {
   openingDate: '',
   legalNature: '',
   businessActivity: '',
+
+  // Step 3 - Principal
   zipCode: '',
   street: '',
   number: '',
@@ -26,12 +28,48 @@ const initialFormData: RegistrationPayload = {
   city: '',
   state: '',
   country: '',
+
+  // Step 3 - Contatos
+  contactPerson: '',
   phone: '',
+  mobilePhone: '',
   email: '',
+  purchasingEmail: '',
   website: '',
+
+  // Step 3 - Endereço Financeiro
+  financialContact: '',
+  financialZipCode: '',
+  financialStreet: '',
+  financialNeighborhood: '',
+  financialCity: '',
+  financialState: '',
+  financialPhone: '',
+  financialMobilePhone: '',
+  financialEmail: '',
+
+  // Step 3 - Endereço de Entrega
+  deliveryZipCode: '',
+  deliveryStreet: '',
+  deliveryNeighborhood: '',
+  deliveryCity: '',
+  deliveryState: '',
+  deliveryContact: '',
+  deliveryPhone: '',
+  deliveryObservation: '',
+
+  // Step 4 - Fiscal
   taxRegime: '',
   stateRegistration: '',
   municipalRegistration: '',
+  simplesNacional: false,
+  ipiExemption: false,
+  suframaDiscount: false,
+  suframaNumber: '',
+  cdiIncentive: false,
+  requiresPurchaseOrder: false,
+
+  // Step 5 & 6
   representatives: [],
   bankReferences: [],
   commercialReferences: [],

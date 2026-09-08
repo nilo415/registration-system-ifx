@@ -1,8 +1,10 @@
 package com.inflex.registration_system.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Main DTO representing the full registration form payload
@@ -14,7 +16,11 @@ import java.util.List;
  * Fields are grouped by wizard step for readability.
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RegistrationPayloadDTO {
+
+    // ── Step 0 – Operation Type ───────────────────────────────────────────
+    private String operationType;
 
     // ── Step 1 – Company Identity ──────────────────────────────────────────
     private String cnpj;
@@ -35,17 +41,49 @@ public class RegistrationPayloadDTO {
     private String country;
 
     // ── Step 3 – Contact ───────────────────────────────────────────────────
+    private String contactPerson;
     private String phone;
+    private String mobilePhone;
     private String email;
+    private String purchasingEmail;
     private String website;
+
+    // ── Financial Address & Contact ─────────────────────────────────────────
+    private String financialContact;
+    private String financialZipCode;
+    private String financialStreet;
+    private String financialNeighborhood;
+    private String financialCity;
+    private String financialState;
+    private String financialPhone;
+    private String financialMobilePhone;
+    private String financialEmail;
+
+    // ── Delivery Address & Contact ──────────────────────────────────────────
+    private String deliveryZipCode;
+    private String deliveryStreet;
+    private String deliveryNeighborhood;
+    private String deliveryCity;
+    private String deliveryState;
+    private String deliveryContact;
+    private String deliveryPhone;
+    private String deliveryObservation;
 
     // ── Step 4 – Tax & Financial ───────────────────────────────────────────
     private String taxRegime;               // e.g. "Simples Nacional", "Lucro Real"
     private String stateRegistration;       // Inscrição Estadual
     private String municipalRegistration;   // Inscrição Municipal
+    private Boolean simplesNacional;
+    private Boolean ipiExemption;
+    private Boolean suframaDiscount;
+    private String suframaNumber;
+    private Boolean cdiIncentive;
+    private Boolean requiresPurchaseOrder;
 
-    // ── Step 5 – Legal Representatives ────────────────────────────────────
+    // ── Step 5 – Legal Representatives & References ────────────────────────
     private List<RepresentativeDTO> representatives;
+    private List<Map<String, Object>> bankReferences;
+    private List<Map<String, Object>> commercialReferences;
 
     // ── Step 6 – Uploaded Documents (file names only; binaries go via /upload) ─
     private List<String> documentFileNames;
