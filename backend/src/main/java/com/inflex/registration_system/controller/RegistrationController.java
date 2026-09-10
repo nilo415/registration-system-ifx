@@ -7,6 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
+
 
 /**
  * REST controller that exposes the registration endpoints to the React frontend.
@@ -100,7 +105,8 @@ public class RegistrationController {
             registrationService.saveRegistration(payload);
             return ResponseEntity.ok(Map.of(
                     "status",  "success",
-                    "message", "Registration finalized successfully."
+                    "message", "Registration finalized successfully.",
+                    "cnpj",    payload.getCnpj() != null ? payload.getCnpj() : ""
             ));
         } catch (Exception e) {
             log.error("Failed to finalize registration", e);
@@ -152,6 +158,37 @@ public class RegistrationController {
                     "message", "Failed to upload file: " + e.getMessage()
             ));
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // GET /api/registration/pdf
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Serves the generated registration PDF inline so the browser can render it.
+     * The file is always named {@code ficha_cadastral.pdf} and stored in the
+     * configured local storage directory.
+     *
+     * @return the PDF bytes with {@code Content-Disposition: inline}
+     */
+    @Operation(summary = "Download the generated registration PDF")
+    @GetMapping("/pdf")
+    public ResponseEntity<Resource> getPdf() {
+
+        log.info("GET /pdf");
+
+        Path pdfPath = fileManagerService.getStorageDir().resolve("ficha_cadastral.pdf");
+
+        if (!pdfPath.toFile().exists()) {
+            log.warn("PDF not found at: {}", pdfPath);
+            return ResponseEntity.notFound().build();
+        }
+
+        Resource resource = new FileSystemResource(pdfPath);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"ficha_cadastral.pdf\"")
+                .body(resource);
     }
 
     // ─────────────────────────────────────────────────────────────────────────

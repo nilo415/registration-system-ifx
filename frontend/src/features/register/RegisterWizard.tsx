@@ -39,6 +39,7 @@ export default function RegisterWizard() {
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [finalizedCnpj, setFinalizedCnpj] = useState<string | null>(null);
 
   const { formData, updateFormData, resetForm } = useRegistration();
 
@@ -102,7 +103,8 @@ export default function RegisterWizard() {
 
     setIsFinalizing(true);
     try {
-      await finalizeRegistration(formData);
+      const response = await finalizeRegistration(formData);
+      setFinalizedCnpj(response?.cnpj ?? formData.cnpj ?? null);
       setShowSuccessModal(true);
     } catch (error) {
       console.error('Erro ao finalizar cadastro:', error);
@@ -290,11 +292,11 @@ export default function RegisterWizard() {
             <div className="w-full flex flex-col sm:flex-row gap-3">
               <button
                 type="button"
-                onClick={handleNewRegistration}
-                className="flex-1 py-3 px-4 rounded-xl text-sm font-semibold text-white bg-primary hover:opacity-90 transition-opacity cursor-pointer"
+                onClick={() => window.open('http://localhost:8080/api/registration/pdf', '_blank')}
+                className="flex-1 py-3 px-4 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer"
                 style={{ background: 'var(--primary)' }}
               >
-                Novo Cadastro
+                Visualizar Cadastro
               </button>
               <button
                 type="button"
