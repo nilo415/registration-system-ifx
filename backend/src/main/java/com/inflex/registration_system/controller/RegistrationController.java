@@ -2,6 +2,9 @@ package com.inflex.registration_system.controller;
 
 import com.inflex.registration_system.dto.RegistrationPayloadDTO;
 import com.inflex.registration_system.service.FileManagerService;
+import com.inflex.registration_system.service.RegistrationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -18,21 +21,28 @@ import java.util.Map;
  * Base path : /api/registration
  *
  * Endpoints:
- *  POST   /draft    → saves the current wizard state as a draft
- *  POST   /finalize → marks the registration as finalized
- *  POST   /upload   → receives a single file attachment
- *  GET    /current  → returns the registration currently saved on disk
+ *  POST   /draft    → saves the current wizard state as a draft (DB)
+ *  POST   /finalize → marks the registration as finalized (DB + PDF)
+ *  POST   /upload   → receives a single file attachment (disk)
+ *  GET    /current  → returns the most recently saved registration (DB)
  */
+@Tag(name = "Registration", description = "Pre-registration wizard endpoints")
 @RestController
 @RequestMapping("/api/registration")
 public class RegistrationController {
 
     private static final Logger log = LoggerFactory.getLogger(RegistrationController.class);
 
+    /** DB-backed service — handles draft/finalize persistence. */
+    private final RegistrationService registrationService;
+
+    /** File-system service — still handles binary file uploads. */
     private final FileManagerService fileManagerService;
 
-    public RegistrationController(FileManagerService fileManagerService) {
-        this.fileManagerService = fileManagerService;
+    public RegistrationController(RegistrationService registrationService,
+                                  FileManagerService fileManagerService) {
+        this.registrationService = registrationService;
+        this.fileManagerService  = fileManagerService;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -40,12 +50,12 @@ public class RegistrationController {
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Saves the registration payload as a DRAFT.
-     * If the CNPJ changed, the storage directory is wiped first.
+     * Saves the registration payload as a DRAFT in the database.
      *
      * @param payload the full wizard payload from the frontend
      * @return 200 OK with a confirmation message
      */
+    @Operation(summary = "Save registration as draft")
     @PostMapping("/draft")
     public ResponseEntity<Map<String, String>> saveDraft(
             @RequestBody RegistrationPayloadDTO payload) {
@@ -54,15 +64,15 @@ public class RegistrationController {
         payload.setStatus("DRAFT");
 
         try {
-            fileManagerService.saveRegistration(payload);
+            registrationService.saveRegistration(payload);
             return ResponseEntity.ok(Map.of(
-                    "status", "success",
+                    "status",  "success",
                     "message", "Draft saved successfully."
             ));
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Failed to save draft", e);
             return ResponseEntity.internalServerError().body(Map.of(
-                    "status", "error",
+                    "status",  "error",
                     "message", "Failed to save draft: " + e.getMessage()
             ));
         }
@@ -73,12 +83,12 @@ public class RegistrationController {
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Saves the registration payload as FINALIZED.
-     * If the CNPJ changed, the storage directory is wiped first.
+     * Saves the registration payload as FINALIZED and generates the PDF.
      *
      * @param payload the full wizard payload from the frontend
      * @return 200 OK with a confirmation message
      */
+    @Operation(summary = "Finalize registration and generate PDF")
     @PostMapping("/finalize")
     public ResponseEntity<Map<String, String>> finalizeRegistration(
             @RequestBody RegistrationPayloadDTO payload) {
@@ -87,15 +97,15 @@ public class RegistrationController {
         payload.setStatus("FINALIZED");
 
         try {
-            fileManagerService.saveRegistration(payload);
+            registrationService.saveRegistration(payload);
             return ResponseEntity.ok(Map.of(
-                    "status", "success",
+                    "status",  "success",
                     "message", "Registration finalized successfully."
             ));
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Failed to finalize registration", e);
             return ResponseEntity.internalServerError().body(Map.of(
-                    "status", "error",
+                    "status",  "error",
                     "message", "Failed to finalize registration: " + e.getMessage()
             ));
         }
@@ -106,13 +116,13 @@ public class RegistrationController {
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Receives a single file (PDF, image, etc.) and saves it to local storage.
-     * The CNPJ must be passed as a request parameter to enforce the cleanup rule.
+     * Receives a single file (PDF, image, etc.) and saves it to local disk.
      *
      * @param cnpj the CNPJ that owns the document
      * @param file the multipart file sent by the frontend
      * @return 200 OK with the saved file name
      */
+    @Operation(summary = "Upload a document attachment")
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadFile(
             @RequestParam("cnpj") String cnpj,
@@ -123,7 +133,7 @@ public class RegistrationController {
 
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of(
-                    "status", "error",
+                    "status",  "error",
                     "message", "No file provided or file is empty."
             ));
         }
@@ -131,14 +141,14 @@ public class RegistrationController {
         try {
             Path saved = fileManagerService.saveUploadedFile(cnpj, file);
             return ResponseEntity.ok(Map.of(
-                    "status", "success",
-                    "message", "File uploaded successfully.",
+                    "status",   "success",
+                    "message",  "File uploaded successfully.",
                     "fileName", saved.getFileName().toString()
             ));
         } catch (IOException e) {
             log.error("Failed to upload file", e);
             return ResponseEntity.internalServerError().body(Map.of(
-                    "status", "error",
+                    "status",  "error",
                     "message", "Failed to upload file: " + e.getMessage()
             ));
         }
@@ -149,25 +159,26 @@ public class RegistrationController {
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Returns the registration currently persisted on disk.
-     * Returns 204 No Content if no registration has been saved yet.
+     * Returns the most recently saved registration from the database.
+     * Returns 204 No Content if no registration exists yet.
      *
-     * @return the current RegistrationPayloadDTO, or 204 if empty
+     * @return the current {@link RegistrationPayloadDTO}, or 204 if empty
      */
+    @Operation(summary = "Retrieve the latest saved registration")
     @GetMapping("/current")
     public ResponseEntity<RegistrationPayloadDTO> getCurrent() {
 
         log.info("GET /current");
 
         try {
-            RegistrationPayloadDTO current = fileManagerService.readCurrentRegistration();
+            RegistrationPayloadDTO current = registrationService.readCurrentRegistration();
 
             if (current == null) {
                 return ResponseEntity.noContent().build(); // 204
             }
 
             return ResponseEntity.ok(current); // 200
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Failed to read current registration", e);
             return ResponseEntity.internalServerError().build();
         }
