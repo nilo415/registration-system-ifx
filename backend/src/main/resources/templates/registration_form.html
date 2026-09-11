@@ -6,29 +6,20 @@
     <title>Ficha Cadastral de Cliente</title>
     <style>
         /* ══════════════════════════════════════════════════════
-           PÁGINA E RESET
-           OpenHTMLtoPDF: apenas CSS 2.1 — sem Flexbox/Grid.
-           Layout exclusivamente via tabelas (table). Sem box-shadow.
-           border-radius usado com moderação (suportado em builds
-           recentes do OpenHTMLtoPDF); remover se o motor não suportar.
+           PÁGINA E RESET (Compressão de Margens)
         ══════════════════════════════════════════════════════ */
         @page {
             size: A4 portrait;
-            margin: 12mm 11mm 12mm 11mm;
+            margin: 10mm 10mm 10mm 10mm;
         }
 
-        /* ══════════════════════════════════════════════════════
-           IMPRESSÃO NO NAVEGADOR
-           Oculta a URL/título injetados pelo Chrome ajustando
-           a margem da página para 0 e compensando no body.
-        ══════════════════════════════════════════════════════ */
         @media print {
             @page {
                 margin: 0;
             }
 
             body {
-                padding: 12mm 11mm 12mm 11mm;
+                padding: 10mm 10mm 10mm 10mm;
             }
         }
 
@@ -38,9 +29,10 @@
             box-sizing: border-box;
         }
 
+        /* 1. COMPRESSÃO DE FONTES PARA CABER NA PÁGINA */
         body {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 7.6pt;
+            font-size: 7.5pt;
             color: #24262b;
             background-color: #ffffff;
         }
@@ -61,36 +53,40 @@
         }
 
         /* ══════════════════════════════════════════════════════
-           PALETA
-           Vermelho de marca .......... #C8102E
-           Tinta / texto forte ........ #1F2430
-           Cinza texto secundário ..... #767c88
-           Linhas / bordas ............ #E1E4EA
-           Fundo de seção (claro) ..... #F6F7FA
-           Verde (SIM / vista) ........ #1D7A46 / #E5F5EA
-           Azul (prazo) ................ #1E4E8C / #E7EEF8
+           CABEÇALHO E RODAPÉ
         ══════════════════════════════════════════════════════ */
-
-        /* ══════════════════════════════════════════════════════
-           CABEÇALHO DO DOCUMENTO
-        ══════════════════════════════════════════════════════ */
-        .header-table {
+        .header-table,
+        .footer-table {
             border: 1px solid #1F2430;
             border-radius: 3px;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
+        }
+
+        .footer-table {
+            margin-top: 2px;
+        }
+
+        .footer-table td {
+            border-right: 1px solid #E1E4EA;
+            padding: 4px 6px;
+            vertical-align: top;
+        }
+
+        .footer-table td:last-child {
+            border-right: none;
         }
 
         .logo-cell {
             width: 78px;
             text-align: center;
             vertical-align: middle;
-            background-color: #eee;
-            padding: 8px 4px;
+            background-color: #fff;
+            padding: 6px 4px;
         }
 
         .logo-img {
-            max-width: 70px;
-            max-height: 45px;
+            max-width: 65px;
+            max-height: 40px;
             display: block;
             margin: 0 auto;
         }
@@ -98,12 +94,12 @@
         .title-cell {
             text-align: left;
             vertical-align: middle;
-            font-size: 10.5pt;
+            font-size: 10pt;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: #1F2430;
-            padding-left: 12px;
+            padding-left: 10px;
             border-right: 1px solid #E1E4EA;
         }
 
@@ -114,109 +110,80 @@
             color: #C8102E;
             letter-spacing: 1.4px;
             text-transform: uppercase;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
         }
 
         .subtitle-cell {
             text-align: left;
             vertical-align: middle;
-            font-size: 8pt;
+            font-size: 8.5pt;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            padding-left: 12px;
+            padding-left: 10px;
             border-right: 1px solid #E1E4EA;
         }
 
         .meta-cell {
-            width: 108px;
+            width: 130px;
             vertical-align: middle;
             padding: 0;
         }
 
         .meta-cell table td {
             border: none;
-            border-bottom: 1px solid #E1E4EA;
-            font-size: 6.8pt;
-            padding: 3px 8px;
+            text-align: center;
+            padding: 4px 4px;
         }
 
-        .meta-cell table tr:last-child td {
-            border-bottom: none;
+        .meta-cell table td:first-child {
+            border-right: 1px solid #E1E4EA;
         }
 
-        .meta-label {
+        .meta-label,
+        .footer-label {
             font-weight: bold;
             color: #767c88;
             text-transform: uppercase;
-            font-size: 5.8pt;
+            font-size: 6pt;
             letter-spacing: 0.4px;
-            width: 46px;
+            margin-bottom: 2px;
         }
 
         /* ══════════════════════════════════════════════════════
-           IDENTIFICAÇÃO (Razão Social / CNPJ) — usado na capa
+           IDENTIFICAÇÃO (Razão Social / CNPJ)
         ══════════════════════════════════════════════════════ */
         .identity-table {
             border: 1px solid #E1E4EA;
             border-left: 3px solid #C8102E;
             border-radius: 2px;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             background-color: #FAFAFB;
         }
 
         .identity-table td {
             border: none;
-            padding: 5px 10px;
+            padding: 4px 8px;
         }
 
         /* ══════════════════════════════════════════════════════
-           BADGE TIPO DE OPERAÇÃO
+           SEÇÕES E CÉLULAS GERAIS
         ══════════════════════════════════════════════════════ */
-        .op-badge-row td {
-            padding: 0 0 6px 0;
-            text-align: left;
-        }
-
-        .op-badge {
-            display: inline-block;
-            padding: 4px 14px;
-            font-size: 8pt;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            border-radius: 2px;
-            border-left: 4px solid;
-        }
-
-        .op-badge-prazo {
-            background-color: #E7EEF8;
-            color: #1E4E8C;
-            border-color: #1E4E8C;
-        }
-
-        .op-badge-vista {
-            background-color: #E5F5EA;
-            color: #1D7A46;
-            border-color: #1D7A46;
-        }
-
-        /* ══════════════════════════════════════════════════════
-           SEÇÕES
-        ══════════════════════════════════════════════════════ */
-        .section-table {
+        .section-table,
+        .approval-table,
+        .checklist-table {
             border: 1px solid #E1E4EA;
             border-radius: 2px;
-            margin-bottom: 6px;
+            margin-bottom: 3px;
         }
 
         .section-header td {
             background-color: #1F2430;
             color: #ffffff;
             font-weight: bold;
-            font-size: 7.6pt;
+            font-size: 7.5pt;
             text-align: left;
-            padding: 4px 8px;
+            padding: 4px 6px;
             text-transform: uppercase;
             letter-spacing: 0.6px;
             border-left: 3px solid #C8102E;
@@ -227,19 +194,17 @@
             background-color: #F0F1F4;
             color: #454b57;
             font-weight: bold;
-            font-size: 6.6pt;
+            font-size: 6.5pt;
             text-align: left;
-            padding: 3px 6px;
+            padding: 3px 5px;
             border: 0.5px solid #E1E4EA;
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
 
-        /* ══════════════════════════════════════════════════════
-           CÉLULAS DE CAMPO (label + valor)
-        ══════════════════════════════════════════════════════ */
-        .field-label {
-            font-size: 5.8pt;
+        .field-label,
+        .approval-label {
+            font-size: 5.5pt;
             font-weight: bold;
             color: #8a8f99;
             white-space: nowrap;
@@ -248,93 +213,56 @@
             margin-bottom: 1px;
         }
 
-        .field-value {
-            font-size: 7.6pt;
+        .field-value,
+        .approval-value {
+            font-size: 8pt;
             color: #1F2430;
             border-bottom: 0.5px solid #E1E4EA;
             min-height: 12px;
             padding-bottom: 1px;
         }
 
-        .data-cell {
+        .data-cell,
+        .approval-table td {
             border: 0.5px solid #EDEEF2;
-            padding: 3px 6px;
+            padding: 3px 5px;
             vertical-align: bottom;
         }
 
         /* ══════════════════════════════════════════════════════
-           CHECKLIST DA CAPA — coluna STATUS
+           CHECKLIST E CHECKBOXES
         ══════════════════════════════════════════════════════ */
-        .checklist-table {
-            border: 1px solid #E1E4EA;
-            border-radius: 2px;
-            margin-bottom: 6px;
-        }
-
         .checklist-table td {
             border: 0.5px solid #EDEEF2;
-            padding: 3.5px 6px;
+            padding: 5px 6px;
             vertical-align: middle;
         }
 
         .checklist-doc {
-            font-size: 7.4pt;
+            font-size: 7.5pt;
             color: #1F2430;
         }
 
         .checklist-status {
             text-align: right;
-            font-size: 7.2pt;
+            font-size: 7.5pt;
             white-space: nowrap;
-            width: 120px;
+            width: 140px;
         }
 
-        /* ══════════════════════════════════════════════════════
-           BLOCO DE APROVAÇÃO / CLASSIFICAÇÃO DA CAPA
-        ══════════════════════════════════════════════════════ */
-        .approval-table {
-            border: 1px solid #E1E4EA;
-            border-radius: 2px;
-            margin-bottom: 6px;
-        }
-
-        .approval-table td {
-            border: 0.5px solid #EDEEF2;
-            padding: 5px 8px;
-            vertical-align: bottom;
-        }
-
-        .approval-label {
-            font-size: 6pt;
-            font-weight: bold;
-            color: #8a8f99;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            margin-bottom: 2px;
-        }
-
-        .approval-value {
-            font-size: 7.6pt;
-            color: #1F2430;
-            border-bottom: 0.5px solid #E1E4EA;
-            min-height: 14px;
-        }
-
-        /* ══════════════════════════════════════════════════════
-           CHECKBOX SIMULADO (SIM / NÃO)
-        ══════════════════════════════════════════════════════ */
         .chk-box {
             display: inline-block;
-            width: 9px;
-            height: 9px;
+            width: 11px;
+            height: 11px;
             border: 1px solid #b7bcc6;
             border-radius: 2px;
-            margin-right: 2px;
+            margin-right: 3px;
             vertical-align: middle;
             text-align: center;
-            font-size: 6.4pt;
-            line-height: 9px;
+            font-size: 7.5pt;
+            line-height: 11px;
             color: #ffffff;
+            font-weight: bold;
         }
 
         .chk-checked {
@@ -342,67 +270,31 @@
             border-color: #C8102E;
         }
 
+        .chk-empty {
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            border: 1px solid #b7bcc6;
+            border-radius: 2px;
+            vertical-align: middle;
+            margin: 0 3px;
+        }
+
         .chk-group {
             text-align: left;
         }
 
-        /* Checkbox simples vazio (capa — preenchimento manual) */
-        .chk-empty {
-            display: inline-block;
-            width: 9px;
-            height: 9px;
-            border: 1px solid #b7bcc6;
-            border-radius: 2px;
-            vertical-align: middle;
-            margin: 0 2px;
+        .bold {
+            font-weight: bold;
         }
 
-        /* ══════════════════════════════════════════════════════
-           TABELA DE REFERÊNCIAS
-        ══════════════════════════════════════════════════════ */
+        /* Padrão para linhas listadas */
         .ref-row-odd td {
             background-color: #FAFAFB;
         }
 
         .ref-row-even td {
             background-color: #ffffff;
-        }
-
-        /* ══════════════════════════════════════════════════════
-           RODAPÉ
-        ══════════════════════════════════════════════════════ */
-        .footer-table {
-            border-top: 1px solid #E1E4EA;
-            margin-top: 6px;
-        }
-
-        .footer-table td {
-            border: none;
-            padding: 4px 5px 0 5px;
-            font-size: 6.8pt;
-        }
-
-        .footer-label {
-            font-weight: bold;
-            font-size: 6pt;
-            color: #8a8f99;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        /* ══════════════════════════════════════════════════════
-           UTILITÁRIOS
-        ══════════════════════════════════════════════════════ */
-        .bold {
-            font-weight: bold;
-        }
-
-        .center {
-            text-align: center;
-        }
-
-        .no-pad {
-            padding: 0;
         }
     </style>
 </head>
@@ -413,7 +305,6 @@
      ║              PÁGINA 1 — CAPA / CHECKLIST                  ║
      ╚═══════════════════════════════════════════════════════════╝ -->
 
-    <!-- ════ CABEÇALHO DA CAPA ════ -->
     <table class="header-table">
         <tr>
             <td class="logo-cell">
@@ -425,21 +316,23 @@
                 CADASTRO
             </td>
             <td class="meta-cell">
-                <table>
+                <table style="height: 100%;">
                     <tr>
-                        <td class="meta-label">Revisão</td>
-                        <td th:text="${payload.revision != null ? payload.revision : '-'}">9</td>
-                    </tr>
-                    <tr>
-                        <td class="meta-label">Folha</td>
-                        <td>1 / 1</td>
+                        <td style="width: 50%;">
+                            <div class="meta-label">Revisão</div>
+                            <div style="font-size: 8.5pt; color: #1F2430; font-weight: bold;"
+                                th:text="${payload.revision != null ? payload.revision : '10'}">10</div>
+                        </td>
+                        <td style="width: 50%;">
+                            <div class="meta-label">Folha</div>
+                            <div style="font-size: 8.5pt; color: #1F2430; font-weight: bold;">1 / 1</div>
+                        </td>
                     </tr>
                 </table>
             </td>
         </tr>
     </table>
 
-    <!-- ════ RAZÃO SOCIAL + CNPJ (identificação do cliente na Capa) ════ -->
     <table class="identity-table">
         <tr>
             <td style="width:60%;">
@@ -453,316 +346,284 @@
         </tr>
     </table>
 
-    <!-- ════ CHECKLIST DE DOCUMENTOS (dinâmico via Thymeleaf) ════ -->
-    <!--
-    Cada linha lê um boolean dedicado do payload (ex: payload.hasFichaCadastral).
-    Convenção: flag == true  → marca X no SIM.
-               flag == false → marca X no NAO.
-    Os campos booleanos devem ser adicionados ao RegistrationPayloadDTO.
--->
     <table class="checklist-table">
         <tr class="section-header">
             <td style="width:64%;">Documentos</td>
             <td style="width:36%; text-align:right;">Status</td>
         </tr>
-
-        <!-- 1. Ficha Cadastral Preenchida -->
         <tr>
             <td class="checklist-doc">Ficha Cadastral Preenchida</td>
             <td class="checklist-status">
                 <span class="chk-box" th:classappend="${payload.hasFichaCadastral} ? ' chk-checked' : ''">
-                    <th:block th:if="${payload.hasFichaCadastral}">✓</th:block>
+                    <th:block th:if="${payload.hasFichaCadastral}">X</th:block>
                 </span> SIM &#160;&#160;
                 <span class="chk-box" th:classappend="${!payload.hasFichaCadastral} ? ' chk-checked' : ''">
-                    <th:block th:unless="${payload.hasFichaCadastral}">✓</th:block>
+                    <th:block th:unless="${payload.hasFichaCadastral}">X</th:block>
                 </span> NÃO
             </td>
         </tr>
-
-        <!-- 2. Busca CEP -->
         <tr style="background-color:#FAFAFB;">
             <td class="checklist-doc">Busca CEP</td>
             <td class="checklist-status">
                 <span class="chk-box" th:classappend="${payload.hasBuscaCep} ? ' chk-checked' : ''">
-                    <th:block th:if="${payload.hasBuscaCep}">✓</th:block>
+                    <th:block th:if="${payload.hasBuscaCep}">X</th:block>
                 </span> SIM &#160;&#160;
                 <span class="chk-box" th:classappend="${!payload.hasBuscaCep} ? ' chk-checked' : ''">
-                    <th:block th:unless="${payload.hasBuscaCep}">✓</th:block>
+                    <th:block th:unless="${payload.hasBuscaCep}">X</th:block>
                 </span> NÃO
             </td>
         </tr>
-
-        <!-- 3. SERASA -->
         <tr>
             <td class="checklist-doc">SERASA</td>
             <td class="checklist-status">
                 <span class="chk-box" th:classappend="${payload.hasSerasa} ? ' chk-checked' : ''">
-                    <th:block th:if="${payload.hasSerasa}">✓</th:block>
+                    <th:block th:if="${payload.hasSerasa}">X</th:block>
                 </span> SIM &#160;&#160;
                 <span class="chk-box" th:classappend="${!payload.hasSerasa} ? ' chk-checked' : ''">
-                    <th:block th:unless="${payload.hasSerasa}">✓</th:block>
+                    <th:block th:unless="${payload.hasSerasa}">X</th:block>
                 </span> NÃO
             </td>
         </tr>
-
-        <!-- 4. Comprovante CNPJ + QSA -->
         <tr style="background-color:#FAFAFB;">
             <td class="checklist-doc">Comprovante CNPJ + Quadro de Sócios Administradores (QSA)</td>
             <td class="checklist-status">
                 <span class="chk-box" th:classappend="${payload.hasComprovanteCnpj} ? ' chk-checked' : ''">
-                    <th:block th:if="${payload.hasComprovanteCnpj}">✓</th:block>
+                    <th:block th:if="${payload.hasComprovanteCnpj}">X</th:block>
                 </span> SIM &#160;&#160;
                 <span class="chk-box" th:classappend="${!payload.hasComprovanteCnpj} ? ' chk-checked' : ''">
-                    <th:block th:unless="${payload.hasComprovanteCnpj}">✓</th:block>
+                    <th:block th:unless="${payload.hasComprovanteCnpj}">X</th:block>
                 </span> NÃO
             </td>
         </tr>
-
-        <!-- 5. Contrato Social -->
         <tr>
-            <td class="checklist-doc">Contrato Social / Constituição / Estatuto</td>
+            <td class="checklist-doc">Contrato Social / Estatuto</td>
             <td class="checklist-status">
                 <span class="chk-box" th:classappend="${payload.hasContratoSocial} ? ' chk-checked' : ''">
-                    <th:block th:if="${payload.hasContratoSocial}">✓</th:block>
+                    <th:block th:if="${payload.hasContratoSocial}">X</th:block>
                 </span> SIM &#160;&#160;
                 <span class="chk-box" th:classappend="${!payload.hasContratoSocial} ? ' chk-checked' : ''">
-                    <th:block th:unless="${payload.hasContratoSocial}">✓</th:block>
+                    <th:block th:unless="${payload.hasContratoSocial}">X</th:block>
                 </span> NÃO
             </td>
         </tr>
-
-        <!-- 6. Última Alteração Contratual / ATA -->
         <tr style="background-color:#FAFAFB;">
             <td class="checklist-doc">Última Alteração Contratual / ATA</td>
             <td class="checklist-status">
                 <span class="chk-box" th:classappend="${payload.hasUltimaAlteracao} ? ' chk-checked' : ''">
-                    <th:block th:if="${payload.hasUltimaAlteracao}">✓</th:block>
+                    <th:block th:if="${payload.hasUltimaAlteracao}">X</th:block>
                 </span> SIM &#160;&#160;
                 <span class="chk-box" th:classappend="${!payload.hasUltimaAlteracao} ? ' chk-checked' : ''">
-                    <th:block th:unless="${payload.hasUltimaAlteracao}">✓</th:block>
+                    <th:block th:unless="${payload.hasUltimaAlteracao}">X</th:block>
                 </span> NÃO
             </td>
         </tr>
-
-        <!-- 7. Optante Simples Nacional — reutiliza simplesNacional já existente no DTO -->
         <tr>
             <td class="checklist-doc">Optante Pelo Simples Nacional</td>
             <td class="checklist-status">
                 <span class="chk-box" th:classappend="${payload.simplesNacional} ? ' chk-checked' : ''">
-                    <th:block th:if="${payload.simplesNacional}">✓</th:block>
+                    <th:block th:if="${payload.simplesNacional}">X</th:block>
                 </span> SIM &#160;&#160;
                 <span class="chk-box" th:classappend="${!payload.simplesNacional} ? ' chk-checked' : ''">
-                    <th:block th:unless="${payload.simplesNacional}">✓</th:block>
+                    <th:block th:unless="${payload.simplesNacional}">X</th:block>
                 </span> NÃO
             </td>
         </tr>
-
-        <!-- 8. Incentivo CDI — reutiliza cdiIncentive já existente no DTO -->
         <tr style="background-color:#FAFAFB;">
-            <td class="checklist-doc">Incentivo pelo CDI (somente clientes)</td>
+            <td class="checklist-doc">Incentivado pelo CDI (somente clientes do MS)</td>
             <td class="checklist-status">
                 <span class="chk-box" th:classappend="${payload.cdiIncentive} ? ' chk-checked' : ''">
-                    <th:block th:if="${payload.cdiIncentive}">✓</th:block>
+                    <th:block th:if="${payload.cdiIncentive}">X</th:block>
                 </span> SIM &#160;&#160;
                 <span class="chk-box" th:classappend="${!payload.cdiIncentive} ? ' chk-checked' : ''">
-                    <th:block th:unless="${payload.cdiIncentive}">✓</th:block>
+                    <th:block th:unless="${payload.cdiIncentive}">X</th:block>
                 </span> NÃO
             </td>
         </tr>
-
-        <!-- 9. Comprovante Inscrição Estadual -->
         <tr>
             <td class="checklist-doc">Comprovante de Inscrição Estadual</td>
             <td class="checklist-status">
                 <span class="chk-box" th:classappend="${payload.hasComprovanteEstadual} ? ' chk-checked' : ''">
-                    <th:block th:if="${payload.hasComprovanteEstadual}">✓</th:block>
+                    <th:block th:if="${payload.hasComprovanteEstadual}">X</th:block>
                 </span> SIM &#160;&#160;
                 <span class="chk-box" th:classappend="${!payload.hasComprovanteEstadual} ? ' chk-checked' : ''">
-                    <th:block th:unless="${payload.hasComprovanteEstadual}">✓</th:block>
+                    <th:block th:unless="${payload.hasComprovanteEstadual}">X</th:block>
                 </span> NÃO
             </td>
         </tr>
-
-        <!-- 10. Declaração Isenção IPI -->
         <tr style="background-color:#FAFAFB;">
-            <td class="checklist-doc">Declaração de Isenção de IPI 2026</td>
+            <td class="checklist-doc">Declaração de Isenção de IPI</td>
             <td class="checklist-status">
                 <span class="chk-box" th:classappend="${payload.hasDeclaracaoIpi} ? ' chk-checked' : ''">
-                    <th:block th:if="${payload.hasDeclaracaoIpi}">✓</th:block>
+                    <th:block th:if="${payload.hasDeclaracaoIpi}">X</th:block>
                 </span> SIM &#160;&#160;
                 <span class="chk-box" th:classappend="${!payload.hasDeclaracaoIpi} ? ' chk-checked' : ''">
-                    <th:block th:unless="${payload.hasDeclaracaoIpi}">✓</th:block>
+                    <th:block th:unless="${payload.hasDeclaracaoIpi}">X</th:block>
                 </span> NÃO
             </td>
         </tr>
-
-        <!-- 11. Comprovante SUFRAMA — condicional: só relevante se suframaDiscount=true -->
         <tr>
             <td class="checklist-doc">Comprovante SUFRAMA</td>
             <td class="checklist-status">
                 <span class="chk-box" th:classappend="${payload.hasComprovanteSuframa} ? ' chk-checked' : ''">
-                    <th:block th:if="${payload.hasComprovanteSuframa}">✓</th:block>
+                    <th:block th:if="${payload.hasComprovanteSuframa}">X</th:block>
                 </span> SIM &#160;&#160;
                 <span class="chk-box" th:classappend="${!payload.hasComprovanteSuframa} ? ' chk-checked' : ''">
-                    <th:block th:unless="${payload.hasComprovanteSuframa}">✓</th:block>
+                    <th:block th:unless="${payload.hasComprovanteSuframa}">X</th:block>
                 </span> NÃO
             </td>
         </tr>
-
-        <!-- 12. Informações Bancárias — derivada: true se bankReferences não estiver vazia -->
         <tr style="background-color:#FAFAFB;">
             <td class="checklist-doc">Informações Bancárias</td>
             <td class="checklist-status">
-                <!--
-                Estratégia: usa a lista bankReferences como fonte de verdade.
-                Se a lista existir e tiver ao menos 1 elemento, considera SIM.
-            -->
                 <th:block th:with="hasBanking=${payload.bankReferences != null and !payload.bankReferences.isEmpty()}">
                     <span class="chk-box" th:classappend="${hasBanking} ? ' chk-checked' : ''">
-                        <th:block th:if="${hasBanking}">✓</th:block>
+                        <th:block th:if="${hasBanking}">X</th:block>
                     </span> SIM &#160;&#160;
                     <span class="chk-box" th:classappend="${!hasBanking} ? ' chk-checked' : ''">
-                        <th:block th:unless="${hasBanking}">✓</th:block>
+                        <th:block th:unless="${hasBanking}">X</th:block>
                     </span> NÃO
                 </th:block>
             </td>
         </tr>
-
-        <!-- 13. Informações Comerciais — derivada: true se commercialReferences não estiver vazia -->
         <tr>
             <td class="checklist-doc">Informações Comerciais</td>
             <td class="checklist-status">
                 <th:block
                     th:with="hasCommercial=${payload.commercialReferences != null and !payload.commercialReferences.isEmpty()}">
                     <span class="chk-box" th:classappend="${hasCommercial} ? ' chk-checked' : ''">
-                        <th:block th:if="${hasCommercial}">✓</th:block>
+                        <th:block th:if="${hasCommercial}">X</th:block>
                     </span> SIM &#160;&#160;
                     <span class="chk-box" th:classappend="${!hasCommercial} ? ' chk-checked' : ''">
-                        <th:block th:unless="${hasCommercial}">✓</th:block>
+                        <th:block th:unless="${hasCommercial}">X</th:block>
                     </span> NÃO
                 </th:block>
             </td>
         </tr>
-
-        <!-- 14. Cliente Enviará Ordem de Compra — reutiliza requiresPurchaseOrder já existente -->
-        <tr style="background-color:#FAFAFB;">
-            <td class="checklist-doc">Cliente Enviará Ordem de Compra</td>
-            <td class="checklist-status">
-                <span class="chk-box" th:classappend="${payload.requiresPurchaseOrder} ? ' chk-checked' : ''">
-                    <th:block th:if="${payload.requiresPurchaseOrder}">✓</th:block>
-                </span> SIM &#160;&#160;
-                <span class="chk-box" th:classappend="${!payload.requiresPurchaseOrder} ? ' chk-checked' : ''">
-                    <th:block th:unless="${payload.requiresPurchaseOrder}">✓</th:block>
-                </span> NÃO
-            </td>
-        </tr>
-
     </table>
 
-    <!-- ════ CLASSIFICAÇÃO DO CLIENTE ════ -->
     <table class="approval-table">
         <tr class="section-header">
-            <td colspan="4">Classificação</td>
+            <td colspan="2">Classificação</td>
         </tr>
         <tr>
-            <td style="width:25%;">
+            <td style="width:50%;">
                 <div class="approval-label">Segmento de Mercado</div>
                 <div class="approval-value"
                     th:text="${payload.businessActivity != null ? payload.businessActivity : ''}"></div>
             </td>
-            <td style="width:25%;">
-                <div class="approval-label">Tipo de Cliente</div>
-                <div class="approval-value" th:text="${payload.clientType != null ? payload.clientType : ''}"></div>
-            </td>
-            <td style="width:25%;">
-                <div class="approval-label">Grupo de Cliente</div>
-                <div class="approval-value" th:text="${payload.clientGroup != null ? payload.clientGroup : ''}"></div>
-            </td>
-            <td style="width:25%;">
-                <div class="approval-label">TES Padrão</div>
-                <div class="approval-value" th:text="${payload.tesDefault != null ? payload.tesDefault : ''}"></div>
+            <td style="width:50%;">
+                <div class="approval-label">Análise de Crédito (relatório de conceito e decisão)</div>
+                <div class="approval-value" th:text="${payload.creditAnalysis != null ? payload.creditAnalysis : ''}">
+                </div>
             </td>
         </tr>
         <tr>
-            <td colspan="2">
-                <div class="approval-label">Representante</div>
-                <div class="approval-value"
-                    th:text="${payload.salesRepresentative != null ? payload.salesRepresentative : ''}"></div>
+            <td style="width:50%;">
+                <div class="approval-label">TES Padrão</div>
+                <div class="approval-value" th:text="${payload.tesDefault != null ? payload.tesDefault : ''}"></div>
             </td>
-            <td colspan="2">
+            <td style="width:50%;">
+                <div class="approval-label">Tipo de Cliente</div>
+                <div class="approval-value" th:text="${payload.clientType != null ? payload.clientType : ''}"></div>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:50%;">
+                <div class="approval-label">Grupo de Cliente</div>
+                <div class="approval-value" th:text="${payload.clientGroup != null ? payload.clientGroup : ''}"></div>
+            </td>
+            <td style="width:50%;">
                 <div class="approval-label">Previsão de Limite de Crédito Mensal: R$</div>
                 <div class="approval-value bold" th:text="${payload.creditLimit != null ? payload.creditLimit : ''}">
                 </div>
             </td>
         </tr>
         <tr>
-            <td colspan="2">
-                <div class="approval-label">Data</div>
-                <div class="approval-value" th:text="${payload.savedAt != null ? payload.savedAt : ''}"></div>
+            <td style="width:50%;">
+                <div class="approval-label">Representante</div>
+                <div class="approval-value"
+                    th:text="${payload.salesRepresentative != null ? payload.salesRepresentative : ''}"></div>
             </td>
-            <td colspan="2">
+            <td style="width:50%;">
                 <div class="approval-label">Informações obtidas por</div>
                 <div class="approval-value" th:text="${payload.preparedBy != null ? payload.preparedBy : ''}"></div>
             </td>
         </tr>
+        <tr>
+            <td style="width:50%;">
+                <div class="approval-label">Data</div>
+                <div class="approval-value" th:text="${payload.savedAt != null ? payload.savedAt : ''}"></div>
+            </td>
+            <td style="width:50%;">&#160;</td>
+        </tr>
     </table>
 
-    <!-- ════ BLOCO DE APROVAÇÃO ════ -->
     <table class="approval-table">
         <tr class="section-header">
             <td colspan="3">Aprovação</td>
         </tr>
         <tr>
-            <td style="width:35%;">
+            <td style="width:30%;">
                 <div class="approval-label">Cadastro Aprovado</div>
-                <div style="margin-top:4px; font-size:7.4pt;">
+                <div style="margin-top:2px; font-size:8.5pt;">
                     <span class="chk-empty"></span> SIM &#160;&#160;&#160; <span class="chk-empty"></span> NÃO
                 </div>
             </td>
-            <td style="width:40%;">
+            <td style="width:45%;">
                 <div class="approval-label">Gerente Responsável pela Aprovação</div>
-                <div class="approval-value" th:text="${payload.approvedBy != null ? payload.approvedBy : ''}"></div>
+                <div class="approval-value"
+                    th:text="${payload.approvedBy != null ? payload.approvedBy : 'Rosilene Vicente'}">Rosilene Vicente
+                </div>
             </td>
             <td style="width:25%;">
                 <div class="approval-label">Data</div>
-                <div class="approval-value">
-                    _____ / _____ / _______
-                </div>
+                <div class="approval-value"
+                    th:text="${payload.approvedAtDate != null ? payload.approvedAtDate : '10/09/26'}">10/09/26</div>
             </td>
         </tr>
     </table>
 
-    <!-- ════ RODAPÉ DA CAPA ════ -->
     <table class="footer-table">
         <tr>
-            <td style="width:12%;" class="footer-label">Revisão</td>
+            <td style="width:12%;">
+                <div class="footer-label">Revisão</div>
+                <div class="bold" style="font-size:8.5pt; color:#1F2430;"
+                    th:text="${payload.revision != null ? payload.revision : '10'}">10</div>
+            </td>
             <td style="width:30%;">
                 <div class="footer-label">Preparado por</div>
-                <div th:text="${payload.preparedBy != null ? payload.preparedBy : ''}"></div>
+                <div style="font-size:8.5pt; color:#1F2430;"
+                    th:text="${payload.preparedBy != null ? payload.preparedBy : 'Natasha Zaghi'}">Natasha Zaghi</div>
+                <div style="color:#767c88; font-size:5.5pt; margin-top: 1px;">Assistente de Vendas</div>
             </td>
             <td style="width:14%;">
                 <div class="footer-label">Data</div>
-                <div th:text="${payload.preparedAt != null ? payload.preparedAt : ''}"></div>
+                <div style="font-size:8.5pt; color:#1F2430;"
+                    th:text="${payload.preparedAtDate != null ? payload.preparedAtDate : '10/09/26'}">10/09/26</div>
             </td>
             <td style="width:30%;">
                 <div class="footer-label">Aprovado por</div>
-                <div th:text="${payload.approvedBy != null ? payload.approvedBy : ''}"></div>
+                <div style="font-size:8.5pt; color:#1F2430;"
+                    th:text="${payload.approvedBy != null ? payload.approvedBy : 'Rosilene Vicente'}">Rosilene Vicente
+                </div>
+                <div style="color:#767c88; font-size:5.5pt; margin-top: 1px;">Gerente Financeiro</div>
             </td>
             <td style="width:14%;">
                 <div class="footer-label">Data</div>
-                <div th:text="${payload.approvedAt != null ? payload.approvedAt : ''}"></div>
+                <div style="font-size:8.5pt; color:#1F2430;"
+                    th:text="${payload.approvedAtDate != null ? payload.approvedAtDate : '10/09/26'}">10/09/26</div>
             </td>
         </tr>
     </table>
 
     <!-- ══════════════════════════════════════════════════════════
-     QUEBRA DE PÁGINA — Capa → Ficha
+ QUEBRA DE PÁGINA — Capa → Ficha
 ══════════════════════════════════════════════════════════ -->
     <div class="page-break"></div>
 
     <!-- ╔═══════════════════════════════════════════════════════════╗
-     ║           PÁGINA 2 — FICHA CADASTRAL DE CLIENTE           ║
-     ╚═══════════════════════════════════════════════════════════╝ -->
+ ║           PÁGINA 2 — FICHA CADASTRAL DE CLIENTE           ║
+ ╚═══════════════════════════════════════════════════════════╝ -->
 
     <!-- ════ CABEÇALHO DA FICHA ════ -->
     <table class="header-table">
@@ -775,42 +636,31 @@
                 FICHA CADASTRAL DE CLIENTE
             </td>
             <td class="meta-cell">
-                <table>
+                <table style="height: 100%;">
                     <tr>
-                        <td class="meta-label">Revisão</td>
-                        <td th:text="${payload.revision != null ? payload.revision : '-'}">9</td>
-                    </tr>
-                    <tr>
-                        <td class="meta-label">Folha</td>
-                        <td>1 / 1</td>
+                        <td style="width: 50%;">
+                            <div class="meta-label">Revisão</div>
+                            <div style="font-size: 8.5pt; color: #1F2430; font-weight: bold;"
+                                th:text="${payload.revision != null ? payload.revision : '5'}">5</div>
+                        </td>
+                        <td style="width: 50%;">
+                            <div class="meta-label">Folha</div>
+                            <div style="font-size: 8.5pt; color: #1F2430; font-weight: bold;">1 / 1</div>
+                        </td>
                     </tr>
                 </table>
             </td>
         </tr>
     </table>
 
-    <!-- ════ BADGE TIPO DE OPERAÇÃO ════ -->
-    <table>
-        <tr class="op-badge-row">
-            <td>
-                <span th:if="${payload.operationType == 'VENDA_A_PRAZO'}" class="op-badge op-badge-prazo">
-                    Tipo de Operação: Venda a Prazo
-                </span>
-                <span th:unless="${payload.operationType == 'VENDA_A_PRAZO'}" class="op-badge op-badge-vista">
-                    Tipo de Operação: Venda a Vista
-                </span>
-            </td>
-        </tr>
-    </table>
-
-    <!-- ════ SEÇÃO 1 — DADOS CADASTRAIS ════ -->
+    <!-- ════ DADOS CADASTRAIS (Unificados) ════ -->
     <table class="section-table">
         <tr class="section-header">
             <td colspan="6">Dados Cadastrais</td>
         </tr>
         <tr>
             <td class="data-cell" colspan="4">
-                <div class="field-label">Razão Social (sem abreviaturas)</div>
+                <div class="field-label">Razão Social</div>
                 <div class="field-value bold" th:text="${payload.companyName != null ? payload.companyName : ''}"></div>
             </td>
             <td class="data-cell" colspan="2">
@@ -819,52 +669,28 @@
             </td>
         </tr>
         <tr>
-            <td class="data-cell" colspan="4">
+            <td class="data-cell" colspan="3">
                 <div class="field-label">Nome Fantasia</div>
                 <div class="field-value" th:text="${payload.tradeName != null ? payload.tradeName : ''}"></div>
             </td>
-            <td class="data-cell" colspan="2">
-                <div class="field-label">Data de Abertura</div>
-                <div class="field-value" th:text="${payload.openingDate != null ? payload.openingDate : ''}"></div>
-            </td>
-        </tr>
-        <tr>
-            <td class="data-cell" colspan="2">
+            <td class="data-cell" colspan="3">
                 <div class="field-label">Inscrição Estadual</div>
                 <div class="field-value"
                     th:text="${payload.stateRegistration != null ? payload.stateRegistration : ''}"></div>
             </td>
-            <td class="data-cell" colspan="2">
+        </tr>
+        <tr>
+            <td class="data-cell" colspan="3">
                 <div class="field-label">Inscrição Municipal</div>
                 <div class="field-value"
                     th:text="${payload.municipalRegistration != null ? payload.municipalRegistration : ''}"></div>
             </td>
-            <td class="data-cell" colspan="2">
+            <td class="data-cell" colspan="3">
                 <div class="field-label">Reg. Junta Comercial</div>
                 <div class="field-value"
                     th:text="${payload.commercialRegistry != null ? payload.commercialRegistry : ''}"></div>
             </td>
         </tr>
-        <tr>
-            <td class="data-cell" colspan="3">
-                <div class="field-label">Natureza Jurídica</div>
-                <div class="field-value" th:text="${payload.legalNature != null ? payload.legalNature : ''}"></div>
-            </td>
-            <td class="data-cell" colspan="3">
-                <div class="field-label">Segmento de Mercado (CNAE)</div>
-                <div class="field-value" th:text="${payload.businessActivity != null ? payload.businessActivity : ''}">
-                </div>
-            </td>
-        </tr>
-    </table>
-
-    <!-- ════ SEÇÃO 2 — ENDEREÇO PRINCIPAL + CONTATO ════ -->
-    <table class="section-table">
-        <tr class="section-header">
-            <td colspan="8">Endereço Principal e Contato</td>
-        </tr>
-
-        <!-- Telefone + Celular + Contato (pessoa) -->
         <tr>
             <td class="data-cell" colspan="2">
                 <div class="field-label">Telefone</div>
@@ -874,34 +700,22 @@
                 <div class="field-label">Celular</div>
                 <div class="field-value" th:text="${payload.mobilePhone != null ? payload.mobilePhone : ''}"></div>
             </td>
-            <td class="data-cell" colspan="4">
+            <td class="data-cell" colspan="2">
                 <div class="field-label">Contato (nome da pessoa)</div>
                 <div class="field-value" th:text="${payload.contactPerson != null ? payload.contactPerson : ''}"></div>
             </td>
         </tr>
-
-        <!-- Logradouro + Número + Bairro -->
         <tr>
-            <td class="data-cell" colspan="5">
+            <td class="data-cell" colspan="4">
                 <div class="field-label">Logradouro / Rua</div>
                 <div class="field-value" th:text="${payload.street != null ? payload.street : ''}"></div>
             </td>
-            <td class="data-cell" colspan="1">
-                <div class="field-label">Número</div>
-                <div class="field-value" th:text="${payload.number != null ? payload.number : ''}"></div>
-            </td>
-            <td class="data-cell" colspan="2">
-                <div class="field-label">Complemento</div>
-                <div class="field-value" th:text="${payload.complement != null ? payload.complement : ''}"></div>
-            </td>
-        </tr>
-
-        <!-- CEP + Cidade + Estado + CX Postal -->
-        <tr>
             <td class="data-cell" colspan="2">
                 <div class="field-label">Bairro</div>
                 <div class="field-value" th:text="${payload.neighborhood != null ? payload.neighborhood : ''}"></div>
             </td>
+        </tr>
+        <tr>
             <td class="data-cell" colspan="1">
                 <div class="field-label">CEP</div>
                 <div class="field-value" th:text="${payload.zipCode != null ? payload.zipCode : ''}"></div>
@@ -919,8 +733,6 @@
                 <div class="field-value" th:text="${payload.poBox != null ? payload.poBox : ''}"></div>
             </td>
         </tr>
-
-        <!-- E-mail NF + E-mail Compras + Website -->
         <tr>
             <td class="data-cell" colspan="3">
                 <div class="field-label">E-mail (NF eletrônica)</div>
@@ -931,14 +743,65 @@
                 <div class="field-value" th:text="${payload.purchasingEmail != null ? payload.purchasingEmail : ''}">
                 </div>
             </td>
+        </tr>
+        <tr>
             <td class="data-cell" colspan="2">
-                <div class="field-label">Website</div>
-                <div class="field-value" th:text="${payload.website != null ? payload.website : ''}"></div>
+                <div class="field-label">Optante pelo Simples Nacional</div>
+                <div class="chk-group" style="margin-top:2px;">
+                    <span class="chk-box" th:classappend="${payload.simplesNacional} ? ' chk-checked' : ''">
+                        <th:block th:if="${payload.simplesNacional}">X</th:block>
+                    </span> SIM &#160;
+                    <span class="chk-box" th:classappend="${!payload.simplesNacional} ? ' chk-checked' : ''">
+                        <th:block th:unless="${payload.simplesNacional}">X</th:block>
+                    </span> NÃO
+                </div>
+            </td>
+            <td class="data-cell" colspan="2">
+                <div class="field-label">Suspensão de IPI</div>
+                <div class="chk-group" style="margin-top:2px;">
+                    <span class="chk-box" th:classappend="${payload.ipiSuspension} ? ' chk-checked' : ''">
+                        <th:block th:if="${payload.ipiSuspension}">X</th:block>
+                    </span> SIM &#160;
+                    <span class="chk-box" th:classappend="${!payload.ipiSuspension} ? ' chk-checked' : ''">
+                        <th:block th:unless="${payload.ipiSuspension}">X</th:block>
+                    </span> NÃO
+                </div>
+            </td>
+            <td class="data-cell" colspan="2">
+                <div class="field-label">Desc. para SUFRAMA</div>
+                <div class="chk-group" style="margin-top:2px;">
+                    <span class="chk-box" th:classappend="${payload.suframaDiscount} ? ' chk-checked' : ''">
+                        <th:block th:if="${payload.suframaDiscount}">X</th:block>
+                    </span> SIM &#160;
+                    <span class="chk-box" th:classappend="${!payload.suframaDiscount} ? ' chk-checked' : ''">
+                        <th:block th:unless="${payload.suframaDiscount}">X</th:block>
+                    </span> NÃO
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="data-cell" colspan="2">
+                <div class="field-label">Exige Ordem de Compra</div>
+                <div class="chk-group" style="margin-top:2px;">
+                    <span class="chk-box" th:classappend="${payload.requiresPurchaseOrder} ? ' chk-checked' : ''">
+                        <th:block th:if="${payload.requiresPurchaseOrder}">X</th:block>
+                    </span> SIM &#160;
+                    <span class="chk-box" th:classappend="${!payload.requiresPurchaseOrder} ? ' chk-checked' : ''">
+                        <th:block th:unless="${payload.requiresPurchaseOrder}">X</th:block>
+                    </span> NÃO
+                </div>
+            </td>
+            <td class="data-cell" colspan="4">
+                <th:block th:if="${payload.suframaDiscount}">
+                    <div class="field-label">Inscrição SUFRAMA</div>
+                    <div class="field-value bold"
+                        th:text="${payload.suframaNumber != null ? payload.suframaNumber : ''}"></div>
+                </th:block>
             </td>
         </tr>
     </table>
 
-    <!-- ════ SEÇÃO 3 — ENDEREÇO FINANCEIRO ════ -->
+    <!-- ════ ENDEREÇO FINANCEIRO ════ -->
     <table class="section-table">
         <tr class="section-header">
             <td colspan="8">Endereço Financeiro (caso rodovia, informar caixa postal)</td>
@@ -993,30 +856,25 @@
                     th:text="${payload.financialMobilePhone != null ? payload.financialMobilePhone : ''}"></div>
             </td>
             <td class="data-cell" colspan="4">
-                <div class="field-label">E-mail (financeiro / compras)</div>
+                <div class="field-label">E-mail</div>
                 <div class="field-value" th:text="${payload.financialEmail != null ? payload.financialEmail : ''}">
                 </div>
             </td>
         </tr>
     </table>
 
-    <!-- ════ SEÇÃO 4 — ENDEREÇO DE ENTREGA ════ -->
+    <!-- ════ ENDEREÇO DE ENTREGA ════ -->
     <table class="section-table">
         <tr class="section-header">
             <td colspan="8">Endereço de Entrega</td>
         </tr>
         <tr>
-            <td class="data-cell" colspan="5">
+            <td class="data-cell" colspan="4">
                 <div class="field-label">Logradouro / Rua</div>
                 <div class="field-value" th:text="${payload.deliveryStreet != null ? payload.deliveryStreet : ''}">
                 </div>
             </td>
-            <td class="data-cell" colspan="1">
-                <div class="field-label">Número</div>
-                <div class="field-value" th:text="${payload.deliveryNumber != null ? payload.deliveryNumber : ''}">
-                </div>
-            </td>
-            <td class="data-cell" colspan="2">
+            <td class="data-cell" colspan="4">
                 <div class="field-label">Bairro</div>
                 <div class="field-value"
                     th:text="${payload.deliveryNeighborhood != null ? payload.deliveryNeighborhood : ''}"></div>
@@ -1055,237 +913,203 @@
         </tr>
     </table>
 
-    <!-- ════ SEÇÃO 5 — INFORMAÇÕES FISCAIS ════ -->
+    <!-- ════ INFORMAÇÕES BANCÁRIAS (Condicional 4 Linhas) ════ -->
     <table class="section-table">
         <tr class="section-header">
-            <td colspan="8">Informações Fiscais</td>
+            <td colspan="6">Informações Bancárias</td>
         </tr>
-        <tr>
-            <!-- Optante Simples Nacional -->
-            <td class="data-cell" colspan="2">
-                <div class="field-label">Optante pelo Simples Nacional</div>
-                <div class="chk-group" style="margin-top:3px;">
-                    <span class="chk-box" th:classappend="${payload.simplesNacional} ? ' chk-checked' : ''">
-                        <th:block th:if="${payload.simplesNacional}">✓</th:block>
-                    </span> SIM &#160;
-                    <span class="chk-box" th:classappend="${!payload.simplesNacional} ? ' chk-checked' : ''">
-                        <th:block th:unless="${payload.simplesNacional}">✓</th:block>
-                    </span> NÃO
-                </div>
-            </td>
-            <!-- Suspensão IPI -->
-            <td class="data-cell" colspan="2">
-                <div class="field-label">Suspensão de IPI</div>
-                <div class="chk-group" style="margin-top:3px;">
-                    <span class="chk-box" th:classappend="${payload.ipiSuspension} ? ' chk-checked' : ''">
-                        <th:block th:if="${payload.ipiSuspension}">✓</th:block>
-                    </span> SIM &#160;
-                    <span class="chk-box" th:classappend="${!payload.ipiSuspension} ? ' chk-checked' : ''">
-                        <th:block th:unless="${payload.ipiSuspension}">✓</th:block>
-                    </span> NÃO
-                </div>
-            </td>
-            <!-- Desconto SUFRAMA -->
-            <td class="data-cell" colspan="2">
-                <div class="field-label">Desc. para SUFRAMA</div>
-                <div class="chk-group" style="margin-top:3px;">
-                    <span class="chk-box" th:classappend="${payload.suframaDiscount} ? ' chk-checked' : ''">
-                        <th:block th:if="${payload.suframaDiscount}">✓</th:block>
-                    </span> SIM &#160;
-                    <span class="chk-box" th:classappend="${!payload.suframaDiscount} ? ' chk-checked' : ''">
-                        <th:block th:unless="${payload.suframaDiscount}">✓</th:block>
-                    </span> NÃO
-                </div>
-            </td>
-            <!-- Exige Ordem de Compra -->
-            <td class="data-cell" colspan="2">
-                <div class="field-label">Exige Ordem de Compra</div>
-                <div class="chk-group" style="margin-top:3px;">
-                    <span class="chk-box" th:classappend="${payload.requiresPurchaseOrder} ? ' chk-checked' : ''">
-                        <th:block th:if="${payload.requiresPurchaseOrder}">✓</th:block>
-                    </span> SIM &#160;
-                    <span class="chk-box" th:classappend="${!payload.requiresPurchaseOrder} ? ' chk-checked' : ''">
-                        <th:block th:unless="${payload.requiresPurchaseOrder}">✓</th:block>
-                    </span> NÃO
-                </div>
-            </td>
+        <tr class="section-header-light">
+            <th class="data-cell" style="width:24%;">Banco</th>
+            <th class="data-cell" style="width:13%;">Agência</th>
+            <th class="data-cell" style="width:18%;">Conta Corrente</th>
+            <th class="data-cell" style="width:16%;">Contato</th>
+            <th class="data-cell" style="width:13%;">Telefone</th>
+            <th class="data-cell" style="width:16%;">Relato / Observação</th>
         </tr>
 
-        <!-- Inscrição SUFRAMA (linha extra apenas se suframaDiscount = true) -->
-        <tr th:if="${payload.suframaDiscount}">
-            <td class="data-cell" colspan="4">
-                <div class="field-label">Inscrição SUFRAMA</div>
-                <div class="field-value bold" th:text="${payload.suframaNumber != null ? payload.suframaNumber : ''}">
-                </div>
-            </td>
-            <td class="data-cell" colspan="4">
-                <div class="field-label">Regime Tributário</div>
-                <div class="field-value" th:text="${payload.taxRegime != null ? payload.taxRegime : ''}"></div>
-            </td>
-        </tr>
-        <tr th:unless="${payload.suframaDiscount}">
-            <td class="data-cell" colspan="8">
-                <div class="field-label">Regime Tributário</div>
-                <div class="field-value" th:text="${payload.taxRegime != null ? payload.taxRegime : ''}"></div>
-            </td>
+        <tr th:each="bank, iterStat : ${payload.bankReferences}"
+            th:classappend="${iterStat.odd} ? 'ref-row-odd' : 'ref-row-even'">
+            <td class="data-cell" th:text="${bank.bankName != null ? bank.bankName : ''}"></td>
+            <td class="data-cell" th:text="${bank.agency != null ? bank.agency : ''}"></td>
+            <td class="data-cell" th:text="${bank.accountNumber != null ? bank.accountNumber : ''}"></td>
+            <td class="data-cell" th:text="${bank.contactName != null ? bank.contactName : ''}"></td>
+            <td class="data-cell" th:text="${bank.phone != null ? bank.phone : ''}"></td>
+            <td class="data-cell" th:text="${bank.observation != null ? bank.observation : ''}"></td>
         </tr>
 
-        <!-- Atividade CDI -->
-        <tr>
-            <td class="data-cell" colspan="8">
-                <div class="field-label">Atividade Incentivada pelo CDI (somente clientes)</div>
-                <div class="chk-group" style="margin-top:3px;">
-                    <span class="chk-box" th:classappend="${payload.cdiIncentive} ? ' chk-checked' : ''">
-                        <th:block th:if="${payload.cdiIncentive}">✓</th:block>
-                    </span> SIM &#160;
-                    <span class="chk-box" th:classappend="${!payload.cdiIncentive} ? ' chk-checked' : ''">
-                        <th:block th:unless="${payload.cdiIncentive}">✓</th:block>
-                    </span> NÃO
-                </div>
-            </td>
-        </tr>
+        <!-- Renderiza 4 linhas vazias apenas se não houver dados preenchidos -->
+        <th:block th:if="${payload.bankReferences == null or payload.bankReferences.isEmpty()}">
+            <tr style="height: 18px;">
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+            </tr>
+            <tr class="ref-row-odd" style="height: 18px;">
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+            </tr>
+            <tr style="height: 18px;">
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+            </tr>
+            <tr class="ref-row-odd" style="height: 18px;">
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+            </tr>
+        </th:block>
     </table>
 
-    <!-- ════════════════════════════════════════════════════════════
-     SEÇÃO 6 — REFERÊNCIAS COMERCIAIS E BANCÁRIAS
-     REGRA CONDICIONAL CRÍTICA: só renderizada para VENDA_A_PRAZO
-════════════════════════════════════════════════════════════ -->
-    <div th:if="${payload.operationType == 'VENDA_A_PRAZO'}">
+    <!-- ════ REFERÊNCIAS COMERCIAIS (Condicional 6 Linhas) ════ -->
+    <table class="section-table">
+        <tr class="section-header">
+            <td colspan="8">Referências Comerciais</td>
+        </tr>
+        <tr class="section-header-light">
+            <th class="data-cell" style="width:18%;">Empresa / Endereço</th>
+            <th class="data-cell" style="width:12%;">CEP / Cidade / Estado</th>
+            <th class="data-cell" style="width:10%;">Telefone</th>
+            <th class="data-cell" style="width:10%;">Bairro / Contato</th>
+            <th class="data-cell" style="width:12%;">Cliente Desde</th>
+            <th class="data-cell" style="width:12%;">Maior Fatura (R$)</th>
+            <th class="data-cell" style="width:13%;">Média Mensal (R$)</th>
+            <th class="data-cell" style="width:13%;">Pagamento</th>
+        </tr>
 
-        <!-- ── 6A: Informações Bancárias ──────────────────────────── -->
-        <table class="section-table">
-            <tr class="section-header">
-                <td colspan="6">Informações Bancárias</td>
-            </tr>
-            <tr class="section-header-light">
-                <th class="data-cell" style="width:24%;">Banco</th>
-                <th class="data-cell" style="width:13%;">Agência</th>
-                <th class="data-cell" style="width:18%;">Conta Corrente</th>
-                <th class="data-cell" style="width:16%;">Contato</th>
-                <th class="data-cell" style="width:13%;">Telefone</th>
-                <th class="data-cell" style="width:16%;">Relato / Observação</th>
-            </tr>
+        <tr th:each="ref, iterStat : ${payload.commercialReferences}"
+            th:classappend="${iterStat.odd} ? 'ref-row-odd' : 'ref-row-even'">
+            <td class="data-cell">
+                <div class="field-label">Empresa</div>
+                <div th:text="${ref.companyName != null ? ref.companyName : ''}"></div>
+                <div class="field-label" style="margin-top:2px;">Endereço</div>
+                <div th:text="${ref.address != null ? ref.address : ''}"></div>
+            </td>
+            <td class="data-cell">
+                <div class="field-label">CEP</div>
+                <div th:text="${ref.zipCode != null ? ref.zipCode : ''}"></div>
+                <div class="field-label" style="margin-top:2px;">Cidade</div>
+                <div th:text="${ref.city != null ? ref.city : ''}"></div>
+                <div class="field-label" style="margin-top:2px;">Estado</div>
+                <div th:text="${ref.state != null ? ref.state : ''}"></div>
+            </td>
+            <td class="data-cell" th:text="${ref.phone != null ? ref.phone : ''}"></td>
+            <td class="data-cell">
+                <div class="field-label">Bairro</div>
+                <div th:text="${ref.neighborhood != null ? ref.neighborhood : ''}"></div>
+                <div class="field-label" style="margin-top:2px;">Contato</div>
+                <div th:text="${ref.contactName != null ? ref.contactName : ''}"></div>
+            </td>
+            <td class="data-cell" th:text="${ref.clientSince != null ? ref.clientSince : ''}"></td>
+            <td class="data-cell" th:text="${ref.highestInvoice != null ? ref.highestInvoice : ''}"></td>
+            <td class="data-cell" th:text="${ref.monthlyAverage != null ? ref.monthlyAverage : ''}"></td>
+            <td class="data-cell" th:text="${ref.paymentBehavior != null ? ref.paymentBehavior : ''}"></td>
+        </tr>
 
-            <!-- Linhas preenchidas -->
-            <tr th:each="bank, iterStat : ${payload.bankReferences}"
-                th:classappend="${iterStat.odd} ? 'ref-row-odd' : 'ref-row-even'">
-                <td class="data-cell" th:text="${bank.bankName != null ? bank.bankName : ''}"></td>
-                <td class="data-cell" th:text="${bank.agency != null ? bank.agency : ''}"></td>
-                <td class="data-cell" th:text="${bank.accountNumber != null ? bank.accountNumber : ''}"></td>
-                <td class="data-cell" th:text="${bank.contactName != null ? bank.contactName : ''}"></td>
-                <td class="data-cell" th:text="${bank.phone != null ? bank.phone : ''}"></td>
-                <td class="data-cell" th:text="${bank.observation != null ? bank.observation : ''}"></td>
+        <!-- Renderiza 6 linhas vazias apenas se não houver dados preenchidos -->
+        <th:block th:if="${payload.commercialReferences == null or payload.commercialReferences.isEmpty()}">
+            <tr style="height: 20px;">
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
             </tr>
-
-            <!-- Linhas em branco de preenchimento mínimo (3 linhas) -->
-            <tr>
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
+            <tr class="ref-row-odd" style="height: 20px;">
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
             </tr>
-            <tr class="ref-row-odd">
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
+            <tr style="height: 20px;">
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
             </tr>
-            <tr>
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
-                <td class="data-cell">&#160;</td>
+            <tr class="ref-row-odd" style="height: 20px;">
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
             </tr>
-        </table>
-
-        <!-- ── 6B: Referências Comerciais ─────────────────────────── -->
-        <table class="section-table">
-            <tr class="section-header">
-                <td colspan="9">Referências Comerciais</td>
+            <tr style="height: 20px;">
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
             </tr>
-            <tr class="section-header-light">
-                <th class="data-cell" style="width:18%;">Empresa / Endereço</th>
-                <th class="data-cell" style="width:12%;">CEP / Cidade / Estado</th>
-                <th class="data-cell" style="width:10%;">Telefone</th>
-                <th class="data-cell" style="width:10%;">Bairro / Contato</th>
-                <th class="data-cell" style="width:12%;">Cliente Desde</th>
-                <th class="data-cell" style="width:12%;">Maior Fatura (R$)</th>
-                <th class="data-cell" style="width:13%;">Média Mensal (R$)</th>
-                <th class="data-cell" style="width:13%;">Pagamento</th>
+            <tr class="ref-row-odd" style="height: 20px;">
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
+                <td class="data-cell"></td>
             </tr>
-
-            <!-- Linhas iteradas do DTO -->
-            <tr th:each="ref, iterStat : ${payload.commercialReferences}"
-                th:classappend="${iterStat.odd} ? 'ref-row-odd' : 'ref-row-even'">
-                <td class="data-cell">
-                    <div class="field-label">Empresa</div>
-                    <div th:text="${ref.companyName != null ? ref.companyName : ''}"></div>
-                    <div class="field-label" style="margin-top:2px;">Endereço</div>
-                    <div th:text="${ref.address != null ? ref.address : ''}"></div>
-                </td>
-                <td class="data-cell">
-                    <div class="field-label">CEP</div>
-                    <div th:text="${ref.zipCode != null ? ref.zipCode : ''}"></div>
-                    <div class="field-label" style="margin-top:2px;">Cidade</div>
-                    <div th:text="${ref.city != null ? ref.city : ''}"></div>
-                    <div class="field-label" style="margin-top:2px;">Estado</div>
-                    <div th:text="${ref.state != null ? ref.state : ''}"></div>
-                </td>
-                <td class="data-cell" th:text="${ref.phone != null ? ref.phone : ''}"></td>
-                <td class="data-cell">
-                    <div class="field-label">Bairro</div>
-                    <div th:text="${ref.neighborhood != null ? ref.neighborhood : ''}"></div>
-                    <div class="field-label" style="margin-top:2px;">Contato</div>
-                    <div th:text="${ref.contactName != null ? ref.contactName : ''}"></div>
-                </td>
-                <td class="data-cell" th:text="${ref.clientSince != null ? ref.clientSince : ''}"></td>
-                <td class="data-cell" th:text="${ref.highestInvoice != null ? ref.highestInvoice : ''}"></td>
-                <td class="data-cell" th:text="${ref.monthlyAverage != null ? ref.monthlyAverage : ''}"></td>
-                <td class="data-cell" th:text="${ref.paymentBehavior != null ? ref.paymentBehavior : ''}"></td>
-            </tr>
-
-            <!-- Mensagem quando vazio -->
-            <tr th:if="${payload.commercialReferences == null or payload.commercialReferences.isEmpty()}">
-                <td class="data-cell" colspan="8"
-                    style="text-align:center; color:#a5a9b2; font-style:italic; padding:8px;">
-                    Nenhuma referência comercial informada.
-                </td>
-            </tr>
-        </table>
-
-    </div>
-    <!-- fim da seção condicional VENDA_A_PRAZO -->
+        </th:block>
+    </table>
 
     <!-- ════ RODAPÉ DA FICHA ════ -->
     <table class="footer-table">
         <tr>
-            <td style="width:12%;" class="footer-label">Revisão</td>
+            <td style="width:12%;">
+                <div class="footer-label">Revisão</div>
+                <div class="bold" style="font-size:8.5pt; color:#1F2430;">5</div>
+            </td>
             <td style="width:30%;">
                 <div class="footer-label">Preparado por</div>
-                <div th:text="${payload.preparedBy != null ? payload.preparedBy : ''}"></div>
+                <div style="font-size:8.5pt; color:#1F2430;">Peterson Stein</div>
+                <div style="color:#767c88; font-size:5.5pt; margin-top: 1px;">Assistente de Vendas</div>
             </td>
             <td style="width:14%;">
                 <div class="footer-label">Data</div>
-                <div th:text="${payload.preparedAt != null ? payload.preparedAt : ''}"></div>
+                <div style="font-size:8.5pt; color:#1F2430;">12/08/2025</div>
             </td>
             <td style="width:30%;">
                 <div class="footer-label">Aprovado por</div>
-                <div th:text="${payload.approvedBy != null ? payload.approvedBy : ''}"></div>
+                <div style="font-size:8.5pt; color:#1F2430;"
+                    th:text="${payload.approvedBy != null ? payload.approvedBy : 'Rosilene Vicente'}">Rosilene Vicente
+                </div>
+                <div style="color:#767c88; font-size:5.5pt; margin-top: 1px;">Gerente Financeiro</div>
             </td>
             <td style="width:14%;">
                 <div class="footer-label">Data</div>
-                <div th:text="${payload.approvedAt != null ? payload.approvedAt : ''}"></div>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="5" style="text-align:center; font-size:6pt; color:#a5a9b2; padding-top:4px;">
-                Documento gerado automaticamente pelo Sistema de Cadastro — Inflex Indústria
+                <div style="font-size:8.5pt; color:#1F2430;">12/08/2025</div>
             </td>
         </tr>
     </table>

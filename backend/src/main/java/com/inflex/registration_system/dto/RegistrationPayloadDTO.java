@@ -89,6 +89,7 @@ public class RegistrationPayloadDTO {
     private Boolean requiresPurchaseOrder = false;
     private String tesDefault;
     private String creditLimit;
+    private String creditAnalysis;
 
     // ── Checklist Documentos ───────────────────────────────────────────────
     private Boolean hasFichaCadastral = true;
@@ -113,12 +114,26 @@ public class RegistrationPayloadDTO {
     private String salesRepresentative;
     private String preparedBy;
     private String preparedAt;
+    private String preparedAtDate;
     private String approvedBy;
     private String approvedAt;
+    private String approvedAtDate;
 
     // ──────────────────────────────────────────────────────────────────────
     // Helper Getters to ensure null-safety in Thymeleaf / SpEL
     // ──────────────────────────────────────────────────────────────────────
+
+    public String getPreparedAtDate() {
+        if (preparedAtDate != null && !preparedAtDate.isBlank()) return preparedAtDate;
+        if (preparedAt != null && !preparedAt.isBlank()) return preparedAt;
+        return null;
+    }
+
+    public String getApprovedAtDate() {
+        if (approvedAtDate != null && !approvedAtDate.isBlank()) return approvedAtDate;
+        if (approvedAt != null && !approvedAt.isBlank()) return approvedAt;
+        return null;
+    }
 
     public String getRevision() {
         return (revision != null && !revision.isBlank()) ? revision : "9";
