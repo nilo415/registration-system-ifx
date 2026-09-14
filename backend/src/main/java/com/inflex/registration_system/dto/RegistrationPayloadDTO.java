@@ -16,7 +16,10 @@ import java.util.Map;
 public class RegistrationPayloadDTO {
 
     // ── Metadata & Template Header ─────────────────────────────────────────
-    private String revision = "9";
+    private String revisionCapa = "10";   // Revisão da Capa (Página 1)
+    private String revisionFicha = "5";   // Revisão da Ficha Cadastral (Página 2)
+    /** @deprecated use revisionCapa / revisionFicha instead */
+    private String revision;
     private String status;              // "DRAFT" or "FINALIZED"
     private String savedAt;             // ISO-8601 timestamp set by the backend
 
@@ -135,8 +138,18 @@ public class RegistrationPayloadDTO {
         return null;
     }
 
+    public String getRevisionCapa() {
+        return (revisionCapa != null && !revisionCapa.isBlank()) ? revisionCapa : "10";
+    }
+
+    public String getRevisionFicha() {
+        return (revisionFicha != null && !revisionFicha.isBlank()) ? revisionFicha : "5";
+    }
+
+    /** @deprecated use getRevisionCapa() / getRevisionFicha() */
     public String getRevision() {
-        return (revision != null && !revision.isBlank()) ? revision : "9";
+        // fallback: if caller still sends the old 'revision' field, honor it
+        return (revision != null && !revision.isBlank()) ? revision : null;
     }
 
     public Boolean getSimplesNacional() {

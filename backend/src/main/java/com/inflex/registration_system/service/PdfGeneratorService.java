@@ -95,8 +95,19 @@ public class PdfGeneratorService {
                 if (!ref.containsKey("companyName") && ref.containsKey("empresa")) {
                     ref.put("companyName", ref.get("empresa"));
                 }
-                if (!ref.containsKey("phone") && ref.containsKey("fone")) {
-                    ref.put("phone", ref.get("fone"));
+                if (!ref.containsKey("contactName")) {
+                    Object contact = ref.containsKey("contato") ? ref.get("contato") : ref.get("nomeContato");
+                    ref.put("contactName", contact != null ? contact : "");
+                }
+                if (!ref.containsKey("cnpj")) {
+                    ref.put("cnpj", "");
+                }
+                if (!ref.containsKey("produtoFornecido")) {
+                    ref.put("produtoFornecido", "");
+                }
+                if (!ref.containsKey("phone")) {
+                    Object phone = ref.containsKey("fone") ? ref.get("fone") : ref.get("telefone");
+                    ref.put("phone", phone != null ? phone : "");
                 }
                 if (!ref.containsKey("clientSince") && ref.containsKey("clienteDesde")) {
                     ref.put("clientSince", ref.get("clienteDesde"));
@@ -112,6 +123,10 @@ public class PdfGeneratorService {
                         ref.put("paymentBehavior", "Pontual");
                     } else if (Boolean.TRUE.equals(ref.get("pagamentoAtraso"))) {
                         ref.put("paymentBehavior", "Com atraso");
+                    } else if (ref.containsKey("condicaoPagamento")) {
+                        ref.put("paymentBehavior", ref.get("condicaoPagamento"));
+                    } else {
+                        ref.put("paymentBehavior", "");
                     }
                 }
             }

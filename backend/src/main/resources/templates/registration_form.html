@@ -32,7 +32,8 @@
         /* 1. COMPRESSÃO DE FONTES PARA CABER NA PÁGINA */
         body {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 7.5pt;
+            font-size: 8pt;
+            line-height: 1.35;
             color: #24262b;
             background-color: #ffffff;
         }
@@ -63,7 +64,7 @@
         }
 
         .footer-table {
-            margin-top: 2px;
+            margin-top: 5px;
         }
 
         .footer-table td {
@@ -229,6 +230,29 @@
             vertical-align: bottom;
         }
 
+        .ref-table {
+            table-layout: fixed;
+            word-wrap: break-word;
+        }
+
+        .ref-table th,
+        .ref-table td {
+            border: 1px solid #d1d5db;
+            word-wrap: break-word;
+            white-space: normal;
+            vertical-align: top;
+            padding: 3px 4px;
+        }
+
+        .ref-table th {
+            vertical-align: middle;
+        }
+
+        .ref-table .cell-prewrap {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
         /* ══════════════════════════════════════════════════════
            CHECKLIST E CHECKBOXES
         ══════════════════════════════════════════════════════ */
@@ -296,11 +320,170 @@
         .ref-row-even td {
             background-color: #ffffff;
         }
+
+        /* ══════════════════════════════════════════════════════
+           ESCOPO EXCLUSIVO — PÁGINA 1: CAPA / CHECKLIST
+           Tipografia aumentada e maior espaçamento vertical.
+           Totalmente isolado da Página 2.
+        ══════════════════════════════════════════════════════ */
+        .page-capa,
+        .page1 {
+            font-size: 9.5pt;
+            line-height: 1.55;
+        }
+
+        .page-capa .header-table,
+        .page1 .header-table {
+            margin-bottom: 5px;
+        }
+
+        .page-capa .title-cell,
+        .page1 .title-cell {
+            font-size: 11.5pt;
+        }
+
+        .page-capa .title-cell .eyebrow,
+        .page1 .title-cell .eyebrow {
+            font-size: 7.5pt;
+            margin-bottom: 2px;
+        }
+
+        .page-capa .meta-label,
+        .page1 .meta-label,
+        .page-capa .footer-label,
+        .page1 .footer-label {
+            font-size: 6.5pt;
+            margin-bottom: 2px;
+        }
+
+        .page-capa .meta-val,
+        .page1 .meta-val {
+            font-size: 9.5pt;
+        }
+
+        .page-capa .identity-table,
+        .page1 .identity-table {
+            margin-bottom: 5px;
+        }
+
+        .page-capa .identity-table td,
+        .page1 .identity-table td {
+            padding: 5px 8px;
+        }
+
+        .page-capa .field-label,
+        .page1 .field-label,
+        .page-capa .approval-label,
+        .page1 .approval-label {
+            font-size: 6.5pt;
+            margin-bottom: 2px;
+        }
+
+        .page-capa .field-value,
+        .page1 .field-value {
+            font-size: 9.5pt;
+            min-height: 15px;
+        }
+
+        .page-capa .checklist-table,
+        .page1 .checklist-table {
+            margin-bottom: 5px;
+        }
+
+        .page-capa .checklist-table td,
+        .page1 .checklist-table td {
+            padding: 5.5px 7px;
+        }
+
+        .page-capa .checklist-doc,
+        .page1 .checklist-doc {
+            font-size: 9pt;
+            line-height: 1.45;
+        }
+
+        .page-capa .checklist-status,
+        .page1 .checklist-status {
+            font-size: 9pt;
+        }
+
+        .page-capa .chk-box,
+        .page1 .chk-box {
+            width: 13px;
+            height: 13px;
+            font-size: 8.5pt;
+            line-height: 13px;
+            margin-right: 4px;
+        }
+
+        .page-capa .chk-empty,
+        .page1 .chk-empty {
+            width: 13px;
+            height: 13px;
+            margin: 0 4px;
+        }
+
+        .page-capa .section-header td,
+        .page1 .section-header td {
+            font-size: 8.5pt;
+            padding: 5px 7px;
+        }
+
+        .page-capa .approval-table,
+        .page1 .approval-table {
+            margin-bottom: 5px;
+        }
+
+        .page-capa .approval-table td,
+        .page1 .approval-table td,
+        .page-capa .data-cell,
+        .page1 .data-cell {
+            padding: 4.5px 6px;
+        }
+
+        .page-capa .approval-value,
+        .page1 .approval-value {
+            font-size: 9pt;
+            min-height: 14px;
+            line-height: 1.4;
+        }
+
+        .page-capa .footer-table,
+        .page1 .footer-table {
+            margin-top: 4px;
+        }
+
+        .page-capa .footer-table td,
+        .page1 .footer-table td {
+            padding: 5px 6px;
+        }
+
+        .page-capa .footer-val,
+        .page1 .footer-val {
+            font-size: 9pt;
+        }
+
+        .page-capa .footer-sub,
+        .page1 .footer-sub {
+            font-size: 6pt;
+            margin-top: 2px;
+        }
+
+        /* ══════════════════════════════════════════════════════
+           ESCOPO EXCLUSIVO — PÁGINA 2: FICHA CADASTRAL
+           Tipografia compacta para comportar todos os dados
+           do formulário com fidelidade na folha A4.
+        ══════════════════════════════════════════════════════ */
+        .page-ficha,
+        .page2 {
+            font-size: 8pt;
+            line-height: 1.35;
+        }
     </style>
 </head>
 
 <body>
 
+    <div class="page-capa page1">
     <!-- ╔═══════════════════════════════════════════════════════════╗
      ║              PÁGINA 1 — CAPA / CHECKLIST                  ║
      ╚═══════════════════════════════════════════════════════════╝ -->
@@ -320,12 +503,12 @@
                     <tr>
                         <td style="width: 50%;">
                             <div class="meta-label">Revisão</div>
-                            <div style="font-size: 8.5pt; color: #1F2430; font-weight: bold;"
-                                th:text="${payload.revision != null ? payload.revision : '10'}">10</div>
+                            <div class="meta-val bold" style="color: #1F2430;"
+                                th:text="${payload.revisionCapa}">10</div>
                         </td>
                         <td style="width: 50%;">
                             <div class="meta-label">Folha</div>
-                            <div style="font-size: 8.5pt; color: #1F2430; font-weight: bold;">1 / 1</div>
+                            <div class="meta-val bold" style="color: #1F2430;">1 / 1</div>
                         </td>
                     </tr>
                 </table>
@@ -512,9 +695,9 @@
                     th:text="${payload.businessActivity != null ? payload.businessActivity : ''}"></div>
             </td>
             <td style="width:50%;">
-                <div class="approval-label">Análise de Crédito (relatório de conceito e decisão)</div>
-                <div class="approval-value" th:text="${payload.creditAnalysis != null ? payload.creditAnalysis : ''}">
-                </div>
+                <div class="approval-label">Representante</div>
+                <div class="approval-value"
+                    th:text="${payload.salesRepresentative != null ? payload.salesRepresentative : ''}"></div>
             </td>
         </tr>
         <tr>
@@ -523,8 +706,19 @@
                 <div class="approval-value" th:text="${payload.tesDefault != null ? payload.tesDefault : ''}"></div>
             </td>
             <td style="width:50%;">
+                <div class="approval-label">Informações obtidas por</div>
+                <div class="approval-value" th:text="${payload.preparedBy != null ? payload.preparedBy : ''}"></div>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:50%;">
                 <div class="approval-label">Tipo de Cliente</div>
                 <div class="approval-value" th:text="${payload.clientType != null ? payload.clientType : ''}"></div>
+            </td>
+            <td style="width:50%;">
+                <div class="approval-label">Análise de Crédito (relatório de conceito e decisão)</div>
+                <div class="approval-value" th:text="${payload.creditAnalysis != null ? payload.creditAnalysis : ''}">
+                </div>
             </td>
         </tr>
         <tr>
@@ -536,17 +730,6 @@
                 <div class="approval-label">Previsão de Limite de Crédito Mensal: R$</div>
                 <div class="approval-value bold" th:text="${payload.creditLimit != null ? payload.creditLimit : ''}">
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td style="width:50%;">
-                <div class="approval-label">Representante</div>
-                <div class="approval-value"
-                    th:text="${payload.salesRepresentative != null ? payload.salesRepresentative : ''}"></div>
-            </td>
-            <td style="width:50%;">
-                <div class="approval-label">Informações obtidas por</div>
-                <div class="approval-value" th:text="${payload.preparedBy != null ? payload.preparedBy : ''}"></div>
             </td>
         </tr>
         <tr>
@@ -565,7 +748,7 @@
         <tr>
             <td style="width:30%;">
                 <div class="approval-label">Cadastro Aprovado</div>
-                <div style="margin-top:2px; font-size:8.5pt;">
+                <div style="margin-top:2px;" class="approval-status-text">
                     <span class="chk-empty"></span> SIM &#160;&#160;&#160; <span class="chk-empty"></span> NÃO
                 </div>
             </td>
@@ -587,40 +770,42 @@
         <tr>
             <td style="width:12%;">
                 <div class="footer-label">Revisão</div>
-                <div class="bold" style="font-size:8.5pt; color:#1F2430;"
-                    th:text="${payload.revision != null ? payload.revision : '10'}">10</div>
+                <div class="bold footer-val" style="color:#1F2430;"
+                    th:text="${payload.revisionCapa}">10</div>
             </td>
             <td style="width:30%;">
                 <div class="footer-label">Preparado por</div>
-                <div style="font-size:8.5pt; color:#1F2430;"
+                <div class="footer-val" style="color:#1F2430;"
                     th:text="${payload.preparedBy != null ? payload.preparedBy : 'Natasha Zaghi'}">Natasha Zaghi</div>
-                <div style="color:#767c88; font-size:5.5pt; margin-top: 1px;">Assistente de Vendas</div>
+                <div class="footer-sub" style="color:#767c88;">Assistente de Vendas</div>
             </td>
             <td style="width:14%;">
                 <div class="footer-label">Data</div>
-                <div style="font-size:8.5pt; color:#1F2430;"
+                <div class="footer-val" style="color:#1F2430;"
                     th:text="${payload.preparedAtDate != null ? payload.preparedAtDate : '10/09/26'}">10/09/26</div>
             </td>
             <td style="width:30%;">
                 <div class="footer-label">Aprovado por</div>
-                <div style="font-size:8.5pt; color:#1F2430;"
+                <div class="footer-val" style="color:#1F2430;"
                     th:text="${payload.approvedBy != null ? payload.approvedBy : 'Rosilene Vicente'}">Rosilene Vicente
                 </div>
-                <div style="color:#767c88; font-size:5.5pt; margin-top: 1px;">Gerente Financeiro</div>
+                <div class="footer-sub" style="color:#767c88;">Gerente Financeiro</div>
             </td>
             <td style="width:14%;">
                 <div class="footer-label">Data</div>
-                <div style="font-size:8.5pt; color:#1F2430;"
+                <div class="footer-val" style="color:#1F2430;"
                     th:text="${payload.approvedAtDate != null ? payload.approvedAtDate : '10/09/26'}">10/09/26</div>
             </td>
         </tr>
     </table>
+    </div>
 
     <!-- ══════════════════════════════════════════════════════════
  QUEBRA DE PÁGINA — Capa → Ficha
 ══════════════════════════════════════════════════════════ -->
     <div class="page-break"></div>
 
+    <div class="page-ficha page2">
     <!-- ╔═══════════════════════════════════════════════════════════╗
  ║           PÁGINA 2 — FICHA CADASTRAL DE CLIENTE           ║
  ╚═══════════════════════════════════════════════════════════╝ -->
@@ -641,7 +826,7 @@
                         <td style="width: 50%;">
                             <div class="meta-label">Revisão</div>
                             <div style="font-size: 8.5pt; color: #1F2430; font-weight: bold;"
-                                th:text="${payload.revision != null ? payload.revision : '5'}">5</div>
+                                th:text="${payload.revisionFicha}">5</div>
                         </td>
                         <td style="width: 50%;">
                             <div class="meta-label">Folha</div>
@@ -746,26 +931,9 @@
         </tr>
         <tr>
             <td class="data-cell" colspan="2">
-                <div class="field-label">Optante pelo Simples Nacional</div>
-                <div class="chk-group" style="margin-top:2px;">
-                    <span class="chk-box" th:classappend="${payload.simplesNacional} ? ' chk-checked' : ''">
-                        <th:block th:if="${payload.simplesNacional}">X</th:block>
-                    </span> SIM &#160;
-                    <span class="chk-box" th:classappend="${!payload.simplesNacional} ? ' chk-checked' : ''">
-                        <th:block th:unless="${payload.simplesNacional}">X</th:block>
-                    </span> NÃO
-                </div>
-            </td>
-            <td class="data-cell" colspan="2">
-                <div class="field-label">Suspensão de IPI</div>
-                <div class="chk-group" style="margin-top:2px;">
-                    <span class="chk-box" th:classappend="${payload.ipiSuspension} ? ' chk-checked' : ''">
-                        <th:block th:if="${payload.ipiSuspension}">X</th:block>
-                    </span> SIM &#160;
-                    <span class="chk-box" th:classappend="${!payload.ipiSuspension} ? ' chk-checked' : ''">
-                        <th:block th:unless="${payload.ipiSuspension}">X</th:block>
-                    </span> NÃO
-                </div>
+                <div class="field-label">Insc. de SUFRAMA</div>
+                <div class="field-value"
+                    th:text="${payload.suframaNumber != null ? payload.suframaNumber : ''}"></div>
             </td>
             <td class="data-cell" colspan="2">
                 <div class="field-label">Desc. para SUFRAMA</div>
@@ -778,9 +946,31 @@
                     </span> NÃO
                 </div>
             </td>
+            <td class="data-cell" colspan="2">
+                <div class="field-label">Optante pelo Simples Nacional</div>
+                <div class="chk-group" style="margin-top:2px;">
+                    <span class="chk-box" th:classappend="${payload.simplesNacional} ? ' chk-checked' : ''">
+                        <th:block th:if="${payload.simplesNacional}">X</th:block>
+                    </span> SIM &#160;
+                    <span class="chk-box" th:classappend="${!payload.simplesNacional} ? ' chk-checked' : ''">
+                        <th:block th:unless="${payload.simplesNacional}">X</th:block>
+                    </span> NÃO
+                </div>
+            </td>
         </tr>
         <tr>
-            <td class="data-cell" colspan="2">
+            <td class="data-cell" colspan="3">
+                <div class="field-label">Suspensão de IPI</div>
+                <div class="chk-group" style="margin-top:2px;">
+                    <span class="chk-box" th:classappend="${payload.ipiSuspension or payload.ipiExemption} ? ' chk-checked' : ''">
+                        <th:block th:if="${payload.ipiSuspension or payload.ipiExemption}">X</th:block>
+                    </span> SIM &#160;
+                    <span class="chk-box" th:classappend="${!payload.ipiSuspension and !payload.ipiExemption} ? ' chk-checked' : ''">
+                        <th:block th:unless="${payload.ipiSuspension or payload.ipiExemption}">X</th:block>
+                    </span> NÃO
+                </div>
+            </td>
+            <td class="data-cell" colspan="3">
                 <div class="field-label">Exige Ordem de Compra</div>
                 <div class="chk-group" style="margin-top:2px;">
                     <span class="chk-box" th:classappend="${payload.requiresPurchaseOrder} ? ' chk-checked' : ''">
@@ -790,13 +980,6 @@
                         <th:block th:unless="${payload.requiresPurchaseOrder}">X</th:block>
                     </span> NÃO
                 </div>
-            </td>
-            <td class="data-cell" colspan="4">
-                <th:block th:if="${payload.suframaDiscount}">
-                    <div class="field-label">Inscrição SUFRAMA</div>
-                    <div class="field-value bold"
-                        th:text="${payload.suframaNumber != null ? payload.suframaNumber : ''}"></div>
-                </th:block>
             </td>
         </tr>
     </table>
@@ -914,27 +1097,25 @@
     </table>
 
     <!-- ════ INFORMAÇÕES BANCÁRIAS (Condicional 4 Linhas) ════ -->
-    <table class="section-table">
+    <table class="section-table ref-table">
         <tr class="section-header">
-            <td colspan="6">Informações Bancárias</td>
+            <td colspan="5">Informações Bancárias</td>
         </tr>
         <tr class="section-header-light">
-            <th class="data-cell" style="width:24%;">Banco</th>
-            <th class="data-cell" style="width:13%;">Agência</th>
+            <th class="data-cell" style="width:26%;">Banco</th>
+            <th class="data-cell" style="width:12%;">Agência</th>
             <th class="data-cell" style="width:18%;">Conta Corrente</th>
-            <th class="data-cell" style="width:16%;">Contato</th>
-            <th class="data-cell" style="width:13%;">Telefone</th>
-            <th class="data-cell" style="width:16%;">Relato / Observação</th>
+            <th class="data-cell" style="width:24%;">Contato</th>
+            <th class="data-cell" style="width:20%;">Telefone</th>
         </tr>
 
         <tr th:each="bank, iterStat : ${payload.bankReferences}"
             th:classappend="${iterStat.odd} ? 'ref-row-odd' : 'ref-row-even'">
-            <td class="data-cell" th:text="${bank.bankName != null ? bank.bankName : ''}"></td>
-            <td class="data-cell" th:text="${bank.agency != null ? bank.agency : ''}"></td>
-            <td class="data-cell" th:text="${bank.accountNumber != null ? bank.accountNumber : ''}"></td>
-            <td class="data-cell" th:text="${bank.contactName != null ? bank.contactName : ''}"></td>
-            <td class="data-cell" th:text="${bank.phone != null ? bank.phone : ''}"></td>
-            <td class="data-cell" th:text="${bank.observation != null ? bank.observation : ''}"></td>
+            <td class="data-cell" th:text="${bank['bankName'] != null ? bank['bankName'] : (bank['banco'] != null ? bank['banco'] : '')}"></td>
+            <td class="data-cell" th:text="${bank['agency'] != null ? bank['agency'] : (bank['agencia'] != null ? bank['agencia'] : '')}"></td>
+            <td class="data-cell" th:text="${bank['accountNumber'] != null ? bank['accountNumber'] : (bank['contaCorrente'] != null ? bank['contaCorrente'] : '')}"></td>
+            <td class="data-cell" th:text="${bank['contactName'] != null ? bank['contactName'] : (bank['gerencia'] != null ? bank['gerencia'] : '')}"></td>
+            <td class="data-cell" th:text="${bank['phone'] != null ? bank['phone'] : (bank['fone'] != null ? bank['fone'] : '')}"></td>
         </tr>
 
         <!-- Renderiza 4 linhas vazias apenas se não houver dados preenchidos -->
@@ -945,10 +1126,8 @@
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
-                <td class="data-cell"></td>
             </tr>
             <tr class="ref-row-odd" style="height: 18px;">
-                <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
@@ -961,10 +1140,8 @@
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
-                <td class="data-cell"></td>
             </tr>
             <tr class="ref-row-odd" style="height: 18px;">
-                <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
@@ -975,48 +1152,25 @@
     </table>
 
     <!-- ════ REFERÊNCIAS COMERCIAIS (Condicional 6 Linhas) ════ -->
-    <table class="section-table">
+    <table class="section-table ref-table">
         <tr class="section-header">
-            <td colspan="8">Referências Comerciais</td>
+            <td colspan="5">Referências Comerciais</td>
         </tr>
         <tr class="section-header-light">
-            <th class="data-cell" style="width:18%;">Empresa / Endereço</th>
-            <th class="data-cell" style="width:12%;">CEP / Cidade / Estado</th>
-            <th class="data-cell" style="width:10%;">Telefone</th>
-            <th class="data-cell" style="width:10%;">Bairro / Contato</th>
-            <th class="data-cell" style="width:12%;">Cliente Desde</th>
-            <th class="data-cell" style="width:12%;">Maior Fatura (R$)</th>
-            <th class="data-cell" style="width:13%;">Média Mensal (R$)</th>
-            <th class="data-cell" style="width:13%;">Pagamento</th>
+            <th class="data-cell" style="width:28%;">Empresa</th>
+            <th class="data-cell" style="width:18%;">CNPJ</th>
+            <th class="data-cell" style="width:18%;">Contato</th>
+            <th class="data-cell" style="width:14%;">Telefone</th>
+            <th class="data-cell" style="width:22%;">Produto Fornecido</th>
         </tr>
 
         <tr th:each="ref, iterStat : ${payload.commercialReferences}"
             th:classappend="${iterStat.odd} ? 'ref-row-odd' : 'ref-row-even'">
-            <td class="data-cell">
-                <div class="field-label">Empresa</div>
-                <div th:text="${ref.companyName != null ? ref.companyName : ''}"></div>
-                <div class="field-label" style="margin-top:2px;">Endereço</div>
-                <div th:text="${ref.address != null ? ref.address : ''}"></div>
-            </td>
-            <td class="data-cell">
-                <div class="field-label">CEP</div>
-                <div th:text="${ref.zipCode != null ? ref.zipCode : ''}"></div>
-                <div class="field-label" style="margin-top:2px;">Cidade</div>
-                <div th:text="${ref.city != null ? ref.city : ''}"></div>
-                <div class="field-label" style="margin-top:2px;">Estado</div>
-                <div th:text="${ref.state != null ? ref.state : ''}"></div>
-            </td>
-            <td class="data-cell" th:text="${ref.phone != null ? ref.phone : ''}"></td>
-            <td class="data-cell">
-                <div class="field-label">Bairro</div>
-                <div th:text="${ref.neighborhood != null ? ref.neighborhood : ''}"></div>
-                <div class="field-label" style="margin-top:2px;">Contato</div>
-                <div th:text="${ref.contactName != null ? ref.contactName : ''}"></div>
-            </td>
-            <td class="data-cell" th:text="${ref.clientSince != null ? ref.clientSince : ''}"></td>
-            <td class="data-cell" th:text="${ref.highestInvoice != null ? ref.highestInvoice : ''}"></td>
-            <td class="data-cell" th:text="${ref.monthlyAverage != null ? ref.monthlyAverage : ''}"></td>
-            <td class="data-cell" th:text="${ref.paymentBehavior != null ? ref.paymentBehavior : ''}"></td>
+            <td class="data-cell" th:text="${ref['companyName'] != null ? ref['companyName'] : (ref['empresa'] != null ? ref['empresa'] : '')}"></td>
+            <td class="data-cell" th:text="${ref['cnpj'] != null ? ref['cnpj'] : ''}"></td>
+            <td class="data-cell" th:text="${ref['contactName'] != null ? ref['contactName'] : (ref['contato'] != null ? ref['contato'] : '')}"></td>
+            <td class="data-cell" th:text="${ref['phone'] != null ? ref['phone'] : (ref['fone'] != null ? ref['fone'] : '')}"></td>
+            <td class="data-cell" th:text="${ref['produtoFornecido'] != null ? ref['produtoFornecido'] : ''}"></td>
         </tr>
 
         <!-- Renderiza 6 linhas vazias apenas se não houver dados preenchidos -->
@@ -1027,14 +1181,8 @@
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
-                <td class="data-cell"></td>
-                <td class="data-cell"></td>
-                <td class="data-cell"></td>
             </tr>
             <tr class="ref-row-odd" style="height: 20px;">
-                <td class="data-cell"></td>
-                <td class="data-cell"></td>
-                <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
@@ -1047,14 +1195,8 @@
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
-                <td class="data-cell"></td>
-                <td class="data-cell"></td>
-                <td class="data-cell"></td>
             </tr>
             <tr class="ref-row-odd" style="height: 20px;">
-                <td class="data-cell"></td>
-                <td class="data-cell"></td>
-                <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
@@ -1067,14 +1209,8 @@
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
-                <td class="data-cell"></td>
-                <td class="data-cell"></td>
-                <td class="data-cell"></td>
             </tr>
             <tr class="ref-row-odd" style="height: 20px;">
-                <td class="data-cell"></td>
-                <td class="data-cell"></td>
-                <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
                 <td class="data-cell"></td>
@@ -1089,11 +1225,12 @@
         <tr>
             <td style="width:12%;">
                 <div class="footer-label">Revisão</div>
-                <div class="bold" style="font-size:8.5pt; color:#1F2430;">5</div>
+                <div class="bold" style="font-size:8.5pt; color:#1F2430;"
+                    th:text="${payload.revisionFicha}">5</div>
             </td>
             <td style="width:30%;">
                 <div class="footer-label">Preparado por</div>
-                <div style="font-size:8.5pt; color:#1F2430;">Peterson Stein</div>
+                <div style="font-size:8.5pt; color:#1F2430;">Natasha Zaghi</div>
                 <div style="color:#767c88; font-size:5.5pt; margin-top: 1px;">Assistente de Vendas</div>
             </td>
             <td style="width:14%;">
@@ -1113,7 +1250,7 @@
             </td>
         </tr>
     </table>
-
+    </div>
 </body>
 
 </html>
