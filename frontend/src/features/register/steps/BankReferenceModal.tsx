@@ -3,6 +3,7 @@ import { useState } from 'react';
 interface BankReferenceModalProps {
   onClose: () => void;
   onAdd: (bank: BankReference) => void;
+  initialData?: Partial<BankReference>;
 }
 
 export interface BankReference {
@@ -19,18 +20,18 @@ export interface BankReference {
   informacoesData: string;
 }
 
-export default function BankReferenceModal({ onClose, onAdd }: BankReferenceModalProps) {
+export default function BankReferenceModal({ onClose, onAdd, initialData }: BankReferenceModalProps) {
   const [form, setForm] = useState<Omit<BankReference, 'id'>>({
-    empresa: '',
-    nomeFantasia: '',
-    cnpj: '',
-    banco: '',
-    agencia: '',
-    contaCorrente: '',
-    gerencia: '',
-    fone: '',
-    relato: '',
-    informacoesData: '',
+    empresa: initialData?.empresa || '',
+    nomeFantasia: initialData?.nomeFantasia || '',
+    cnpj: initialData?.cnpj || '',
+    banco: initialData?.banco || '',
+    agencia: initialData?.agencia || '',
+    contaCorrente: initialData?.contaCorrente || '',
+    gerencia: initialData?.gerencia || '',
+    fone: initialData?.fone || '',
+    relato: initialData?.relato || '',
+    informacoesData: initialData?.informacoesData || new Date().toLocaleDateString('pt-BR'),
   });
 
   const inputStyle = {

@@ -29,32 +29,43 @@ public class PdfGeneratorService {
         log.info("Generating PDF for CNPJ: {}", payload.getCnpj());
 
         try {
-            // Normalizar referências e datas antes de passar para o template
-            enrichPayloadForPdf(payload);
-
-            Context context = new Context();
-            context.setVariable("payload", payload);
-
-            String htmlContent = templateEngine.process("registration_form", context);
-
-            // Embutir logo como Base64 para garantir renderização no OpenHTMLtoPDF independente de caminhos relativos
-            htmlContent = embedLogoIfAvailable(htmlContent);
-
-            Path pdfPath = targetDirectory.resolve("ficha_cadastral.pdf");
-
-            try (OutputStream os = new FileOutputStream(pdfPath.toFile())) {
-                PdfRendererBuilder builder = new PdfRendererBuilder();
-                builder.useFastMode();
-                builder.withHtmlContent(htmlContent, targetDirectory.toUri().toString());
-                builder.toStream(os);
-                builder.run();
+            if (!Files.exists(targetDirectory)) {
+                Files.createDirectories(targetDirectory);
             }
+
+            byte[] pdfBytes = generatePdfBytes(payload);
+            Path pdfPath = targetDirectory.resolve("ficha_cadastral.pdf");
+            Files.write(pdfPath, pdfBytes);
 
             log.info("PDF successfully generated at: {}", pdfPath);
 
         } catch (Exception e) {
             log.error("Failed to generate PDF for CNPJ: {}", payload.getCnpj(), e);
             throw new RuntimeException("Error generating PDF: " + e.getMessage(), e);
+        }
+    }
+
+    public byte[] generatePdfBytes(RegistrationPayloadDTO payload) {
+        try {
+            enrichPayloadForPdf(payload);
+
+            Context context = new Context();
+            context.setVariable("payload", payload);
+
+            String htmlContent = templateEngine.process("registration_form", context);
+            htmlContent = embedLogoIfAvailable(htmlContent);
+
+            try (java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream()) {
+                PdfRendererBuilder builder = new PdfRendererBuilder();
+                builder.useFastMode();
+                builder.withHtmlContent(htmlContent, null);
+                builder.toStream(baos);
+                builder.run();
+                return baos.toByteArray();
+            }
+        } catch (Exception e) {
+            log.error("Failed to generate PDF bytes for CNPJ: {}", payload.getCnpj(), e);
+            throw new RuntimeException("Error generating PDF bytes: " + e.getMessage(), e);
         }
     }
 
@@ -69,22 +80,55 @@ public class PdfGeneratorService {
                 if (!bank.containsKey("bankName") && bank.containsKey("banco")) {
                     bank.put("bankName", bank.get("banco"));
                 }
+                if (!bank.containsKey("banco") && bank.containsKey("bankName")) {
+                    bank.put("banco", bank.get("bankName"));
+                }
                 if (!bank.containsKey("agency") && bank.containsKey("agencia")) {
                     bank.put("agency", bank.get("agencia"));
+                }
+                if (!bank.containsKey("agencia") && bank.containsKey("agency")) {
+                    bank.put("agencia", bank.get("agency"));
                 }
                 if (!bank.containsKey("accountNumber")) {
                     Object acc = bank.containsKey("contaCorrente") ? bank.get("contaCorrente") : bank.get("account");
                     if (acc != null) bank.put("accountNumber", acc);
                 }
+                if (!bank.containsKey("contaCorrente")) {
+                    Object acc = bank.containsKey("accountNumber") ? bank.get("accountNumber") : bank.get("account");
+                    if (acc != null) bank.put("contaCorrente", acc);
+                }
                 if (!bank.containsKey("contactName")) {
                     Object contact = bank.containsKey("gerencia") ? bank.get("gerencia") : bank.get("contact");
                     if (contact != null) bank.put("contactName", contact);
                 }
+                if (!bank.containsKey("gerencia")) {
+                    Object contact = bank.containsKey("contactName") ? bank.get("contactName") : bank.get("contact");
+                    if (contact != null) bank.put("gerencia", contact);
+                }
                 if (!bank.containsKey("phone") && bank.containsKey("fone")) {
                     bank.put("phone", bank.get("fone"));
                 }
+                if (!bank.containsKey("fone") && bank.containsKey("phone")) {
+                    bank.put("fone", bank.get("phone"));
+                }
                 if (!bank.containsKey("observation") && bank.containsKey("relato")) {
                     bank.put("observation", bank.get("relato"));
+                }
+                if (!bank.containsKey("relato") && bank.containsKey("observation")) {
+                    bank.put("relato", bank.get("observation"));
+                }
+                // Fallbacks para empresa, nomeFantasia, cnpj e informacoesData
+                if (!bank.containsKey("empresa") || bank.get("empresa") == null || bank.get("empresa").toString().isBlank()) {
+                    bank.put("empresa", payload.getCompanyName() != null ? payload.getCompanyName() : "");
+                }
+                if (!bank.containsKey("nomeFantasia") || bank.get("nomeFantasia") == null || bank.get("nomeFantasia").toString().isBlank()) {
+                    bank.put("nomeFantasia", payload.getTradeName() != null ? payload.getTradeName() : "");
+                }
+                if (!bank.containsKey("cnpj") || bank.get("cnpj") == null || bank.get("cnpj").toString().isBlank()) {
+                    bank.put("cnpj", payload.getCnpj() != null ? payload.getCnpj() : "");
+                }
+                if (!bank.containsKey("informacoesData") || bank.get("informacoesData") == null || bank.get("informacoesData").toString().isBlank()) {
+                    bank.put("informacoesData", payload.getPreparedAtDate() != null ? payload.getPreparedAtDate() : LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                 }
             }
         }

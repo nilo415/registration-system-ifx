@@ -44,10 +44,15 @@ public class RegistrationController {
     /** File-system service — still handles binary file uploads. */
     private final FileManagerService fileManagerService;
 
+    /** Service to generate PDFs directly */
+    private final com.inflex.registration_system.service.PdfGeneratorService pdfGeneratorService;
+
     public RegistrationController(RegistrationService registrationService,
-                                  FileManagerService fileManagerService) {
+                                  FileManagerService fileManagerService,
+                                  com.inflex.registration_system.service.PdfGeneratorService pdfGeneratorService) {
         this.registrationService = registrationService;
         this.fileManagerService  = fileManagerService;
+        this.pdfGeneratorService = pdfGeneratorService;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -190,6 +195,23 @@ public class RegistrationController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"ficha_cadastral.pdf\"")
                 .body(resource);
     }
+
+    @Operation(summary = "Generate and preview complete registration PDF in real-time")
+    @PostMapping("/preview-pdf")
+    public ResponseEntity<byte[]> previewPdf(@RequestBody RegistrationPayloadDTO payload) {
+        log.info("POST /preview-pdf — CNPJ: {}", payload.getCnpj());
+        try {
+            byte[] pdfBytes = pdfGeneratorService.generatePdfBytes(payload);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"ficha_cadastral.pdf\"")
+                    .body(pdfBytes);
+        } catch (Exception e) {
+            log.error("Failed to generate preview PDF", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 
     // ─────────────────────────────────────────────────────────────────────────
     // GET /api/registration/current

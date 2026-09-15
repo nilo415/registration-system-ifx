@@ -478,6 +478,57 @@
             font-size: 8pt;
             line-height: 1.35;
         }
+
+        /* ══════════════════════════════════════════════════════
+           ESCOPO EXCLUSIVO — PÁGINA 3: INFORMAÇÕES BANCÁRIAS
+           Layout limpo, harmonioso e moderno com o padrão Inflex.
+        ══════════════════════════════════════════════════════ */
+        .page-banco,
+        .page3 {
+            font-size: 8.5pt;
+            line-height: 1.4;
+        }
+
+        .page-banco .header-table {
+            margin-bottom: 5px;
+        }
+
+        .page-banco .section-table,
+        .page-banco .approval-table {
+            margin-bottom: 6px;
+        }
+
+        .page-banco .section-header td {
+            font-size: 8pt;
+            padding: 4px 6px;
+        }
+
+        .page-banco .data-cell {
+            padding: 3.5px 6px;
+        }
+
+        .page-banco .relato-cell {
+            border: 0.5px solid #EDEEF2;
+            background-color: #ffffff;
+            padding: 10px 12px;
+            vertical-align: top;
+            height: 300px;
+        }
+
+        .page-banco .signature-box {
+            width: 50%;
+            padding: 12px 16px 14px 16px;
+            text-align: center;
+            vertical-align: bottom;
+            border: 0.5px solid #EDEEF2;
+        }
+
+        .page-banco .signature-line {
+            border-top: 1px solid #767c88;
+            width: 85%;
+            margin: 40px auto 0 auto;
+            padding-top: 4px;
+        }
     </style>
 </head>
 
@@ -1251,6 +1302,198 @@
         </tr>
     </table>
     </div>
-</body>
 
+    <!-- ══════════════════════════════════════════════════════════
+         PARTE 3 — SOLICITAÇÃO DE INFORMAÇÕES BANCÁRIAS
+         (Renderizado no mesmo PDF, 1 página separada por banco)
+    ══════════════════════════════════════════════════════════ -->
+    <th:block th:if="${payload.bankReferences != null and !payload.bankReferences.isEmpty()}">
+        <th:block th:each="bank, iterStat : ${payload.bankReferences}">
+            <div class="page-break"></div>
+
+            <div class="page-banco page3">
+                <!-- CABEÇALHO -->
+                <table class="header-table">
+                    <tr>
+                        <td class="logo-cell">
+                            <img src="..\..\..\..\..\frontend\src\assets\images\inflex-logo.png" alt="Inflex Industria"
+                                class="logo-img" />
+                        </td>
+                        <td class="title-cell" style="width:auto;">
+                            Solicitação de informações bancárias
+                        </td>
+                        <td class="meta-cell">
+                            <table style="height: 100%;">
+                                <tr>
+                                    <td style="width: 50%;">
+                                        <div class="meta-label">Revisão</div>
+                                        <div style="font-size: 8.5pt; color: #1F2430; font-weight: bold;">3</div>
+                                    </td>
+                                    <td style="width: 50%;">
+                                        <div class="meta-label">Folha</div>
+                                        <div style="font-size: 8.5pt; color: #1F2430; font-weight: bold;">1 / 1</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- FAIXA DE LOCALIDADE & DATA -->
+                <table class="section-table" style="margin-bottom: 5px;">
+                    <tr>
+                        <td style="width: 60%; background-color: #FAFAFB; padding: 4px 8px; border: 0.5px solid #E1E4EA;">
+                            <span class="field-label" style="font-size: 6pt; color: #767c88;">UNIDADE EMISSORA:</span>
+                            <span style="font-size: 8pt; font-weight: bold; color: #1F2430; margin-left: 4px;">Dourados / MS</span>
+                        </td>
+                        <td style="width: 40%; background-color: #FAFAFB; padding: 4px 8px; border: 0.5px solid #E1E4EA; text-align: right;">
+                            <span class="field-label" style="font-size: 6pt; color: #767c88;">DATA DE REGISTRO:</span>
+                            <span style="font-size: 8pt; font-weight: bold; color: #1F2430; margin-left: 4px;"
+                                  th:text="${bank['informacoesData'] != null ? bank['informacoesData'] : (payload.preparedAtDate != null ? payload.preparedAtDate : '')}"></span>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- INFORMAÇÕES DO CLIENTE SOLICITADO (com Agência e CC) -->
+                <table class="section-table">
+                    <tr class="section-header">
+                        <td colspan="4">Informações do cliente solicitado</td>
+                    </tr>
+                    <tr>
+                        <td class="data-cell" colspan="3" style="width: 55%;">
+                            <div class="field-label">Empresa / Razão Social</div>
+                            <div class="field-value bold"
+                                 th:text="${bank['empresa'] != null and !bank['empresa'].isEmpty() ? bank['empresa'] : payload.companyName}"></div>
+                        </td>
+                        <td class="data-cell" colspan="1" style="width: 45%;">
+                            <div class="field-label">CNPJ</div>
+                            <div class="field-value bold"
+                                 th:text="${bank['cnpj'] != null and !bank['cnpj'].isEmpty() ? bank['cnpj'] : payload.cnpj}"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="data-cell" colspan="2">
+                            <div class="field-label">Nome Fantasia</div>
+                            <div class="field-value"
+                                 th:text="${bank['nomeFantasia'] != null and !bank['nomeFantasia'].isEmpty() ? bank['nomeFantasia'] : payload.tradeName}"></div>
+                        </td>
+                        <td class="data-cell" colspan="1">
+                            <div class="field-label">Agência</div>
+                            <div class="field-value"
+                                 th:text="${bank['agencia'] != null ? bank['agencia'] : (bank['agency'] != null ? bank['agency'] : '')}"></div>
+                        </td>
+                        <td class="data-cell" colspan="1">
+                            <div class="field-label">Conta Corrente</div>
+                            <div class="field-value"
+                                 th:text="${bank['contaCorrente'] != null ? bank['contaCorrente'] : (bank['accountNumber'] != null ? bank['accountNumber'] : '')}"></div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- INSTITUIÇÃO BANCÁRIA CONSULTADA -->
+                <table class="section-table">
+                    <tr class="section-header">
+                        <td colspan="4">Instituição Bancária Consultada</td>
+                    </tr>
+                    <tr>
+                        <td class="data-cell" colspan="2" style="width: 50%;">
+                            <div class="field-label">Banco</div>
+                            <div class="field-value bold"
+                                 th:text="${bank['banco'] != null ? bank['banco'] : (bank['bankName'] != null ? bank['bankName'] : '')}"></div>
+                        </td>
+                        <td class="data-cell" colspan="1" style="width: 30%;">
+                            <div class="field-label">Gerência / Contato</div>
+                            <div class="field-value"
+                                 th:text="${bank['gerencia'] != null ? bank['gerencia'] : (bank['contactName'] != null ? bank['contactName'] : '')}"></div>
+                        </td>
+                        <td class="data-cell" colspan="1" style="width: 20%;">
+                            <div class="field-label">Telefone</div>
+                            <div class="field-value"
+                                 th:text="${bank['fone'] != null ? bank['fone'] : (bank['phone'] != null ? bank['phone'] : '')}"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="data-cell" colspan="4">
+                            <div class="field-label">Informações Coletadas Em</div>
+                            <div class="field-value"
+                                 th:text="${bank['informacoesData'] != null ? bank['informacoesData'] : (payload.preparedAtDate != null ? payload.preparedAtDate : '')}"></div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- RELATO -->
+                <table class="section-table" style="margin-bottom: 6px;">
+                    <tr class="section-header">
+                        <td>Relato</td>
+                    </tr>
+                    <tr>
+                        <td class="relato-cell">
+                            <div th:if="${bank['relato'] != null and !#strings.isEmpty(bank['relato'])}"
+                                 style="font-size: 8.5pt; line-height: 1.55; color: #1F2430; white-space: pre-wrap; word-wrap: break-word;"
+                                 th:text="${bank['relato']}"></div>
+                            <div th:if="${bank['relato'] == null or #strings.isEmpty(bank['relato'])}"
+                                 style="color: #a0a6b2; font-style: italic; font-size: 8pt; padding-top: 8px;">
+                                [Espaço reservado para relato bancário]
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- RESPONSÁVEIS -->
+                <table class="approval-table" style="margin-bottom: 6px;">
+                    <tr class="section-header">
+                        <td colspan="2">Responsáveis</td>
+                    </tr>
+                    <tr>
+                        <!-- Responsável bancário: sem linha de assinatura, apenas nome e cargo -->
+                        <td class="signature-box" style="vertical-align: middle; text-align: center; padding: 16px;">
+                            <div class="bold" style="font-size: 8.5pt; color: #1F2430;"
+                                 th:text="${bank['gerencia'] != null and !bank['gerencia'].isEmpty() ? bank['gerencia'] : 'Responsável pelas Informações'}"></div>
+                            <div style="font-size: 6.5pt; color: #767c88; text-transform: uppercase; margin-top: 3px;">
+                                Responsável pelas informações
+                            </div>
+                        </td>
+                        <!-- Responsável Inflex: com linha de assinatura -->
+                        <td class="signature-box">
+                            <div class="signature-line">
+                                <div class="bold" style="font-size: 8pt; color: #1F2430;">Carlos Tadashi Tamaoka</div>
+                                <div style="font-size: 6.5pt; color: #767c88; text-transform: uppercase; margin-top: 1px;">
+                                    Aux. Comercial Inflex
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- RODAPÉ OFICIAL DA PARTE 3 -->
+                <table class="footer-table">
+                    <tr>
+                        <td style="width: 12%;">
+                            <div class="footer-label">Revisão</div>
+                            <div class="bold" style="font-size: 8.5pt; color: #1F2430;">3</div>
+                        </td>
+                        <td style="width: 30%;">
+                            <div class="footer-label">Preparado por</div>
+                            <div style="font-size: 8.5pt; color: #1F2430;">Carlos Tadashi Tamaoka</div>
+                            <div style="color: #767c88; font-size: 5.5pt; margin-top: 1px;">Aux. Vendas</div>
+                        </td>
+                        <td style="width: 14%;">
+                            <div class="footer-label">Data</div>
+                            <div style="font-size: 8.5pt; color: #1F2430;">04/05/2016</div>
+                        </td>
+                        <td style="width: 30%;">
+                            <div class="footer-label">Aprovado por</div>
+                            <div style="font-size: 8.5pt; color: #1F2430;">Rosilene Vicente</div>
+                            <div style="color: #767c88; font-size: 5.5pt; margin-top: 1px;">Gerente Financeiro</div>
+                        </td>
+                        <td style="width: 14%;">
+                            <div class="footer-label">Data</div>
+                            <div style="font-size: 8.5pt; color: #1F2430;">05/10/2009</div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </th:block>
+    </th:block>
+</body>
 </html>

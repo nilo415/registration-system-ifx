@@ -7,6 +7,7 @@ export default function Step5References() {
   const { formData, updateFormData } = useRegistration();
   const [showBankModal, setShowBankModal] = useState(false);
   const [showSupplierModal, setShowSupplierModal] = useState(false);
+  const [printingBankId, setPrintingBankId] = useState<string | null>(null);
 
   // Read lists from global context (cast to local types)
   const banks = (formData.bankReferences ?? []) as BankReference[];
@@ -26,6 +27,43 @@ export default function Step5References() {
 
   const handleRemoveSupplier = (id: string) => {
     updateFormData({ commercialReferences: suppliers.filter((s) => s.id !== id) });
+  };
+
+  // Dados da empresa para pré-preencher o modal bancário
+  const companyInitialData: Partial<BankReference> = {
+    empresa: (formData as any).companyName || '',
+    nomeFantasia: (formData as any).tradeName || '',
+    cnpj: (formData as any).cnpj || '',
+  };
+
+  // Gera e abre o PDF completo (capa + ficha + páginas bancárias) via /preview-pdf
+  const handlePrintBank = async (bank: BankReference) => {
+    setPrintingBankId(bank.id);
+    try {
+      const response = await fetch('http://localhost:8080/api/registration/preview-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao gerar PDF: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const win = window.open(url, '_blank');
+      if (win) {
+        win.addEventListener('load', () => {
+          win.print();
+        });
+      }
+    } catch (err) {
+      console.error('Falha ao gerar PDF bancário:', err);
+      alert('Não foi possível gerar o PDF. Verifique se o servidor está rodando.');
+    } finally {
+      setPrintingBankId(null);
+    }
   };
 
   const cardStyle = {
@@ -58,6 +96,19 @@ export default function Step5References() {
     transition: 'opacity 0.15s',
   };
 
+  const iconBtnStyle: React.CSSProperties = {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    color: 'var(--text-muted)',
+    padding: '6px',
+    borderRadius: '6px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'color 0.15s, background 0.15s',
+  };
+
   const getInitials = (name: string) =>
     name
       .split(' ')
@@ -68,6 +119,9 @@ export default function Step5References() {
 
   return (
     <div style={{ display: 'flex', gap: '24px' }}>
+      {/* Spinner keyframes */}
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+
       {/* ── Left Column: Lists ── */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
@@ -117,6 +171,7 @@ export default function Step5References() {
                     borderTop: idx > 0 ? '1px solid var(--border-color)' : 'none',
                   }}
                 >
+                  {/* Avatar */}
                   <div style={{
                     width: 36, height: 36, borderRadius: '8px',
                     background: 'var(--border-color)',
@@ -126,21 +181,71 @@ export default function Step5References() {
                   }}>
                     {getInitials(bank.banco || bank.empresa)}
                   </div>
+
+                  {/* Info */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ color: 'var(--text-main)', fontWeight: 600, fontSize: '13px', margin: 0 }}>
                       {bank.banco || bank.empresa}
                     </p>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '12px', margin: 0 }}>
-                      {bank.agencia && `Ag: ${bank.agencia}`}
-                      {bank.agencia && bank.contaCorrente && ' · '}
-                      {bank.contaCorrente && `CC: ${bank.contaCorrente}`}
+                    <p style={{ color: 'var(--text-muted)', fontSize: '12px', margin: '2px 0 0 0' }}>
+                      {[
+                        bank.agencia && `Ag: ${bank.agencia}`,
+                        bank.contaCorrente && `CC: ${bank.contaCorrente}`,
+                        bank.gerencia,
+                      ].filter(Boolean).join(' · ')}
                     </p>
                   </div>
-                  <div style={{ display: 'flex', gap: '4px' }}>
+
+                  {/* Actions */}
+                  <div style={{ display: 'flex', gap: '2px', flexShrink: 0 }}>
+                    {/* Print button */}
                     <button
-                      style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '6px', borderRadius: '6px' }}
-                      title="Remover"
+                      style={{
+                        ...iconBtnStyle,
+                        color: printingBankId === bank.id ? 'var(--primary)' : 'var(--text-muted)',
+                      }}
+                      title="Gerar PDF completo e imprimir"
+                      disabled={printingBankId === bank.id}
+                      onClick={() => handlePrintBank(bank)}
+                      onMouseOver={(e) => {
+                        if (printingBankId !== bank.id) {
+                          (e.currentTarget as HTMLButtonElement).style.color = 'var(--primary)';
+                          (e.currentTarget as HTMLButtonElement).style.background = 'rgba(200,16,46,0.08)';
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        if (printingBankId !== bank.id) {
+                          (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)';
+                          (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                        }
+                      }}
+                    >
+                      {printingBankId === bank.id ? (
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
+                          <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                        </svg>
+                      ) : (
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="6 9 6 2 18 2 18 9" />
+                          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                          <rect x="6" y="14" width="12" height="8" />
+                        </svg>
+                      )}
+                    </button>
+
+                    {/* Remove button */}
+                    <button
+                      style={iconBtnStyle}
+                      title="Remover banco"
                       onClick={() => handleRemoveBank(bank.id)}
+                      onMouseOver={(e) => {
+                        (e.currentTarget as HTMLButtonElement).style.color = '#ef4444';
+                        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.08)';
+                      }}
+                      onMouseOut={(e) => {
+                        (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)';
+                        (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                      }}
                     >
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="3 6 5 6 21 6" />
@@ -217,15 +322,23 @@ export default function Step5References() {
                     <p style={{ color: 'var(--text-main)', fontWeight: 600, fontSize: '13px', margin: 0 }}>
                       {supplier.empresa}
                     </p>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '12px', margin: 0 }}>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '12px', margin: '2px 0 0 0' }}>
                       {supplier.produtoFornecido || supplier.nomeFantasia || 'Sem detalhes'}
                     </p>
                   </div>
-                  <div style={{ display: 'flex', gap: '4px' }}>
+                  <div style={{ display: 'flex', gap: '2px' }}>
                     <button
-                      style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '6px', borderRadius: '6px' }}
-                      title="Remover"
+                      style={iconBtnStyle}
+                      title="Remover fornecedor"
                       onClick={() => handleRemoveSupplier(supplier.id)}
+                      onMouseOver={(e) => {
+                        (e.currentTarget as HTMLButtonElement).style.color = '#ef4444';
+                        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.08)';
+                      }}
+                      onMouseOut={(e) => {
+                        (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)';
+                        (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                      }}
                     >
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="3 6 5 6 21 6" />
@@ -268,7 +381,6 @@ export default function Step5References() {
           </div>
 
           <div style={{ background: 'rgba(0,0,0,0.15)', borderRadius: '10px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {/* Bancos */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
                 <span style={{ fontSize: '11px', opacity: 0.85 }}>Bancos Adicionados</span>
@@ -283,7 +395,6 @@ export default function Step5References() {
                 }} />
               </div>
             </div>
-            {/* Fornecedores */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
                 <span style={{ fontSize: '11px', opacity: 0.85 }}>Fornecedores</span>
@@ -299,6 +410,14 @@ export default function Step5References() {
               </div>
             </div>
           </div>
+
+          {banks.length > 0 && (
+            <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: '8px', padding: '10px 12px' }}>
+              <p style={{ fontSize: '10px', opacity: 0.9, lineHeight: 1.5, margin: 0 }}>
+                <strong>🖨️ Dica:</strong> Use o ícone de impressora em cada banco para gerar o PDF completo com a ficha bancária incluída.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -307,6 +426,7 @@ export default function Step5References() {
         <BankReferenceModal
           onClose={() => setShowBankModal(false)}
           onAdd={handleAddBank}
+          initialData={companyInitialData}
         />
       )}
       {showSupplierModal && (

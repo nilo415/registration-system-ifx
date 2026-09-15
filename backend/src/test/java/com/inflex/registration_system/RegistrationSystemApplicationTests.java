@@ -57,7 +57,17 @@ class RegistrationSystemApplicationTests {
 		bank1.put("contaCorrente", "56789-0");
 		bank1.put("gerencia", "Fabio Assunção");
 		bank1.put("fone", "(11) 3210-9876");
+		bank1.put("relato", "Cliente de primeira linha, pontual em suas obrigações financeiras. Sem ocorrências restritivas.");
 		bankRefs.add(bank1);
+
+		Map<String, Object> bank2 = new LinkedHashMap<>();
+		bank2.put("banco", "Itaú Unibanco S.A.");
+		bank2.put("agencia", "0099");
+		bank2.put("contaCorrente", "12345-6");
+		bank2.put("gerencia", "Mariana Costa");
+		bank2.put("fone", "(67) 3422-0000");
+		bank2.put("relato", "Conta ativa há mais de 10 anos com movimentações condizentes com o porte da empresa.");
+		bankRefs.add(bank2);
 
 		dto.setBankReferences(bankRefs);
 
