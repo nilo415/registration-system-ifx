@@ -529,6 +529,56 @@
             margin: 40px auto 0 auto;
             padding-top: 4px;
         }
+
+        /* ══════════════════════════════════════════════════════
+           ESCOPO EXCLUSIVO — PÁGINA 4: INFORMAÇÕES COMERCIAIS
+           Layout refinado, estruturado e alinhado ao padrão Inflex.
+        ══════════════════════════════════════════════════════ */
+        .page-comercial,
+        .page4 {
+            font-size: 8pt;
+            line-height: 1.35;
+        }
+
+        .page-comercial .header-table {
+            margin-bottom: 4px;
+        }
+
+        .page-comercial .section-table,
+        .page-comercial .approval-table {
+            margin-bottom: 4px;
+        }
+
+        .page-comercial .section-header td {
+            font-size: 7.5pt;
+            padding: 3.5px 6px;
+        }
+
+        .page-comercial .data-cell {
+            padding: 3px 6px;
+        }
+
+        .page-comercial .obs-box {
+            border: 1.5px solid #2d5a27;
+            background-color: #ffffff;
+            padding: 8px 10px;
+            min-height: 90px;
+        }
+
+        .page-comercial .signature-box {
+            width: 50%;
+            padding: 8px 14px 10px 14px;
+            text-align: center;
+            vertical-align: bottom;
+            border: 0.5px solid #EDEEF2;
+        }
+
+        .page-comercial .signature-line {
+            border-top: 1px solid #767c88;
+            width: 85%;
+            margin: 30px auto 0 auto;
+            padding-top: 4px;
+        }
     </style>
 </head>
 
@@ -1320,7 +1370,7 @@
                                 class="logo-img" />
                         </td>
                         <td class="title-cell" style="width:auto;">
-                            Solicitação de informações bancárias
+                            INFORMAÇÕES BANCÁRIAS
                         </td>
                         <td class="meta-cell">
                             <table style="height: 100%;">
@@ -1340,16 +1390,11 @@
                 </table>
 
                 <!-- FAIXA DE LOCALIDADE & DATA -->
-                <table class="section-table" style="margin-bottom: 5px;">
+                <table class="section-table" style="margin-bottom: 4px;">
                     <tr>
-                        <td style="width: 60%; background-color: #FAFAFB; padding: 4px 8px; border: 0.5px solid #E1E4EA;">
-                            <span class="field-label" style="font-size: 6pt; color: #767c88;">UNIDADE EMISSORA:</span>
-                            <span style="font-size: 8pt; font-weight: bold; color: #1F2430; margin-left: 4px;">Dourados / MS</span>
-                        </td>
-                        <td style="width: 40%; background-color: #FAFAFB; padding: 4px 8px; border: 0.5px solid #E1E4EA; text-align: right;">
-                            <span class="field-label" style="font-size: 6pt; color: #767c88;">DATA DE REGISTRO:</span>
-                            <span style="font-size: 8pt; font-weight: bold; color: #1F2430; margin-left: 4px;"
-                                  th:text="${bank['informacoesData'] != null ? bank['informacoesData'] : (payload.preparedAtDate != null ? payload.preparedAtDate : '')}"></span>
+                        <td style="background-color: #FAFAFB; padding: 4px 8px; border: 0.5px solid #E1E4EA; text-align: right;">
+                            <span style="font-size: 8pt; font-weight: bold; color: #1F2430;"
+                                  th:text="${bank['dataExtenso'] != null ? bank['dataExtenso'] : 'Dourados-MS, ' + (bank['informacoesData'] != null ? bank['informacoesData'] : '')}">Dourados-MS</span>
                         </td>
                     </tr>
                 </table>
@@ -1489,6 +1534,283 @@
                         <td style="width: 14%;">
                             <div class="footer-label">Data</div>
                             <div style="font-size: 8.5pt; color: #1F2430;">05/10/2009</div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </th:block>
+    </th:block>
+
+    <!-- ══════════════════════════════════════════════════════════
+         PARTE 4 — REFERÊNCIA COMERCIAL
+         (Renderizado no mesmo PDF, 1 página separada por fornecedor)
+    ══════════════════════════════════════════════════════════ -->
+    <th:block th:if="${payload.commercialReferences != null and !payload.commercialReferences.isEmpty()}">
+        <th:block th:each="ref, iterStat : ${payload.commercialReferences}">
+            <div class="page-break"></div>
+
+            <div class="page-comercial page4">
+                <!-- CABEÇALHO -->
+                <table class="header-table">
+                    <tr>
+                        <td class="logo-cell">
+                            <img src="..\..\..\..\..\frontend\src\assets\images\inflex-logo.png" alt="Inflex Industria"
+                                class="logo-img" />
+                        </td>
+                        <td class="title-cell" style="width:auto;">
+                            REFERÊNCIA COMERCIAL
+                        </td>
+                        <td class="meta-cell">
+                            <table style="height: 100%;">
+                                <tr>
+                                    <td style="width: 50%;">
+                                        <div class="meta-label">Revisão</div>
+                                        <div style="font-size: 8.5pt; color: #1F2430; font-weight: bold;">8</div>
+                                    </td>
+                                    <td style="width: 50%;">
+                                        <div class="meta-label">Folha</div>
+                                        <div style="font-size: 8.5pt; color: #1F2430; font-weight: bold;">1 / 1</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- FAIXA SUPERIOR: DATA À DIREITA E EMPRESA CONSULTADA À ESQUERDA -->
+                <table class="section-table" style="margin-bottom: 3px;">
+                    <tr>
+                        <td style="background-color: #FAFAFB; padding: 4px 8px; border: 0.5px solid #E1E4EA; text-align: right;">
+                            <span style="font-size: 8pt; font-weight: bold; color: #1F2430;"
+                                  th:text="${ref['dataExtenso'] != null ? ref['dataExtenso'] : 'Dourados-MS, ' + (ref['informacoesData'] != null ? ref['informacoesData'] : '')}">Dourados-MS</span>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- EMPRESA CONSULTADA (REFERÊNCIA COMERCIAL PREENCHIDA) -->
+                <div style="margin-bottom: 5px; padding: 5px 8px; background-color: #ffffff; border: 0.5px solid #E1E4EA; display: flex; align-items: center;">
+                    <span style="font-size: 8pt; font-weight: bold; color: #4b5563; margin-right: 6px;">Empresa:</span>
+                    <span style="font-size: 8.5pt; font-weight: bold; color: #111827;"
+                          th:text="${ref['supplierCompanyName'] != null and !ref['supplierCompanyName'].isEmpty() ? ref['supplierCompanyName'] : (ref['empresa'] != null ? ref['empresa'] : '')}"></span>
+                </div>
+
+                <!-- TEXTO INTRODUTÓRIO -->
+                <div style="font-size: 7.5pt; color: #374151; line-height: 1.4; margin-bottom: 5px; padding: 5px 8px; background-color: #f9fafb; border-left: 3px solid #C8102E;">
+                    Foram solicitadas à empresa acima mencionada, a gentileza de nos fornecer referências comerciais do cliente abaixo, para fins de análise cadastral e de crédito, considerando as seguintes informações:
+                </div>
+
+                <!-- DADOS DO CLIENTE SOLICITADO (NOSSO CLIENTE EM CADASTRO) -->
+                <table class="section-table">
+                    <tr class="section-header">
+                        <td colspan="4">Informações do cliente solicitado</td>
+                    </tr>
+                    <tr>
+                        <td class="data-cell" colspan="3" style="width: 65%;">
+                            <div class="field-label">Empresa / Razão Social</div>
+                            <div class="field-value bold"
+                                 th:text="${payload.companyName != null and !payload.companyName.isEmpty() ? payload.companyName : (ref['clientCompanyName'] != null ? ref['clientCompanyName'] : '')}"></div>
+                        </td>
+                        <td class="data-cell" colspan="1" style="width: 35%;">
+                            <div class="field-label">CNPJ</div>
+                            <div class="field-value bold"
+                                 th:text="${payload.cnpj != null and !payload.cnpj.isEmpty() ? payload.cnpj : (ref['clientCnpj'] != null ? ref['clientCnpj'] : '')}"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="data-cell" colspan="4">
+                            <div class="field-label">Nome Fantasia</div>
+                            <div class="field-value"
+                                 th:text="${payload.tradeName != null and !payload.tradeName.isEmpty() ? payload.tradeName : (ref['clientTradeName'] != null ? ref['clientTradeName'] : '')}"></div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- HISTÓRICO E CONDIÇÕES COMERCIAIS -->
+                <table class="section-table">
+                    <tr class="section-header">
+                        <td colspan="5">Histórico e Condições Comerciais</td>
+                    </tr>
+                    <!-- Linha 1: Cliente Desde, Maior Fatura, Última Fatura -->
+                    <tr>
+                        <td class="data-cell" style="width: 25%;" colspan="1">
+                            <div class="field-label">Cliente Desde</div>
+                            <div class="field-value"
+                                 th:text="${ref['clienteDesde'] != null and !ref['clienteDesde'].isEmpty() ? ref['clienteDesde'] : '-'}"></div>
+                        </td>
+                        <td class="data-cell" style="width: 25%;" colspan="1">
+                            <div class="field-label">Maior Fatura — Data</div>
+                            <div class="field-value"
+                                 th:text="${ref['maiorFaturaData'] != null and !ref['maiorFaturaData'].isEmpty() ? ref['maiorFaturaData'] : '-'}"></div>
+                        </td>
+                        <td class="data-cell" style="width: 25%;" colspan="2">
+                            <div class="field-label">Maior Fatura — Valor</div>
+                            <div class="field-value"
+                                 th:text="${ref['maiorFaturaValor'] != null and !ref['maiorFaturaValor'].isEmpty() ? 'R$ ' + ref['maiorFaturaValor'] : 'R$ 0,00'}"></div>
+                        </td>
+                        <td class="data-cell" style="width: 25%;" colspan="1">
+                            <div class="field-label">Última Fatura — Data</div>
+                            <div class="field-value"
+                                 th:text="${ref['ultimaFaturaData'] != null and !ref['ultimaFaturaData'].isEmpty() ? ref['ultimaFaturaData'] : '-'}"></div>
+                        </td>
+                    </tr>
+                    <!-- Linha 2: Última Fatura Valor, Média Mensal, Débitos Vencidos, Débitos a Vencer, Limite Atual de Crédito -->
+                    <tr>
+                        <td class="data-cell" style="width: 20%;">
+                            <div class="field-label">Última Fatura — Valor</div>
+                            <div class="field-value"
+                                 th:text="${ref['ultimaFaturaValor'] != null and !ref['ultimaFaturaValor'].isEmpty() ? 'R$ ' + ref['ultimaFaturaValor'] : 'R$ 0,00'}"></div>
+                        </td>
+                        <td class="data-cell" style="width: 20%;">
+                            <div class="field-label">Média Mensal</div>
+                            <div class="field-value"
+                                 th:text="${ref['mediasMensalValor'] != null and !ref['mediasMensalValor'].isEmpty() ? 'R$ ' + ref['mediasMensalValor'] : 'NÃO INFORMADO.'}"></div>
+                        </td>
+                        <td class="data-cell" style="width: 20%;">
+                            <div class="field-label">Débitos Vencidos</div>
+                            <div class="field-value"
+                                 th:text="${ref['debitosVencidos'] != null and !ref['debitosVencidos'].isEmpty() ? 'R$ ' + ref['debitosVencidos'] : 'R$ 0,00'}"></div>
+                        </td>
+                        <td class="data-cell" style="width: 20%;">
+                            <div class="field-label">Débitos a Vencer</div>
+                            <div class="field-value"
+                                 th:text="${ref['debitosVencer'] != null and !ref['debitosVencer'].isEmpty() ? 'R$ ' + ref['debitosVencer'] : 'R$ 0,00'}"></div>
+                        </td>
+                        <td class="data-cell" style="width: 20%;">
+                            <div class="field-label">Limite Atual de Crédito</div>
+                            <div class="field-value"
+                                 th:text="${ref['limiteCredito'] != null and !ref['limiteCredito'].isEmpty() ? 'R$ ' + ref['limiteCredito'] : 'NÃO INFORMADO.'}"></div>
+                        </td>
+                    </tr>
+                    <!-- Linha 3: Condição de Pagamento e Forma de Pagamento -->
+                    <tr>
+                        <td class="data-cell" colspan="2" style="width: 40%;">
+                            <div class="field-label">Condição de Pagamento</div>
+                            <div style="font-size: 7.5pt; margin-top: 2px;">
+                                <span style="margin-right: 14px;" th:text="${ref['condicaoPagamento'] == 'avista' ? '( x ) à vista' : '(   ) à vista'}"></span>
+                                <span th:text="${ref['condicaoPagamento'] == 'aprazo' ? '( x ) à prazo' : '(   ) à prazo'}"></span>
+                                <span th:if="${ref['diasPrazo'] != null and !ref['diasPrazo'].isEmpty()}"
+                                      th:text="' ' + ${ref['diasPrazo']} + ' dias'"></span>
+                            </div>
+                        </td>
+                        <td class="data-cell" colspan="3" style="width: 60%;">
+                            <div class="field-label">Forma de Pagamento</div>
+                            <div style="font-size: 7.5pt; margin-top: 2px;">
+                                <span style="margin-right: 12px;" th:text="${ref['formaPagamento'] != null and ref['formaPagamento']['boleto'] == true ? '( x ) Boleto Banco' : '(   ) Boleto Banco'}"></span>
+                                <span style="margin-right: 12px;" th:text="${ref['formaPagamento'] != null and ref['formaPagamento']['deposito'] == true ? '( x ) Depósito C/C' : '(   ) Depósito C/C'}"></span>
+                                <span th:text="${ref['formaPagamento'] != null and ref['formaPagamento']['cheque'] == true ? '( x ) Cheque' : '(   ) Cheque'}"></span>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Linha 4: Pontualidade e Pagamento em Cartório -->
+                    <tr>
+                        <td class="data-cell" colspan="2" style="width: 40%;">
+                            <div class="field-label">Pagamentos</div>
+                            <div style="font-size: 7.5pt; margin-top: 2px;">
+                                <span style="margin-right: 14px;" th:text="${ref['pagamentoPontual'] == true ? '( x ) pontual' : '(   ) pontual'}"></span>
+                                <span th:text="${ref['pagamentoAtraso'] == true ? '( x ) com atraso' : '(   ) com atraso'}"></span>
+                                <span th:if="${ref['mediaAtraso'] != null and !ref['mediaAtraso'].isEmpty()}"
+                                      th:text="' Média atraso: ' + ${ref['mediaAtraso']} + ' dias'"></span>
+                            </div>
+                        </td>
+                        <td class="data-cell" colspan="3" style="width: 60%;">
+                            <div class="field-label">Realizar Pagamento em Cartório</div>
+                            <div style="font-size: 7.5pt; margin-top: 2px;">
+                                <span th:if="${ref['pagamentoCartorio'] == 'sim'}">( x ) Sim &#160;&#160; (   ) Não</span>
+                                <span th:if="${ref['pagamentoCartorio'] == 'nao'}">(   ) Sim &#160;&#160; ( x ) Não</span>
+                                <span th:if="${ref['pagamentoCartorio'] != 'sim' and ref['pagamentoCartorio'] != 'nao'}">(   ) Sim &#160;&#160; (   ) Não &#160;&#160; NÃO INFORMADO.</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Linha 5: Conceito e Produto Fornecido -->
+                    <tr>
+                        <td class="data-cell" colspan="2" style="width: 40%;">
+                            <div class="field-label">Conceito</div>
+                            <div style="font-size: 7.5pt; margin-top: 2px;">
+                                <span style="margin-right: 8px;" th:text="${ref['conceito'] == 'otimo' ? '( x ) ótimo cliente' : '(   ) ótimo cliente'}"></span>
+                                <span style="margin-right: 8px;" th:text="${ref['conceito'] == 'bom' ? '( x ) bom cliente' : '(   ) bom cliente'}"></span>
+                                <span style="margin-right: 8px;" th:text="${ref['conceito'] == 'mediano' ? '( x ) cliente mediano' : '(   ) cliente mediano'}"></span>
+                                <span th:text="${ref['conceito'] == 'dificil' ? '( x ) cliente difícil' : '(   ) cliente difícil'}"></span>
+                            </div>
+                        </td>
+                        <td class="data-cell" colspan="3" style="width: 60%;">
+                            <div class="field-label">Produto / Serviço Fornecido</div>
+                            <div class="field-value"
+                                 th:text="${ref['produtoFornecido'] != null and !ref['produtoFornecido'].isEmpty() ? ref['produtoFornecido'] : 'NÃO INFORMADO.'}"></div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- OBSERVAÇÕES IMPORTANTES -->
+                <table class="section-table" style="margin-bottom: 4px;">
+                    <tr class="section-header">
+                        <td style="text-align: center;">OBSERVAÇÕES IMPORTANTES</td>
+                    </tr>
+                    <tr>
+                        <td class="obs-box">
+                            <div th:if="${ref['observacoes'] != null and !#strings.isEmpty(ref['observacoes'])}"
+                                  style="font-size: 8pt; line-height: 1.5; color: #1F2430; white-space: pre-wrap; word-wrap: break-word;"
+                                  th:text="${ref['observacoes']}"></div>
+                            <div th:if="${ref['observacoes'] == null or #strings.isEmpty(ref['observacoes'])}"
+                                  style="color: #a0a6b2; font-style: italic; font-size: 7.5pt; padding-top: 6px;">
+                                [Sem observações adicionais registradas para esta referência comercial]
+                            </div>
+                            <div style="margin-top: 14px; font-size: 6.5pt; color: #767c88;">
+                                <span th:text="'*Informações coletadas em ' + ${ref['informacoesData'] != null ? ref['informacoesData'] : ''}">*Informações coletadas em</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- RESPONSÁVEIS -->
+                <table class="approval-table" style="margin-bottom: 4px;">
+                    <tr class="section-header">
+                        <td colspan="2">Responsáveis</td>
+                    </tr>
+                    <tr>
+                        <!-- Responsável comercial do fornecedor: sem linha de assinatura -->
+                        <td class="signature-box" style="vertical-align: middle; text-align: center; padding: 14px 10px;">
+                            <div class="bold" style="font-size: 8.5pt; color: #1F2430;"
+                                 th:text="${ref['responsavelInfo'] != null and !ref['responsavelInfo'].isEmpty() ? ref['responsavelInfo'] : 'Responsável pelas Informações'}"></div>
+                            <div style="font-size: 6.5pt; color: #767c88; text-transform: uppercase; margin-top: 3px;">
+                                Responsável pelas informações
+                            </div>
+                        </td>
+                        <!-- Responsável Inflex: com linha de assinatura -->
+                        <td class="signature-box">
+                            <div class="signature-line">
+                                <div class="bold" style="font-size: 8pt; color: #1F2430;">Carlos Tadashi Tamaoka</div>
+                                <div style="font-size: 6.5pt; color: #767c88; text-transform: uppercase; margin-top: 1px;">
+                                    Aux. Comercial Inflex
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- RODAPÉ OFICIAL DA PARTE 4 (REVISÃO 8) -->
+                <table class="footer-table">
+                    <tr>
+                        <td style="width: 12%;">
+                            <div class="footer-label">Revisão</div>
+                            <div class="bold" style="font-size: 8.5pt; color: #1F2430;">8</div>
+                        </td>
+                        <td style="width: 30%;">
+                            <div class="footer-label">Preparado por:</div>
+                            <div style="font-size: 8.5pt; color: #1F2430;">Tiago Bortolazo</div>
+                            <div style="color: #767c88; font-size: 5.5pt; margin-top: 1px;">Supervisor Comercial</div>
+                        </td>
+                        <td style="width: 14%;">
+                            <div class="footer-label">Data:</div>
+                            <div style="font-size: 8.5pt; color: #1F2430;">06/11/24</div>
+                        </td>
+                        <td style="width: 30%;">
+                            <div class="footer-label">Aprovado por:</div>
+                            <div style="font-size: 8.5pt; color: #1F2430;">Elziro Vicente Junior</div>
+                            <div style="color: #767c88; font-size: 5.5pt; margin-top: 1px;">Diretor Comercial</div>
+                        </td>
+                        <td style="width: 14%;">
+                            <div class="footer-label">Data:</div>
+                            <div style="font-size: 8.5pt; color: #1F2430;">06/11/24</div>
                         </td>
                     </tr>
                 </table>

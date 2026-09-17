@@ -3,6 +3,7 @@ import { useState } from 'react';
 interface SupplierReferenceModalProps {
   onClose: () => void;
   onAdd: (supplier: SupplierReference) => void;
+  initialData?: Partial<SupplierReference>;
 }
 
 export interface SupplierReference {
@@ -10,6 +11,7 @@ export interface SupplierReference {
   empresa: string;
   nomeFantasia: string;
   cnpj: string;
+  contato?: string;
   clienteDesde: string;
   maiorFaturaData: string;
   maiorFaturaValor: string;
@@ -40,6 +42,7 @@ const defaultForm: Omit<SupplierReference, 'id'> = {
   empresa: '',
   nomeFantasia: '',
   cnpj: '',
+  contato: '',
   clienteDesde: '',
   maiorFaturaData: '',
   maiorFaturaValor: '',
@@ -62,8 +65,12 @@ const defaultForm: Omit<SupplierReference, 'id'> = {
   informacoesData: '',
 };
 
-export default function SupplierReferenceModal({ onClose, onAdd }: SupplierReferenceModalProps) {
-  const [form, setForm] = useState<Omit<SupplierReference, 'id'>>(defaultForm);
+export default function SupplierReferenceModal({ onClose, onAdd, initialData }: SupplierReferenceModalProps) {
+  const [form, setForm] = useState<Omit<SupplierReference, 'id'>>({
+    ...defaultForm,
+    informacoesData: new Date().toISOString().split('T')[0],
+    ...initialData,
+  });
 
   const inputStyle = {
     background: 'var(--bg-page)',
@@ -195,6 +202,14 @@ export default function SupplierReferenceModal({ onClose, onAdd }: SupplierRefer
             <label style={labelStyle}>CNPJ</label>
             <input type="text" placeholder="00.000.000/0000-00" value={form.cnpj}
               onChange={(e) => handleChange('cnpj', e.target.value)}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle} />
+          </div>
+
+          {/* Contato / Responsável */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <label style={labelStyle}>Contato / Responsável pelas Informações</label>
+            <input type="text" placeholder="Nome do contato no fornecedor" value={form.contato || ''}
+              onChange={(e) => handleChange('contato', e.target.value)}
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle} />
           </div>
 

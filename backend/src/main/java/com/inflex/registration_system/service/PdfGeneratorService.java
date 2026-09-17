@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -130,21 +131,26 @@ public class PdfGeneratorService {
                 if (!bank.containsKey("informacoesData") || bank.get("informacoesData") == null || bank.get("informacoesData").toString().isBlank()) {
                     bank.put("informacoesData", payload.getPreparedAtDate() != null ? payload.getPreparedAtDate() : LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                 }
+                if (!bank.containsKey("dataExtenso") || bank.get("dataExtenso") == null) {
+                    DateTimeFormatter formatterExtenso = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("pt", "BR"));
+                    bank.put("dataExtenso", "Dourados-MS, " + LocalDate.now().format(formatterExtenso));
+                }
             }
         }
 
         // Mapear propriedades comerciais vindas do formulário
         if (payload.getCommercialReferences() != null) {
+            DateTimeFormatter formatterExtenso = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("pt", "BR"));
+            String defaultDataExtenso = "Dourados-MS, " + LocalDate.now().format(formatterExtenso);
+
             for (Map<String, Object> ref : payload.getCommercialReferences()) {
                 if (!ref.containsKey("companyName") && ref.containsKey("empresa")) {
                     ref.put("companyName", ref.get("empresa"));
                 }
+                ref.put("supplierCompanyName", ref.get("empresa") != null ? ref.get("empresa") : ref.get("companyName"));
                 if (!ref.containsKey("contactName")) {
                     Object contact = ref.containsKey("contato") ? ref.get("contato") : ref.get("nomeContato");
                     ref.put("contactName", contact != null ? contact : "");
-                }
-                if (!ref.containsKey("cnpj")) {
-                    ref.put("cnpj", "");
                 }
                 if (!ref.containsKey("produtoFornecido")) {
                     ref.put("produtoFornecido", "");
@@ -162,6 +168,12 @@ public class PdfGeneratorService {
                 if (!ref.containsKey("monthlyAverage") && ref.containsKey("mediasMensalValor")) {
                     ref.put("monthlyAverage", ref.get("mediasMensalValor"));
                 }
+                if (!ref.containsKey("debitosVencidos") || ref.get("debitosVencidos") == null || ref.get("debitosVencidos").toString().isBlank()) {
+                    ref.put("debitosVencidos", "0,00");
+                }
+                if (!ref.containsKey("debitosVencer") || ref.get("debitosVencer") == null || ref.get("debitosVencer").toString().isBlank()) {
+                    ref.put("debitosVencer", "0,00");
+                }
                 if (!ref.containsKey("paymentBehavior")) {
                     if (Boolean.TRUE.equals(ref.get("pagamentoPontual"))) {
                         ref.put("paymentBehavior", "Pontual");
@@ -173,6 +185,31 @@ public class PdfGeneratorService {
                         ref.put("paymentBehavior", "");
                     }
                 }
+
+                // Dados do cliente para o cabeçalho/identificação da folha comercial
+                ref.put("clientCompanyName", payload.getCompanyName() != null ? payload.getCompanyName() : "");
+                ref.put("clientTradeName", payload.getTradeName() != null ? payload.getTradeName() : "");
+                ref.put("clientCnpj", payload.getCnpj() != null ? payload.getCnpj() : "");
+
+                // Data de registro por extenso
+                if (!ref.containsKey("dataExtenso") || ref.get("dataExtenso") == null) {
+                    ref.put("dataExtenso", defaultDataExtenso);
+                }
+
+                // Data de coleta
+                if (!ref.containsKey("informacoesData") || ref.get("informacoesData") == null || ref.get("informacoesData").toString().isBlank()) {
+                    ref.put("informacoesData", payload.getPreparedAtDate() != null ? payload.getPreparedAtDate() : LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                }
+
+                // Responsável pelas informações (contato ou fornecedor)
+                Object resp = ref.get("contato");
+                if (resp == null || resp.toString().isBlank()) {
+                    resp = ref.get("contactName");
+                }
+                if (resp == null || resp.toString().isBlank()) {
+                    resp = ref.get("empresa");
+                }
+                ref.put("responsavelInfo", resp != null ? resp.toString() : "Responsável");
             }
         }
     }

@@ -8,6 +8,7 @@ export default function Step5References() {
   const [showBankModal, setShowBankModal] = useState(false);
   const [showSupplierModal, setShowSupplierModal] = useState(false);
   const [printingBankId, setPrintingBankId] = useState<string | null>(null);
+  const [printingSupplierId, setPrintingSupplierId] = useState<string | null>(null);
 
   // Read lists from global context (cast to local types)
   const banks = (formData.bankReferences ?? []) as BankReference[];
@@ -29,16 +30,20 @@ export default function Step5References() {
     updateFormData({ commercialReferences: suppliers.filter((s) => s.id !== id) });
   };
 
-  // Dados da empresa para pré-preencher o modal bancário
+  // Dados da empresa para pré-preencher os modais
   const companyInitialData: Partial<BankReference> = {
     empresa: (formData as any).companyName || '',
     nomeFantasia: (formData as any).tradeName || '',
     cnpj: (formData as any).cnpj || '',
   };
 
-  // Gera e abre o PDF completo (capa + ficha + páginas bancárias) via /preview-pdf
-  const handlePrintBank = async (bank: BankReference) => {
-    setPrintingBankId(bank.id);
+  const supplierInitialData: Partial<SupplierReference> = {
+    informacoesData: new Date().toISOString().split('T')[0],
+  };
+
+  // Gera e abre o PDF completo (capa + ficha + páginas bancárias + páginas comerciais) via /preview-pdf
+  const handlePrintBank = async (_bank: BankReference) => {
+    setPrintingBankId(_bank.id);
     try {
       const response = await fetch('http://localhost:8080/api/registration/preview-pdf', {
         method: 'POST',
@@ -63,6 +68,35 @@ export default function Step5References() {
       alert('Não foi possível gerar o PDF. Verifique se o servidor está rodando.');
     } finally {
       setPrintingBankId(null);
+    }
+  };
+
+  const handlePrintSupplier = async (supplier: SupplierReference) => {
+    setPrintingSupplierId(supplier.id);
+    try {
+      const response = await fetch('http://localhost:8080/api/registration/preview-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao gerar PDF: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const win = window.open(url, '_blank');
+      if (win) {
+        win.addEventListener('load', () => {
+          win.print();
+        });
+      }
+    } catch (err) {
+      console.error('Falha ao gerar PDF comercial:', err);
+      alert('Não foi possível gerar o PDF. Verifique se o servidor está rodando.');
+    } finally {
+      setPrintingSupplierId(null);
     }
   };
 
@@ -326,7 +360,43 @@ export default function Step5References() {
                       {supplier.produtoFornecido || supplier.nomeFantasia || 'Sem detalhes'}
                     </p>
                   </div>
-                  <div style={{ display: 'flex', gap: '2px' }}>
+                  <div style={{ display: 'flex', gap: '2px', flexShrink: 0 }}>
+                    {/* Print button */}
+                    <button
+                      style={{
+                        ...iconBtnStyle,
+                        color: printingSupplierId === supplier.id ? 'var(--primary)' : 'var(--text-muted)',
+                      }}
+                      title="Gerar PDF completo e imprimir"
+                      disabled={printingSupplierId === supplier.id}
+                      onClick={() => handlePrintSupplier(supplier)}
+                      onMouseOver={(e) => {
+                        if (printingSupplierId !== supplier.id) {
+                          (e.currentTarget as HTMLButtonElement).style.color = 'var(--primary)';
+                          (e.currentTarget as HTMLButtonElement).style.background = 'rgba(200,16,46,0.08)';
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        if (printingSupplierId !== supplier.id) {
+                          (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)';
+                          (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                        }
+                      }}
+                    >
+                      {printingSupplierId === supplier.id ? (
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
+                          <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                        </svg>
+                      ) : (
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="6 9 6 2 18 2 18 9" />
+                          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                          <rect x="6" y="14" width="12" height="8" />
+                        </svg>
+                      )}
+                    </button>
+
+                    {/* Remove button */}
                     <button
                       style={iconBtnStyle}
                       title="Remover fornecedor"
@@ -411,10 +481,10 @@ export default function Step5References() {
             </div>
           </div>
 
-          {banks.length > 0 && (
+          {(banks.length > 0 || suppliers.length > 0) && (
             <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: '8px', padding: '10px 12px' }}>
               <p style={{ fontSize: '10px', opacity: 0.9, lineHeight: 1.5, margin: 0 }}>
-                <strong>🖨️ Dica:</strong> Use o ícone de impressora em cada banco para gerar o PDF completo com a ficha bancária incluída.
+                <strong>🖨️ Dica:</strong> Use o ícone de impressora em cada banco ou fornecedor para gerar o PDF completo com as fichas de referências incluídas.
               </p>
             </div>
           )}
@@ -433,6 +503,7 @@ export default function Step5References() {
         <SupplierReferenceModal
           onClose={() => setShowSupplierModal(false)}
           onAdd={handleAddSupplier}
+          initialData={supplierInitialData}
         />
       )}
     </div>
