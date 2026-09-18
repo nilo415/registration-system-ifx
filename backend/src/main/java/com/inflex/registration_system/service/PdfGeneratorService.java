@@ -132,16 +132,14 @@ public class PdfGeneratorService {
                     bank.put("informacoesData", payload.getPreparedAtDate() != null ? payload.getPreparedAtDate() : LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                 }
                 if (!bank.containsKey("dataExtenso") || bank.get("dataExtenso") == null) {
-                    DateTimeFormatter formatterExtenso = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("pt", "BR"));
-                    bank.put("dataExtenso", "Dourados-MS, " + LocalDate.now().format(formatterExtenso));
+                    bank.put("dataExtenso", "Dourados-MS, " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                 }
             }
         }
 
         // Mapear propriedades comerciais vindas do formulário
         if (payload.getCommercialReferences() != null) {
-            DateTimeFormatter formatterExtenso = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("pt", "BR"));
-            String defaultDataExtenso = "Dourados-MS, " + LocalDate.now().format(formatterExtenso);
+            String defaultDataExtenso = "Dourados-MS, " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
             for (Map<String, Object> ref : payload.getCommercialReferences()) {
                 if (!ref.containsKey("companyName") && ref.containsKey("empresa")) {

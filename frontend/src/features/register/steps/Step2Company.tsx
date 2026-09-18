@@ -124,29 +124,27 @@ export default function Step2Company() {
           />
         </div>
 
-        {/* Data de Abertura */}
+        {/* Reg. Junta Comercial */}
         <div className="flex flex-col gap-2">
           <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
-            Data de Abertura
+            Reg. Junta Comercial
           </label>
           <input
             type="text"
-            placeholder="DD/MM/AAAA"
+            placeholder="Número do registro"
             className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
             style={inputStyle}
-            value={formData.openingDate ?? ''}
-            onChange={(e) => updateFormData({ openingDate: e.target.value })}
+            value={formData.commercialRegistry ?? ''}
+            onChange={(e) => updateFormData({ commercialRegistry: e.target.value })}
           />
         </div>
 
         {/* IE and IM */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
-                Inscrição Estadual (IE)
-              </label>
-            </div>
+            <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
+              Inscrição Estadual (IE)
+            </label>
             <input
               type="text"
               placeholder="Isento ou Número"
@@ -169,21 +167,6 @@ export default function Step2Company() {
               onChange={(e) => updateFormData({ municipalRegistration: e.target.value })}
             />
           </div>
-        </div>
-
-        {/* Natureza Jurídica */}
-        <div className="flex flex-col gap-2">
-          <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
-            Natureza Jurídica
-          </label>
-          <input
-            type="text"
-            placeholder="Ex: Sociedade Ltda."
-            className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
-            style={inputStyle}
-            value={formData.legalNature ?? ''}
-            onChange={(e) => updateFormData({ legalNature: e.target.value })}
-          />
         </div>
 
         {/* Segmento (CNAE) */}

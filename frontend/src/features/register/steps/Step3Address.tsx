@@ -22,7 +22,7 @@ export default function Step3Address() {
               <circle cx="12" cy="10" r="3"></circle>
             </svg>
           </div>
-          <h3 className="font-bold text-lg" style={{ color: 'var(--primary)' }}>Endereço Principal e Contatos</h3>
+          <h3 className="font-bold text-lg" style={{ color: 'var(--primary)' }}>Endereço Principal</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -41,20 +41,13 @@ export default function Step3Address() {
               onChange={(e) => updateFormData({ street: e.target.value })} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-2">
-            <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Número</label>
-            <input type="text" placeholder="123"
+            <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Cx. Postal</label>
+            <input type="text" placeholder="Caixa Postal"
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
-              value={formData.number ?? ''}
-              onChange={(e) => updateFormData({ number: e.target.value })} />
+              value={formData.poBox ?? ''}
+              onChange={(e) => updateFormData({ poBox: e.target.value })} />
           </div>
 
-          <div className="flex flex-col gap-2 md:col-span-4">
-            <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Complemento</label>
-            <input type="text" placeholder="Sala, Apto, Galpão"
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
-              value={formData.complement ?? ''}
-              onChange={(e) => updateFormData({ complement: e.target.value })} />
-          </div>
           <div className="flex flex-col gap-2 md:col-span-4">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Bairro</label>
             <input type="text" placeholder="Centro"
@@ -62,22 +55,14 @@ export default function Step3Address() {
               value={formData.neighborhood ?? ''}
               onChange={(e) => updateFormData({ neighborhood: e.target.value })} />
           </div>
-          <div className="flex flex-col gap-2 md:col-span-4">
-            <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>País</label>
-            <input type="text" placeholder="Brasil"
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
-              value={formData.country ?? ''}
-              onChange={(e) => updateFormData({ country: e.target.value })} />
-          </div>
-
-          <div className="flex flex-col gap-2 md:col-span-8">
+          <div className="flex flex-col gap-2 md:col-span-6">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Cidade</label>
             <input type="text" placeholder="São Paulo"
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
               value={formData.city ?? ''}
               onChange={(e) => updateFormData({ city: e.target.value })} />
           </div>
-          <div className="flex flex-col gap-2 md:col-span-4">
+          <div className="flex flex-col gap-2 md:col-span-2">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Estado (UF)</label>
             <input type="text" placeholder="SP"
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
@@ -136,13 +121,6 @@ export default function Step3Address() {
                 value={formData.purchasingEmail ?? ''}
                 onChange={(e) => updateFormData({ purchasingEmail: e.target.value })} />
             </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Website</label>
-              <input type="text" placeholder="www.empresa.com.br"
-                className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
-                value={formData.website ?? ''}
-                onChange={(e) => updateFormData({ website: e.target.value })} />
-            </div>
           </div>
         </div>
       </div>
@@ -181,14 +159,14 @@ export default function Step3Address() {
               value={formData.financialStreet ?? ''}
               onChange={(e) => updateFormData({ financialStreet: e.target.value })} />
           </div>
-          <div className="flex flex-col gap-2 md:col-span-4">
+          <div className="flex flex-col gap-2 md:col-span-3">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Bairro</label>
             <input type="text" placeholder="Bairro"
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
               value={formData.financialNeighborhood ?? ''}
               onChange={(e) => updateFormData({ financialNeighborhood: e.target.value })} />
           </div>
-          <div className="flex flex-col gap-2 md:col-span-5">
+          <div className="flex flex-col gap-2 md:col-span-4">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Cidade</label>
             <input type="text" placeholder="Cidade"
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
@@ -201,6 +179,13 @@ export default function Step3Address() {
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
               value={formData.financialState ?? ''}
               onChange={(e) => updateFormData({ financialState: e.target.value })} />
+          </div>
+          <div className="flex flex-col gap-2 md:col-span-2">
+            <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Cx. Postal</label>
+            <input type="text" placeholder="Caixa Postal"
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              value={formData.financialPoBox ?? ''}
+              onChange={(e) => updateFormData({ financialPoBox: e.target.value })} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-4">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Telefone</label>

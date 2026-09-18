@@ -69,19 +69,16 @@ export interface RegistrationPayload {
   cnpj?: string;
   companyName?: string;
   tradeName?: string;
-  openingDate?: string;
-  legalNature?: string;
+  commercialRegistry?: string;
   businessActivity?: string;
 
   // Step 3 - Principal
   zipCode?: string;
   street?: string;
-  number?: string;
-  complement?: string;
   neighborhood?: string;
   city?: string;
   state?: string;
-  country?: string;
+  poBox?: string;
 
   // Step 3 - Contatos
   contactPerson?: string;
@@ -89,7 +86,6 @@ export interface RegistrationPayload {
   mobilePhone?: string;
   email?: string;
   purchasingEmail?: string;
-  website?: string;
 
   // Step 3 - Endereço Financeiro
   financialContact?: string;
@@ -98,6 +94,7 @@ export interface RegistrationPayload {
   financialNeighborhood?: string;
   financialCity?: string;
   financialState?: string;
+  financialPoBox?: string;
   financialPhone?: string;
   financialMobilePhone?: string;
   financialEmail?: string;

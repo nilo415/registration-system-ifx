@@ -1577,22 +1577,20 @@
                     </tr>
                 </table>
 
-                <!-- FAIXA SUPERIOR: DATA À DIREITA E EMPRESA CONSULTADA À ESQUERDA -->
+                <!-- FAIXA SUPERIOR: EMPRESA CONSULTADA + DATA NA MESMA LINHA -->
                 <table class="section-table" style="margin-bottom: 3px;">
                     <tr>
+                        <td style="background-color: #FAFAFB; padding: 4px 8px; border: 0.5px solid #E1E4EA; width: 60%;">
+                            <span style="font-size: 8pt; font-weight: bold; color: #4b5563; margin-right: 6px;">Empresa:</span>
+                            <span style="font-size: 8.5pt; font-weight: bold; color: #111827;"
+                                  th:text="${ref['supplierCompanyName'] != null and !ref['supplierCompanyName'].isEmpty() ? ref['supplierCompanyName'] : (ref['empresa'] != null ? ref['empresa'] : '')}"></span>
+                        </td>
                         <td style="background-color: #FAFAFB; padding: 4px 8px; border: 0.5px solid #E1E4EA; text-align: right;">
                             <span style="font-size: 8pt; font-weight: bold; color: #1F2430;"
                                   th:text="${ref['dataExtenso'] != null ? ref['dataExtenso'] : 'Dourados-MS, ' + (ref['informacoesData'] != null ? ref['informacoesData'] : '')}">Dourados-MS</span>
                         </td>
                     </tr>
                 </table>
-
-                <!-- EMPRESA CONSULTADA (REFERÊNCIA COMERCIAL PREENCHIDA) -->
-                <div style="margin-bottom: 5px; padding: 5px 8px; background-color: #ffffff; border: 0.5px solid #E1E4EA; display: flex; align-items: center;">
-                    <span style="font-size: 8pt; font-weight: bold; color: #4b5563; margin-right: 6px;">Empresa:</span>
-                    <span style="font-size: 8.5pt; font-weight: bold; color: #111827;"
-                          th:text="${ref['supplierCompanyName'] != null and !ref['supplierCompanyName'].isEmpty() ? ref['supplierCompanyName'] : (ref['empresa'] != null ? ref['empresa'] : '')}"></span>
-                </div>
 
                 <!-- TEXTO INTRODUTÓRIO -->
                 <div style="font-size: 7.5pt; color: #374151; line-height: 1.4; margin-bottom: 5px; padding: 5px 8px; background-color: #f9fafb; border-left: 3px solid #C8102E;">
@@ -1628,114 +1626,195 @@
                 <!-- HISTÓRICO E CONDIÇÕES COMERCIAIS -->
                 <table class="section-table">
                     <tr class="section-header">
-                        <td colspan="5">Histórico e Condições Comerciais</td>
+                        <td colspan="4">Histórico e Condições Comerciais</td>
                     </tr>
-                    <!-- Linha 1: Cliente Desde, Maior Fatura, Última Fatura -->
+                    <!-- Linha 1: Produto / Serviço Fornecido e Cliente Desde -->
                     <tr>
-                        <td class="data-cell" style="width: 25%;" colspan="1">
+                        <td class="data-cell" colspan="3" style="width: 70%;">
+                            <div class="field-label">Produto / Serviço Fornecido</div>
+                            <div class="field-value"
+                                 th:text="${ref['produtoFornecido'] != null and !ref['produtoFornecido'].isEmpty() ? ref['produtoFornecido'] : 'NÃO INFORMADO.'}"></div>
+                        </td>
+                        <td class="data-cell" colspan="1" style="width: 30%;">
                             <div class="field-label">Cliente Desde</div>
                             <div class="field-value"
                                  th:text="${ref['clienteDesde'] != null and !ref['clienteDesde'].isEmpty() ? ref['clienteDesde'] : '-'}"></div>
                         </td>
-                        <td class="data-cell" style="width: 25%;" colspan="1">
+                    </tr>
+                    <!-- Linha 2: Maior Fatura e Última Fatura -->
+                    <tr>
+                        <td class="data-cell" style="width: 25%;">
                             <div class="field-label">Maior Fatura — Data</div>
                             <div class="field-value"
                                  th:text="${ref['maiorFaturaData'] != null and !ref['maiorFaturaData'].isEmpty() ? ref['maiorFaturaData'] : '-'}"></div>
                         </td>
-                        <td class="data-cell" style="width: 25%;" colspan="2">
+                        <td class="data-cell" style="width: 25%;">
                             <div class="field-label">Maior Fatura — Valor</div>
                             <div class="field-value"
                                  th:text="${ref['maiorFaturaValor'] != null and !ref['maiorFaturaValor'].isEmpty() ? 'R$ ' + ref['maiorFaturaValor'] : 'R$ 0,00'}"></div>
                         </td>
-                        <td class="data-cell" style="width: 25%;" colspan="1">
+                        <td class="data-cell" style="width: 25%;">
                             <div class="field-label">Última Fatura — Data</div>
                             <div class="field-value"
                                  th:text="${ref['ultimaFaturaData'] != null and !ref['ultimaFaturaData'].isEmpty() ? ref['ultimaFaturaData'] : '-'}"></div>
                         </td>
-                    </tr>
-                    <!-- Linha 2: Última Fatura Valor, Média Mensal, Débitos Vencidos, Débitos a Vencer, Limite Atual de Crédito -->
-                    <tr>
-                        <td class="data-cell" style="width: 20%;">
+                        <td class="data-cell" style="width: 25%;">
                             <div class="field-label">Última Fatura — Valor</div>
                             <div class="field-value"
                                  th:text="${ref['ultimaFaturaValor'] != null and !ref['ultimaFaturaValor'].isEmpty() ? 'R$ ' + ref['ultimaFaturaValor'] : 'R$ 0,00'}"></div>
                         </td>
-                        <td class="data-cell" style="width: 20%;">
+                    </tr>
+                    <!-- Linha 3: Média Mensal, Débitos Vencidos, Débitos a Vencer, Limite Atual de Crédito -->
+                    <tr>
+                        <td class="data-cell" style="width: 25%;">
                             <div class="field-label">Média Mensal</div>
                             <div class="field-value"
                                  th:text="${ref['mediasMensalValor'] != null and !ref['mediasMensalValor'].isEmpty() ? 'R$ ' + ref['mediasMensalValor'] : 'NÃO INFORMADO.'}"></div>
                         </td>
-                        <td class="data-cell" style="width: 20%;">
+                        <td class="data-cell" style="width: 25%;">
                             <div class="field-label">Débitos Vencidos</div>
                             <div class="field-value"
                                  th:text="${ref['debitosVencidos'] != null and !ref['debitosVencidos'].isEmpty() ? 'R$ ' + ref['debitosVencidos'] : 'R$ 0,00'}"></div>
                         </td>
-                        <td class="data-cell" style="width: 20%;">
+                        <td class="data-cell" style="width: 25%;">
                             <div class="field-label">Débitos a Vencer</div>
                             <div class="field-value"
                                  th:text="${ref['debitosVencer'] != null and !ref['debitosVencer'].isEmpty() ? 'R$ ' + ref['debitosVencer'] : 'R$ 0,00'}"></div>
                         </td>
-                        <td class="data-cell" style="width: 20%;">
+                        <td class="data-cell" style="width: 25%;">
                             <div class="field-label">Limite Atual de Crédito</div>
                             <div class="field-value"
                                  th:text="${ref['limiteCredito'] != null and !ref['limiteCredito'].isEmpty() ? 'R$ ' + ref['limiteCredito'] : 'NÃO INFORMADO.'}"></div>
                         </td>
                     </tr>
-                    <!-- Linha 3: Condição de Pagamento e Forma de Pagamento -->
+                    <!-- Linha 4: Condição de Pagamento e Forma de Pagamento -->
                     <tr>
-                        <td class="data-cell" colspan="2" style="width: 40%;">
+                        <td class="data-cell" colspan="2" style="width: 45%;">
                             <div class="field-label">Condição de Pagamento</div>
-                            <div style="font-size: 7.5pt; margin-top: 2px;">
-                                <span style="margin-right: 14px;" th:text="${ref['condicaoPagamento'] == 'avista' ? '( x ) à vista' : '(   ) à vista'}"></span>
-                                <span th:text="${ref['condicaoPagamento'] == 'aprazo' ? '( x ) à prazo' : '(   ) à prazo'}"></span>
-                                <span th:if="${ref['diasPrazo'] != null and !ref['diasPrazo'].isEmpty()}"
-                                      th:text="' ' + ${ref['diasPrazo']} + ' dias'"></span>
-                            </div>
+                            <table style="width: 100%; border: none; border-collapse: collapse; margin-top: 2px;">
+                                <tr>
+                                    <td style="border: none; padding: 0; white-space: nowrap; vertical-align: middle; width: 40%; text-align: left;">
+                                        <span class="chk-box" th:classappend="${ref['condicaoPagamento'] == 'avista'} ? ' chk-checked' : ''">
+                                            <th:block th:if="${ref['condicaoPagamento'] == 'avista'}">X</th:block>
+                                        </span>
+                                        <span style="font-size: 7.5pt; vertical-align: middle;">à vista</span>
+                                    </td>
+                                    <td style="border: none; padding: 0; white-space: nowrap; vertical-align: middle; width: 60%; text-align: left;">
+                                        <span class="chk-box" th:classappend="${ref['condicaoPagamento'] == 'aprazo'} ? ' chk-checked' : ''">
+                                            <th:block th:if="${ref['condicaoPagamento'] == 'aprazo'}">X</th:block>
+                                        </span>
+                                        <span style="font-size: 7.5pt; vertical-align: middle;">
+                                            à prazo
+                                            <th:block th:if="${ref['diasPrazo'] != null and !ref['diasPrazo'].isEmpty()}"
+                                                      th:text="|(${ref['diasPrazo']} dias)|"></th:block>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
-                        <td class="data-cell" colspan="3" style="width: 60%;">
+                        <td class="data-cell" colspan="2" style="width: 55%;">
                             <div class="field-label">Forma de Pagamento</div>
-                            <div style="font-size: 7.5pt; margin-top: 2px;">
-                                <span style="margin-right: 12px;" th:text="${ref['formaPagamento'] != null and ref['formaPagamento']['boleto'] == true ? '( x ) Boleto Banco' : '(   ) Boleto Banco'}"></span>
-                                <span style="margin-right: 12px;" th:text="${ref['formaPagamento'] != null and ref['formaPagamento']['deposito'] == true ? '( x ) Depósito C/C' : '(   ) Depósito C/C'}"></span>
-                                <span th:text="${ref['formaPagamento'] != null and ref['formaPagamento']['cheque'] == true ? '( x ) Cheque' : '(   ) Cheque'}"></span>
-                            </div>
+                            <table style="width: 100%; border: none; border-collapse: collapse; margin-top: 2px;">
+                                <tr>
+                                    <td style="border: none; padding: 0; white-space: nowrap; vertical-align: middle; width: 28%; text-align: left;">
+                                        <span class="chk-box" th:classappend="${ref['formaPagamento'] != null and ref['formaPagamento']['boleto'] == true} ? ' chk-checked' : ''">
+                                            <th:block th:if="${ref['formaPagamento'] != null and ref['formaPagamento']['boleto'] == true}">X</th:block>
+                                        </span>
+                                        <span style="font-size: 7.5pt; vertical-align: middle;">Boleto</span>
+                                    </td>
+                                    <td style="border: none; padding: 0; white-space: nowrap; vertical-align: middle; width: 46%; text-align: left;">
+                                        <span class="chk-box" th:classappend="${ref['formaPagamento'] != null and ref['formaPagamento']['deposito'] == true} ? ' chk-checked' : ''">
+                                            <th:block th:if="${ref['formaPagamento'] != null and ref['formaPagamento']['deposito'] == true}">X</th:block>
+                                        </span>
+                                        <span style="font-size: 7.5pt; vertical-align: middle;">Depósito C/C</span>
+                                    </td>
+                                    <td style="border: none; padding: 0; white-space: nowrap; vertical-align: middle; width: 26%; text-align: left;">
+                                        <span class="chk-box" th:classappend="${ref['formaPagamento'] != null and ref['formaPagamento']['cheque'] == true} ? ' chk-checked' : ''">
+                                            <th:block th:if="${ref['formaPagamento'] != null and ref['formaPagamento']['cheque'] == true}">X</th:block>
+                                        </span>
+                                        <span style="font-size: 7.5pt; vertical-align: middle;">Cheque</span>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
-                    <!-- Linha 4: Pontualidade e Pagamento em Cartório -->
+                    <!-- Linha 5: Pontualidade e Pagamento em Cartório -->
                     <tr>
-                        <td class="data-cell" colspan="2" style="width: 40%;">
+                        <td class="data-cell" colspan="2" style="width: 50%;">
                             <div class="field-label">Pagamentos</div>
-                            <div style="font-size: 7.5pt; margin-top: 2px;">
-                                <span style="margin-right: 14px;" th:text="${ref['pagamentoPontual'] == true ? '( x ) pontual' : '(   ) pontual'}"></span>
-                                <span th:text="${ref['pagamentoAtraso'] == true ? '( x ) com atraso' : '(   ) com atraso'}"></span>
-                                <span th:if="${ref['mediaAtraso'] != null and !ref['mediaAtraso'].isEmpty()}"
-                                      th:text="' Média atraso: ' + ${ref['mediaAtraso']} + ' dias'"></span>
-                            </div>
+                            <table style="width: 100%; border: none; border-collapse: collapse; margin-top: 2px;">
+                                <tr>
+                                    <td style="border: none; padding: 0; white-space: nowrap; vertical-align: middle; width: 35%; text-align: left;">
+                                        <span class="chk-box" th:classappend="${ref['pagamentoPontual'] == true} ? ' chk-checked' : ''">
+                                            <th:block th:if="${ref['pagamentoPontual'] == true}">X</th:block>
+                                        </span>
+                                        <span style="font-size: 7.5pt; vertical-align: middle;">Pontual</span>
+                                    </td>
+                                    <td style="border: none; padding: 0; white-space: nowrap; vertical-align: middle; width: 65%; text-align: left;">
+                                        <span class="chk-box" th:classappend="${ref['pagamentoAtraso'] == true} ? ' chk-checked' : ''">
+                                            <th:block th:if="${ref['pagamentoAtraso'] == true}">X</th:block>
+                                        </span>
+                                        <span style="font-size: 7.5pt; vertical-align: middle;">
+                                            Com atraso
+                                            <th:block th:if="${ref['mediaAtraso'] != null and !ref['mediaAtraso'].isEmpty()}"
+                                                      th:text="| (méd. ${ref['mediaAtraso']} dias)|"></th:block>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
-                        <td class="data-cell" colspan="3" style="width: 60%;">
+                        <td class="data-cell" colspan="2" style="width: 50%;">
                             <div class="field-label">Realizar Pagamento em Cartório</div>
-                            <div style="font-size: 7.5pt; margin-top: 2px;">
-                                <span th:if="${ref['pagamentoCartorio'] == 'sim'}">( x ) Sim &#160;&#160; (   ) Não</span>
-                                <span th:if="${ref['pagamentoCartorio'] == 'nao'}">(   ) Sim &#160;&#160; ( x ) Não</span>
-                                <span th:if="${ref['pagamentoCartorio'] != 'sim' and ref['pagamentoCartorio'] != 'nao'}">(   ) Sim &#160;&#160; (   ) Não &#160;&#160; NÃO INFORMADO.</span>
-                            </div>
+                            <table style="width: 100%; border: none; border-collapse: collapse; margin-top: 2px;">
+                                <tr>
+                                    <td style="border: none; padding: 0; white-space: nowrap; vertical-align: middle; width: 50%; text-align: left;">
+                                        <span class="chk-box" th:classappend="${ref['pagamentoCartorio'] == 'sim'} ? ' chk-checked' : ''">
+                                            <th:block th:if="${ref['pagamentoCartorio'] == 'sim'}">X</th:block>
+                                        </span>
+                                        <span style="font-size: 7.5pt; vertical-align: middle;">Sim</span>
+                                    </td>
+                                    <td style="border: none; padding: 0; white-space: nowrap; vertical-align: middle; width: 50%; text-align: left;">
+                                        <span class="chk-box" th:classappend="${ref['pagamentoCartorio'] == 'nao'} ? ' chk-checked' : ''">
+                                            <th:block th:if="${ref['pagamentoCartorio'] == 'nao'}">X</th:block>
+                                        </span>
+                                        <span style="font-size: 7.5pt; vertical-align: middle;">Não</span>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
-                    <!-- Linha 5: Conceito e Produto Fornecido -->
+                    <!-- Linha 6: Conceito -->
                     <tr>
-                        <td class="data-cell" colspan="2" style="width: 40%;">
+                        <td class="data-cell" colspan="4" style="width: 100%;">
                             <div class="field-label">Conceito</div>
-                            <div style="font-size: 7.5pt; margin-top: 2px;">
-                                <span style="margin-right: 8px;" th:text="${ref['conceito'] == 'otimo' ? '( x ) ótimo cliente' : '(   ) ótimo cliente'}"></span>
-                                <span style="margin-right: 8px;" th:text="${ref['conceito'] == 'bom' ? '( x ) bom cliente' : '(   ) bom cliente'}"></span>
-                                <span style="margin-right: 8px;" th:text="${ref['conceito'] == 'mediano' ? '( x ) cliente mediano' : '(   ) cliente mediano'}"></span>
-                                <span th:text="${ref['conceito'] == 'dificil' ? '( x ) cliente difícil' : '(   ) cliente difícil'}"></span>
-                            </div>
-                        </td>
-                        <td class="data-cell" colspan="3" style="width: 60%;">
-                            <div class="field-label">Produto / Serviço Fornecido</div>
-                            <div class="field-value"
-                                 th:text="${ref['produtoFornecido'] != null and !ref['produtoFornecido'].isEmpty() ? ref['produtoFornecido'] : 'NÃO INFORMADO.'}"></div>
+                            <table style="width: 100%; border: none; border-collapse: collapse; margin-top: 2px;">
+                                <tr>
+                                    <td style="border: none; padding: 0; white-space: nowrap; vertical-align: middle; width: 25%; text-align: center;">
+                                        <span class="chk-box" th:classappend="${ref['conceito'] == 'otimo'} ? ' chk-checked' : ''">
+                                            <th:block th:if="${ref['conceito'] == 'otimo'}">X</th:block>
+                                        </span>
+                                        <span style="font-size: 7.5pt; vertical-align: middle;">Ótimo</span>
+                                    </td>
+                                    <td style="border: none; padding: 0; white-space: nowrap; vertical-align: middle; width: 25%; text-align: center;">
+                                        <span class="chk-box" th:classappend="${ref['conceito'] == 'bom'} ? ' chk-checked' : ''">
+                                            <th:block th:if="${ref['conceito'] == 'bom'}">X</th:block>
+                                        </span>
+                                        <span style="font-size: 7.5pt; vertical-align: middle;">Bom</span>
+                                    </td>
+                                    <td style="border: none; padding: 0; white-space: nowrap; vertical-align: middle; width: 25%; text-align: center;">
+                                        <span class="chk-box" th:classappend="${ref['conceito'] == 'mediano'} ? ' chk-checked' : ''">
+                                            <th:block th:if="${ref['conceito'] == 'mediano'}">X</th:block>
+                                        </span>
+                                        <span style="font-size: 7.5pt; vertical-align: middle;">Mediano</span>
+                                    </td>
+                                    <td style="border: none; padding: 0; white-space: nowrap; vertical-align: middle; width: 25%; text-align: center;">
+                                        <span class="chk-box" th:classappend="${ref['conceito'] == 'dificil'} ? ' chk-checked' : ''">
+                                            <th:block th:if="${ref['conceito'] == 'dificil'}">X</th:block>
+                                        </span>
+                                        <span style="font-size: 7.5pt; vertical-align: middle;">Difícil</span>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
                 </table>

@@ -15,19 +15,16 @@ const initialFormData: RegistrationPayload = {
   cnpj: '',
   companyName: '',
   tradeName: '',
-  openingDate: '',
-  legalNature: '',
+  commercialRegistry: '',
   businessActivity: '',
 
   // Step 3 - Principal
   zipCode: '',
   street: '',
-  number: '',
-  complement: '',
   neighborhood: '',
   city: '',
   state: '',
-  country: '',
+  poBox: '',
 
   // Step 3 - Contatos
   contactPerson: '',
@@ -35,7 +32,6 @@ const initialFormData: RegistrationPayload = {
   mobilePhone: '',
   email: '',
   purchasingEmail: '',
-  website: '',
 
   // Step 3 - Endereço Financeiro
   financialContact: '',
@@ -44,6 +40,7 @@ const initialFormData: RegistrationPayload = {
   financialNeighborhood: '',
   financialCity: '',
   financialState: '',
+  financialPoBox: '',
   financialPhone: '',
   financialMobilePhone: '',
   financialEmail: '',
