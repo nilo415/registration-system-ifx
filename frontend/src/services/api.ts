@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { sanitizePayloadForBackend } from '../utils/formatters';
 
 export interface Representative {
   fullName?: string;
@@ -66,11 +67,23 @@ export interface CommercialReference {
 
 export interface RegistrationPayload {
   operationType?: string; // e.g., 'VENDA_A_PRAZO', 'VENDA_A_VISTA', etc.
+  salesRepresentative?: string;
+  representante?: string;
+  preparedBy?: string;
+  informacoesObtidasPor?: string;
+
   cnpj?: string;
   companyName?: string;
   tradeName?: string;
   commercialRegistry?: string;
   businessActivity?: string;
+  segmentoMercado?: string;
+  clientType?: string;
+  tipoCliente?: string;
+  clientGroup?: string;
+  grupoCliente?: string;
+  tesDefault?: string;
+  tesPadrao?: string;
 
   // Step 3 - Principal
   zipCode?: string;
@@ -155,7 +168,8 @@ export const fetchCurrentRegistration = async (): Promise<RegistrationPayload | 
 
 export const saveDraft = async (payload: RegistrationPayload) => {
   try {
-    const response = await api.post('/draft', payload);
+    const sanitized = sanitizePayloadForBackend(payload);
+    const response = await api.post('/draft', sanitized);
     return response.data;
   } catch (error) {
     console.error('Erro ao salvar rascunho:', error);
@@ -165,7 +179,8 @@ export const saveDraft = async (payload: RegistrationPayload) => {
 
 export const finalizeRegistration = async (payload: RegistrationPayload) => {
   try {
-    const response = await api.post('/finalize', payload);
+    const sanitized = sanitizePayloadForBackend(payload);
+    const response = await api.post('/finalize', sanitized);
     return response.data;
   } catch (error) {
     console.error('Erro ao finalizar cadastro:', error);
@@ -191,4 +206,37 @@ export const uploadFile = async (file: File, cnpj: string) => {
   }
 };
 
+export interface FormOption {
+  id: number;
+  category: string;
+  label: string;
+}
+
+const optionsApi = axios.create({
+  baseURL: 'http://localhost:8080/api/options',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+export const fetchOptionsByCategory = async (category: string): Promise<FormOption[]> => {
+  const response = await optionsApi.get(`/${category}`);
+  return response.data;
+};
+
+export const fetchAllOptions = async (): Promise<FormOption[]> => {
+  const response = await optionsApi.get('');
+  return response.data;
+};
+
+export const addOptionByCategory = async (category: string, label: string): Promise<FormOption> => {
+  const response = await optionsApi.post(`/${category}`, { label });
+  return response.data;
+};
+
+export const deleteOptionById = async (id: number): Promise<void> => {
+  await optionsApi.delete(`/${id}`);
+};
+
 export default api;
+

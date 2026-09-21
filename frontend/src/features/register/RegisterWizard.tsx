@@ -8,7 +8,6 @@ import Step2Company from './steps/Step2Company';
 import Step3Address from './steps/Step3Address';
 import Step4Tax from './steps/Step4Tax';
 import Step5References from './steps/Step5References';
-import Step6Documents from './steps/Step6Documents';
 
 const STEPS = [
   'OPERAÇÃO',
@@ -16,7 +15,6 @@ const STEPS = [
   'ENDEREÇO',
   'FISCAL',
   'REFERÊNCIAS',
-  'DOCUMENTOS',
 ];
 
 const STEP_TITLES = [
@@ -25,7 +23,6 @@ const STEP_TITLES = [
   'Endereço',
   'Dados Fiscais',
   'Referências',
-  'Documentos',
 ];
 
 interface Toast {
@@ -247,7 +244,6 @@ export default function RegisterWizard() {
           <div style={{ display: currentStep === 2 ? 'block' : 'none' }}><Step3Address /></div>
           <div style={{ display: currentStep === 3 ? 'block' : 'none' }}><Step4Tax /></div>
           <div style={{ display: currentStep === 4 ? 'block' : 'none' }}><Step5References /></div>
-          <div style={{ display: currentStep === 5 ? 'block' : 'none' }}><Step6Documents /></div>
         </div>
 
         <div className="w-full h-px" style={{ background: 'var(--border-color)' }} />
@@ -286,7 +282,7 @@ export default function RegisterWizard() {
               Cadastro Finalizado com Sucesso!
             </h3>
             <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-muted)' }}>
-              Os dados foram registrados no servidor local e o documento PDF (ficha cadastral) foi gerado na pasta de armazenamento.
+              {finalizedCnpj ? `Empresa CNPJ: ${finalizedCnpj}. Os` : 'Os'} dados foram registrados no servidor local e o documento PDF (ficha cadastral) foi gerado na pasta de armazenamento.
             </p>
 
             <div className="w-full flex flex-col sm:flex-row gap-3">
@@ -300,14 +296,14 @@ export default function RegisterWizard() {
               </button>
               <button
                 type="button"
-                onClick={() => setShowSuccessModal(false)}
+                onClick={handleNewRegistration}
                 className="py-3 px-5 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
                 style={{
                   background: 'var(--tertiary)',
                   color: 'var(--text-main)',
                 }}
               >
-                Fechar
+                Novo Cadastro
               </button>
             </div>
           </div>

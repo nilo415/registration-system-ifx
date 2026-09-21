@@ -1,7 +1,39 @@
+import { useEffect, useState } from 'react';
 import { useRegistration } from '../../../contexts/RegistrationContext';
+import { fetchOptionsByCategory, type FormOption } from '../../../services/api';
 
 export default function Step2Company() {
   const { formData, updateFormData } = useRegistration();
+  const [tipoOptions, setTipoOptions] = useState<FormOption[]>([]);
+  const [grupoOptions, setGrupoOptions] = useState<FormOption[]>([]);
+  const [segmentoOptions, setSegmentoOptions] = useState<FormOption[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadOptions = async () => {
+      try {
+        const [tipos, grupos, segmentos] = await Promise.all([
+          fetchOptionsByCategory('tipoCliente'),
+          fetchOptionsByCategory('grupoCliente'),
+          fetchOptionsByCategory('segmentoMercado'),
+        ]);
+        if (isMounted) {
+          setTipoOptions(tipos);
+          setGrupoOptions(grupos);
+          setSegmentoOptions(segmentos);
+        }
+      } catch (err) {
+        console.error('Erro ao carregar opções de cliente:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    loadOptions();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const inputStyle = {
     background: 'transparent',
@@ -9,7 +41,17 @@ export default function Step2Company() {
     border: '1px solid var(--border-color)',
   };
 
+  const optionItemStyle = {
+    background: 'var(--bg-card, #ffffff)',
+    color: 'var(--text-main, #1f2430)',
+  };
+
   const labelStyle = { color: 'var(--text-main)' };
+
+  const currentTipo = formData.clientType || formData.tipoCliente || '';
+  const currentGrupo = formData.clientGroup || formData.grupoCliente || '';
+  const currentSegmento = formData.businessActivity || formData.segmentoMercado || '';
+  const currentTes = formData.tesDefault ?? formData.tesPadrao ?? '';
 
   return (
     <div className="flex flex-col md:flex-row gap-8">
@@ -56,7 +98,7 @@ export default function Step2Company() {
       {/* ── Right Panel: Form Fields ── */}
       <div className="w-full md:w-2/3 flex flex-col gap-6">
 
-        {/* CNPJ Row */}
+        {/* CNPJ Row (Entrada livre sem máscara) */}
         <div className="flex flex-col gap-2">
           <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
             CNPJ <span className="text-red-500">*</span>
@@ -73,7 +115,7 @@ export default function Step2Company() {
               </div>
               <input
                 type="text"
-                placeholder="00.000.000/0000-00"
+                placeholder="CNPJ da Empresa (sem máscara)"
                 className="w-full h-10 pl-10 pr-3 rounded-md text-sm outline-none transition-colors"
                 style={inputStyle}
                 value={formData.cnpj ?? ''}
@@ -169,22 +211,116 @@ export default function Step2Company() {
           </div>
         </div>
 
-        {/* Segmento (CNAE) */}
+        {/* Segmento de Mercado (CNAE) */}
         <div className="flex flex-col gap-2">
           <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
             Segmento de Mercado (CNAE)
           </label>
+          <select
+            className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors cursor-pointer"
+            style={inputStyle}
+            value={currentSegmento}
+            onChange={(e) =>
+              updateFormData({
+                businessActivity: e.target.value,
+                segmentoMercado: e.target.value,
+              })
+            }
+          >
+            <option value="" style={optionItemStyle}>
+              {loading ? 'Carregando...' : 'Selecione o Segmento de Mercado...'}
+            </option>
+            {currentSegmento && !segmentoOptions.some((o) => o.label === currentSegmento) && (
+              <option value={currentSegmento} style={optionItemStyle}>
+                {currentSegmento} (atual)
+              </option>
+            )}
+            {segmentoOptions.map((opt) => (
+              <option key={opt.id} value={opt.label} style={optionItemStyle}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* TES Padrão */}
+        <div className="flex flex-col gap-2">
+          <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
+            TES Padrão
+          </label>
           <input
             type="text"
-            placeholder="Ex: Comércio Varejista"
+            placeholder="Digite o código da TES padrão (ex: 501, 502...)"
             className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
             style={inputStyle}
-            value={formData.businessActivity ?? ''}
-            onChange={(e) => updateFormData({ businessActivity: e.target.value })}
+            value={currentTes}
+            onChange={(e) => updateFormData({ tesDefault: e.target.value, tesPadrao: e.target.value })}
           />
+        </div>
+
+        {/* Tipo de Cliente & Grupo de Cliente */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {/* Tipo de Cliente */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
+                Tipo de Cliente
+              </label>
+            </div>
+            <select
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors cursor-pointer"
+              style={inputStyle}
+              value={tipoOptions.some((o) => o.label === currentTipo) ? currentTipo : ''}
+              onChange={(e) =>
+                updateFormData({
+                  clientType: e.target.value,
+                  tipoCliente: e.target.value,
+                })
+              }
+            >
+              <option value="" style={optionItemStyle}>
+                {loading ? 'Carregando...' : 'Selecione o Tipo de Cliente...'}
+              </option>
+              {tipoOptions.map((opt) => (
+                <option key={opt.id} value={opt.label} style={optionItemStyle}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Grupo de Cliente */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
+                Grupo de Cliente
+              </label>
+            </div>
+            <select
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors cursor-pointer"
+              style={inputStyle}
+              value={grupoOptions.some((o) => o.label === currentGrupo) ? currentGrupo : ''}
+              onChange={(e) =>
+                updateFormData({
+                  clientGroup: e.target.value,
+                  grupoCliente: e.target.value,
+                })
+              }
+            >
+              <option value="" style={optionItemStyle}>
+                {loading ? 'Carregando...' : 'Selecione o Grupo de Cliente...'}
+              </option>
+              {grupoOptions.map((opt) => (
+                <option key={opt.id} value={opt.label} style={optionItemStyle}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
       </div>
     </div>
   );
 }
+

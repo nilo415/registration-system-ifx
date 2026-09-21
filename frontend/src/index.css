@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
 
 @theme {
     /* Brand Colors */
@@ -40,6 +41,12 @@
     /* Light gray/blue main background */
     --bg-surface: #FFFFFF;
     /* White for cards */
+    --bg-card: #FFFFFF;
+    /* Card background */
+    --bg-card-header: #F8FAFC;
+    /* Card header/item subtle background */
+    --bg-item: #F1F5F9;
+    /* List item background */
 
     /* Sidebar */
     --bg-sidebar: #F4F7FC;
@@ -73,8 +80,14 @@
     --secondary: #60A5FA;
     --tertiary: #93C5FD;
 
-    --bg-base: #09090B;
-    --bg-surface: #09090B;
+    --bg-base: #0F0F11;
+    --bg-surface: #0F0F11;
+    --bg-card: #18181B;
+    /* Card background in dark mode */
+    --bg-card-header: #1C1C1F;
+    /* Card header/subtle area in dark */
+    --bg-item: #27272A;
+    /* List item background in dark */
 
     /* Sidebar */
     --bg-sidebar: #18181B;

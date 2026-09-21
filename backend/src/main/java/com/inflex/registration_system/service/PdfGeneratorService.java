@@ -75,6 +75,17 @@ public class PdfGeneratorService {
             payload.setPreparedAt(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         }
 
+        // Formatação visual dos dados principais
+        if (payload.getCnpj() != null) payload.setCnpj(formatCnpj(payload.getCnpj()));
+        if (payload.getZipCode() != null) payload.setZipCode(formatCep(payload.getZipCode()));
+        if (payload.getFinancialZipCode() != null) payload.setFinancialZipCode(formatCep(payload.getFinancialZipCode()));
+        if (payload.getDeliveryZipCode() != null) payload.setDeliveryZipCode(formatCep(payload.getDeliveryZipCode()));
+        if (payload.getPhone() != null) payload.setPhone(formatPhone(payload.getPhone()));
+        if (payload.getMobilePhone() != null) payload.setMobilePhone(formatPhone(payload.getMobilePhone()));
+        if (payload.getFinancialPhone() != null) payload.setFinancialPhone(formatPhone(payload.getFinancialPhone()));
+        if (payload.getFinancialMobilePhone() != null) payload.setFinancialMobilePhone(formatPhone(payload.getFinancialMobilePhone()));
+        if (payload.getDeliveryPhone() != null) payload.setDeliveryPhone(formatPhone(payload.getDeliveryPhone()));
+
         // Mapear propriedades bancárias vindas em português do formulário
         if (payload.getBankReferences() != null) {
             for (Map<String, Object> bank : payload.getBankReferences()) {
@@ -134,6 +145,12 @@ public class PdfGeneratorService {
                 if (!bank.containsKey("dataExtenso") || bank.get("dataExtenso") == null) {
                     bank.put("dataExtenso", "Dourados-MS, " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                 }
+
+                // Formatações visuais dos dados bancários
+                bank.put("cnpj", formatCnpj(bank.get("cnpj")));
+                bank.put("phone", formatPhone(bank.get("phone")));
+                bank.put("fone", formatPhone(bank.get("fone")));
+                bank.put("informacoesData", formatDate(bank.get("informacoesData")));
             }
         }
 
@@ -208,7 +225,89 @@ public class PdfGeneratorService {
                     resp = ref.get("empresa");
                 }
                 ref.put("responsavelInfo", resp != null ? resp.toString() : "Responsável");
+
+                // Formatações visuais dos dados comerciais
+                ref.put("cnpj", formatCnpj(ref.get("cnpj")));
+                ref.put("phone", formatPhone(ref.get("phone")));
+                ref.put("clienteDesde", formatDate(ref.get("clienteDesde")));
+                ref.put("maiorFaturaData", formatDate(ref.get("maiorFaturaData")));
+                ref.put("ultimaFaturaData", formatDate(ref.get("ultimaFaturaData")));
+                ref.put("informacoesData", formatDate(ref.get("informacoesData")));
+                ref.put("mediasMensalValor", formatCurrency(ref.get("mediasMensalValor")));
+                ref.put("maiorFaturaValor", formatCurrency(ref.get("maiorFaturaValor")));
+                ref.put("ultimaFaturaValor", formatCurrency(ref.get("ultimaFaturaValor")));
+                ref.put("debitosVencidos", formatCurrency(ref.get("debitosVencidos")));
+                ref.put("debitosVencer", formatCurrency(ref.get("debitosVencer")));
+                ref.put("limiteCredito", formatCurrency(ref.get("limiteCredito")));
+                ref.put("highestInvoice", ref.get("maiorFaturaValor"));
+                ref.put("monthlyAverage", ref.get("mediasMensalValor"));
             }
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Formatting Helpers for PDF Rendering
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public static String formatCnpj(Object val) {
+        if (val == null) return "";
+        String digits = val.toString().replaceAll("\\D", "");
+        if (digits.length() == 14) {
+            return digits.substring(0, 2) + "." + digits.substring(2, 5) + "." +
+                   digits.substring(5, 8) + "/" + digits.substring(8, 12) + "-" +
+                   digits.substring(12);
+        }
+        return val.toString();
+    }
+
+    public static String formatCep(Object val) {
+        if (val == null) return "";
+        String digits = val.toString().replaceAll("\\D", "");
+        if (digits.length() == 8) {
+            return digits.substring(0, 5) + "-" + digits.substring(5);
+        }
+        return val.toString();
+    }
+
+    public static String formatPhone(Object val) {
+        if (val == null) return "";
+        String digits = val.toString().replaceAll("\\D", "");
+        if (digits.length() == 10) {
+            return "(" + digits.substring(0, 2) + ") " + digits.substring(2, 6) + "-" + digits.substring(6);
+        } else if (digits.length() == 11) {
+            return "(" + digits.substring(0, 2) + ") " + digits.substring(2, 7) + "-" + digits.substring(7);
+        }
+        return val.toString();
+    }
+
+    public static String formatDate(Object val) {
+        if (val == null) return "";
+        String str = val.toString().trim();
+        if (str.matches("^\\d{4}-\\d{2}-\\d{2}.*")) {
+            String[] parts = str.substring(0, 10).split("-");
+            return parts[2] + "/" + parts[1] + "/" + parts[0];
+        }
+        String digits = str.replaceAll("\\D", "");
+        if (digits.length() == 8) {
+            return digits.substring(0, 2) + "/" + digits.substring(2, 4) + "/" + digits.substring(4);
+        }
+        return str;
+    }
+
+    public static String formatCurrency(Object val) {
+        if (val == null) return "0,00";
+        String s = val.toString().trim();
+        if (s.isEmpty()) return "0,00";
+        if (s.contains(",")) return s;
+        String digits = s.replaceAll("\\D", "");
+        if (digits.isEmpty()) return "0,00";
+        try {
+            long cents = Long.parseLong(digits);
+            long reals = cents / 100;
+            long remCents = cents % 100;
+            return String.format(Locale.GERMAN, "%,d,%02d", reals, remCents);
+        } catch (Exception e) {
+            return s;
         }
     }
 

@@ -1,5 +1,6 @@
 import { useRegistration } from '../../../contexts/RegistrationContext';
 
+
 export default function Step3Address() {
   const { formData, updateFormData } = useRegistration();
 

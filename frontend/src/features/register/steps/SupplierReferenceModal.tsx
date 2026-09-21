@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { formatDate, formatCurrency } from '../../../utils/formatters';
 
 interface SupplierReferenceModalProps {
   onClose: () => void;
@@ -68,8 +69,18 @@ const defaultForm: Omit<SupplierReference, 'id'> = {
 export default function SupplierReferenceModal({ onClose, onAdd, initialData }: SupplierReferenceModalProps) {
   const [form, setForm] = useState<Omit<SupplierReference, 'id'>>({
     ...defaultForm,
-    informacoesData: new Date().toISOString().split('T')[0],
     ...initialData,
+    cnpj: initialData?.cnpj || '',
+    clienteDesde: formatDate(initialData?.clienteDesde || ''),
+    maiorFaturaData: formatDate(initialData?.maiorFaturaData || ''),
+    ultimaFaturaData: formatDate(initialData?.ultimaFaturaData || ''),
+    informacoesData: formatDate(initialData?.informacoesData) || formatDate(new Date().toISOString()),
+    mediasMensalValor: formatCurrency(initialData?.mediasMensalValor || ''),
+    maiorFaturaValor: formatCurrency(initialData?.maiorFaturaValor || ''),
+    ultimaFaturaValor: formatCurrency(initialData?.ultimaFaturaValor || ''),
+    debitosVencidos: formatCurrency(initialData?.debitosVencidos || ''),
+    debitosVencer: formatCurrency(initialData?.debitosVencer || ''),
+    limiteCredito: formatCurrency(initialData?.limiteCredito || ''),
   });
 
   const inputStyle = {
@@ -219,38 +230,38 @@ export default function SupplierReferenceModal({ onClose, onAdd, initialData }: 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '12px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={labelStyle}>Cliente Desde</label>
-                <input type="date" value={form.clienteDesde}
-                  onChange={(e) => handleChange('clienteDesde', e.target.value)}
+                <input type="text" placeholder="dd/mm/aaaa" value={formatDate(form.clienteDesde)}
+                  onChange={(e) => handleChange('clienteDesde', formatDate(e.target.value))}
                   className="w-full h-10 px-3 rounded-md text-sm outline-none" style={inputStyle} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={labelStyle}>Média Mensal (R$)</label>
-                <input type="text" placeholder="0,00" value={form.mediasMensalValor}
-                  onChange={(e) => handleChange('mediasMensalValor', e.target.value)}
+                <input type="text" placeholder="0,00" value={formatCurrency(form.mediasMensalValor)}
+                  onChange={(e) => handleChange('mediasMensalValor', formatCurrency(e.target.value))}
                   className="w-full h-10 px-3 rounded-md text-sm outline-none" style={inputStyle} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={labelStyle}>Maior Fatura — Data</label>
-                <input type="date" value={form.maiorFaturaData}
-                  onChange={(e) => handleChange('maiorFaturaData', e.target.value)}
+                <input type="text" placeholder="dd/mm/aaaa" value={formatDate(form.maiorFaturaData)}
+                  onChange={(e) => handleChange('maiorFaturaData', formatDate(e.target.value))}
                   className="w-full h-10 px-3 rounded-md text-sm outline-none" style={inputStyle} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={labelStyle}>Maior Fatura — Valor (R$)</label>
-                <input type="text" placeholder="0,00" value={form.maiorFaturaValor}
-                  onChange={(e) => handleChange('maiorFaturaValor', e.target.value)}
+                <input type="text" placeholder="0,00" value={formatCurrency(form.maiorFaturaValor)}
+                  onChange={(e) => handleChange('maiorFaturaValor', formatCurrency(e.target.value))}
                   className="w-full h-10 px-3 rounded-md text-sm outline-none" style={inputStyle} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={labelStyle}>Última Fatura — Data</label>
-                <input type="date" value={form.ultimaFaturaData}
-                  onChange={(e) => handleChange('ultimaFaturaData', e.target.value)}
+                <input type="text" placeholder="dd/mm/aaaa" value={formatDate(form.ultimaFaturaData)}
+                  onChange={(e) => handleChange('ultimaFaturaData', formatDate(e.target.value))}
                   className="w-full h-10 px-3 rounded-md text-sm outline-none" style={inputStyle} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={labelStyle}>Última Fatura — Valor (R$)</label>
-                <input type="text" placeholder="0,00" value={form.ultimaFaturaValor}
-                  onChange={(e) => handleChange('ultimaFaturaValor', e.target.value)}
+                <input type="text" placeholder="0,00" value={formatCurrency(form.ultimaFaturaValor)}
+                  onChange={(e) => handleChange('ultimaFaturaValor', formatCurrency(e.target.value))}
                   className="w-full h-10 px-3 rounded-md text-sm outline-none" style={inputStyle} />
               </div>
             </div>
@@ -340,20 +351,20 @@ export default function SupplierReferenceModal({ onClose, onAdd, initialData }: 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginTop: '12px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={labelStyle}>Débitos Vencidos (R$)</label>
-                <input type="text" placeholder="0,00" value={form.debitosVencidos}
-                  onChange={(e) => handleChange('debitosVencidos', e.target.value)}
+                <input type="text" placeholder="0,00" value={formatCurrency(form.debitosVencidos)}
+                  onChange={(e) => handleChange('debitosVencidos', formatCurrency(e.target.value))}
                   className="w-full h-10 px-3 rounded-md text-sm outline-none" style={inputStyle} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={labelStyle}>Débitos a Vencer (R$)</label>
-                <input type="text" placeholder="0,00" value={form.debitosVencer}
-                  onChange={(e) => handleChange('debitosVencer', e.target.value)}
+                <input type="text" placeholder="0,00" value={formatCurrency(form.debitosVencer)}
+                  onChange={(e) => handleChange('debitosVencer', formatCurrency(e.target.value))}
                   className="w-full h-10 px-3 rounded-md text-sm outline-none" style={inputStyle} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={labelStyle}>Limite de Crédito (R$)</label>
-                <input type="text" placeholder="0,00" value={form.limiteCredito}
-                  onChange={(e) => handleChange('limiteCredito', e.target.value)}
+                <input type="text" placeholder="0,00" value={formatCurrency(form.limiteCredito)}
+                  onChange={(e) => handleChange('limiteCredito', formatCurrency(e.target.value))}
                   className="w-full h-10 px-3 rounded-md text-sm outline-none" style={inputStyle} />
               </div>
             </div>
@@ -392,8 +403,8 @@ export default function SupplierReferenceModal({ onClose, onAdd, initialData }: 
           {/* Informações coletadas em */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label style={labelStyle}>Informações coletadas em</label>
-            <input type="date" value={form.informacoesData}
-              onChange={(e) => handleChange('informacoesData', e.target.value)}
+            <input type="text" placeholder="dd/mm/aaaa" value={formatDate(form.informacoesData)}
+              onChange={(e) => handleChange('informacoesData', formatDate(e.target.value))}
               className="w-full h-10 px-3 rounded-md text-sm outline-none" style={inputStyle} />
           </div>
         </div>

@@ -12,11 +12,16 @@ const RegistrationContext = createContext<RegistrationContextProps | undefined>(
 
 const initialFormData: RegistrationPayload = {
   operationType: '',
+  salesRepresentative: '',
+  preparedBy: '',
   cnpj: '',
   companyName: '',
   tradeName: '',
   commercialRegistry: '',
   businessActivity: '',
+  clientType: '',
+  clientGroup: '',
+  tesDefault: '',
 
   // Step 3 - Principal
   zipCode: '',

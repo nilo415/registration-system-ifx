@@ -1,5 +1,6 @@
 package com.inflex.registration_system.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
@@ -32,9 +33,16 @@ public class RegistrationPayloadDTO {
     private String tradeName;
     private String openingDate;
     private String legalNature;
+
+    @JsonAlias({"segmentoMercado", "segmento_mercado"})
     private String businessActivity;        // CNAE code / description
+
     private String commercialRegistry;     // Junta Comercial
+
+    @JsonAlias({"tipoCliente", "tipo_cliente"})
     private String clientType;             // Tipo de cliente
+
+    @JsonAlias({"grupoCliente", "grupo_cliente"})
     private String clientGroup;            // Grupo de clientes
 
     // ── Step 2 – Address ───────────────────────────────────────────────────
@@ -90,7 +98,10 @@ public class RegistrationPayloadDTO {
     private String suframaNumber;
     private Boolean cdiIncentive = false;
     private Boolean requiresPurchaseOrder = false;
+
+    @JsonAlias({"tesPadrao", "tes_padrao"})
     private String tesDefault;
+
     private String creditLimit;
     private String creditAnalysis;
 
@@ -114,7 +125,10 @@ public class RegistrationPayloadDTO {
     private List<String> documentFileNames = new ArrayList<>();
 
     // ── Approvals & Signatures ─────────────────────────────────────────────
+    @JsonAlias({"representante", "representante_vendas"})
     private String salesRepresentative;
+
+    @JsonAlias({"informacoesObtidasPor", "informacoes_obtidas_por"})
     private String preparedBy;
     private String preparedAt;
     private String preparedAtDate;

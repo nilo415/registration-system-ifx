@@ -7,8 +7,6 @@ export default function Step5References() {
   const { formData, updateFormData } = useRegistration();
   const [showBankModal, setShowBankModal] = useState(false);
   const [showSupplierModal, setShowSupplierModal] = useState(false);
-  const [printingBankId, setPrintingBankId] = useState<string | null>(null);
-  const [printingSupplierId, setPrintingSupplierId] = useState<string | null>(null);
 
   // Read lists from global context (cast to local types)
   const banks = (formData.bankReferences ?? []) as BankReference[];
@@ -38,66 +36,7 @@ export default function Step5References() {
   };
 
   const supplierInitialData: Partial<SupplierReference> = {
-    informacoesData: new Date().toISOString().split('T')[0],
-  };
-
-  // Gera e abre o PDF completo (capa + ficha + páginas bancárias + páginas comerciais) via /preview-pdf
-  const handlePrintBank = async (_bank: BankReference) => {
-    setPrintingBankId(_bank.id);
-    try {
-      const response = await fetch('http://localhost:8080/api/registration/preview-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erro ao gerar PDF: ${response.status}`);
-      }
-
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const win = window.open(url, '_blank');
-      if (win) {
-        win.addEventListener('load', () => {
-          win.print();
-        });
-      }
-    } catch (err) {
-      console.error('Falha ao gerar PDF bancário:', err);
-      alert('Não foi possível gerar o PDF. Verifique se o servidor está rodando.');
-    } finally {
-      setPrintingBankId(null);
-    }
-  };
-
-  const handlePrintSupplier = async (supplier: SupplierReference) => {
-    setPrintingSupplierId(supplier.id);
-    try {
-      const response = await fetch('http://localhost:8080/api/registration/preview-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erro ao gerar PDF: ${response.status}`);
-      }
-
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const win = window.open(url, '_blank');
-      if (win) {
-        win.addEventListener('load', () => {
-          win.print();
-        });
-      }
-    } catch (err) {
-      console.error('Falha ao gerar PDF comercial:', err);
-      alert('Não foi possível gerar o PDF. Verifique se o servidor está rodando.');
-    } finally {
-      setPrintingSupplierId(null);
-    }
+    informacoesData: '',
   };
 
   const cardStyle = {
@@ -153,9 +92,6 @@ export default function Step5References() {
 
   return (
     <div style={{ display: 'flex', gap: '24px' }}>
-      {/* Spinner keyframes */}
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-
       {/* ── Left Column: Lists ── */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
@@ -230,44 +166,8 @@ export default function Step5References() {
                     </p>
                   </div>
 
-                  {/* Actions */}
+                  {/* Actions — delete only */}
                   <div style={{ display: 'flex', gap: '2px', flexShrink: 0 }}>
-                    {/* Print button */}
-                    <button
-                      style={{
-                        ...iconBtnStyle,
-                        color: printingBankId === bank.id ? 'var(--primary)' : 'var(--text-muted)',
-                      }}
-                      title="Gerar PDF completo e imprimir"
-                      disabled={printingBankId === bank.id}
-                      onClick={() => handlePrintBank(bank)}
-                      onMouseOver={(e) => {
-                        if (printingBankId !== bank.id) {
-                          (e.currentTarget as HTMLButtonElement).style.color = 'var(--primary)';
-                          (e.currentTarget as HTMLButtonElement).style.background = 'rgba(200,16,46,0.08)';
-                        }
-                      }}
-                      onMouseOut={(e) => {
-                        if (printingBankId !== bank.id) {
-                          (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)';
-                          (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                        }
-                      }}
-                    >
-                      {printingBankId === bank.id ? (
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
-                          <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                        </svg>
-                      ) : (
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="6 9 6 2 18 2 18 9" />
-                          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                          <rect x="6" y="14" width="12" height="8" />
-                        </svg>
-                      )}
-                    </button>
-
-                    {/* Remove button */}
                     <button
                       style={iconBtnStyle}
                       title="Remover banco"
@@ -308,7 +208,7 @@ export default function Step5References() {
                 </svg>
               </div>
               <span style={{ color: 'var(--text-main)', fontWeight: 700, fontSize: '14px' }}>
-                Referências Comerciais
+                Ref. Comerciais
               </span>
             </div>
             <button
@@ -320,14 +220,14 @@ export default function Step5References() {
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
               </svg>
-              Adicionar Fornecedor
+              Adicionar Ref. Comercial
             </button>
           </div>
 
           {suppliers.length === 0 ? (
             <div style={{ padding: '28px 16px', textAlign: 'center' }}>
               <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
-                Nenhum fornecedor adicionado ainda.
+                Nenhuma referência comercial adicionada ainda.
               </p>
             </div>
           ) : (
@@ -361,45 +261,10 @@ export default function Step5References() {
                     </p>
                   </div>
                   <div style={{ display: 'flex', gap: '2px', flexShrink: 0 }}>
-                    {/* Print button */}
-                    <button
-                      style={{
-                        ...iconBtnStyle,
-                        color: printingSupplierId === supplier.id ? 'var(--primary)' : 'var(--text-muted)',
-                      }}
-                      title="Gerar PDF completo e imprimir"
-                      disabled={printingSupplierId === supplier.id}
-                      onClick={() => handlePrintSupplier(supplier)}
-                      onMouseOver={(e) => {
-                        if (printingSupplierId !== supplier.id) {
-                          (e.currentTarget as HTMLButtonElement).style.color = 'var(--primary)';
-                          (e.currentTarget as HTMLButtonElement).style.background = 'rgba(200,16,46,0.08)';
-                        }
-                      }}
-                      onMouseOut={(e) => {
-                        if (printingSupplierId !== supplier.id) {
-                          (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)';
-                          (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                        }
-                      }}
-                    >
-                      {printingSupplierId === supplier.id ? (
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
-                          <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                        </svg>
-                      ) : (
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="6 9 6 2 18 2 18 9" />
-                          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                          <rect x="6" y="14" width="12" height="8" />
-                        </svg>
-                      )}
-                    </button>
-
                     {/* Remove button */}
                     <button
                       style={iconBtnStyle}
-                      title="Remover fornecedor"
+                      title="Remover referência comercial"
                       onClick={() => handleRemoveSupplier(supplier.id)}
                       onMouseOver={(e) => {
                         (e.currentTarget as HTMLButtonElement).style.color = '#ef4444';
@@ -454,40 +319,32 @@ export default function Step5References() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
                 <span style={{ fontSize: '11px', opacity: 0.85 }}>Bancos Adicionados</span>
-                <span style={{ fontSize: '11px', fontWeight: 700 }}>{banks.length}</span>
+                <span style={{ fontSize: '11px', fontWeight: 700 }}>{banks.length}/4</span>
               </div>
               <div style={{ height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.2)' }}>
                 <div style={{
                   height: '100%', borderRadius: '2px',
                   background: '#fff',
-                  width: `${Math.min((banks.length / 3) * 100, 100)}%`,
+                  width: `${Math.min((banks.length / 4) * 100, 100)}%`,
                   transition: 'width 0.3s ease',
                 }} />
               </div>
             </div>
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                <span style={{ fontSize: '11px', opacity: 0.85 }}>Fornecedores</span>
-                <span style={{ fontSize: '11px', fontWeight: 700 }}>{suppliers.length}/5</span>
+                <span style={{ fontSize: '11px', opacity: 0.85 }}>Ref. Comerciais</span>
+                <span style={{ fontSize: '11px', fontWeight: 700 }}>{suppliers.length}/6</span>
               </div>
               <div style={{ height: '4px', borderRadius: '2px', background: 'rgba(255,255,255,0.2)' }}>
                 <div style={{
                   height: '100%', borderRadius: '2px',
                   background: '#fff',
-                  width: `${Math.min((suppliers.length / 5) * 100, 100)}%`,
+                  width: `${Math.min((suppliers.length / 6) * 100, 100)}%`,
                   transition: 'width 0.3s ease',
                 }} />
               </div>
             </div>
           </div>
-
-          {(banks.length > 0 || suppliers.length > 0) && (
-            <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: '8px', padding: '10px 12px' }}>
-              <p style={{ fontSize: '10px', opacity: 0.9, lineHeight: 1.5, margin: 0 }}>
-                <strong>🖨️ Dica:</strong> Use o ícone de impressora em cada banco ou fornecedor para gerar o PDF completo com as fichas de referências incluídas.
-              </p>
-            </div>
-          )}
         </div>
       </div>
 

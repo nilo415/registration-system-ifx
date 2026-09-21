@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { formatDate } from '../../../utils/formatters';
 
 interface BankReferenceModalProps {
   onClose: () => void;
@@ -31,7 +32,7 @@ export default function BankReferenceModal({ onClose, onAdd, initialData }: Bank
     gerencia: initialData?.gerencia || '',
     fone: initialData?.fone || '',
     relato: initialData?.relato || '',
-    informacoesData: initialData?.informacoesData || new Date().toLocaleDateString('pt-BR'),
+    informacoesData: formatDate(initialData?.informacoesData) || '',
   });
 
   const inputStyle = {
@@ -219,9 +220,6 @@ export default function BankReferenceModal({ onClose, onAdd, initialData }: Bank
           {/* Relato */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label style={labelStyle}>Relato</label>
-            <div style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', marginBottom: '4px' }}>
-              <span style={{ color: 'var(--text-muted)', fontSize: '11px', fontWeight: 600 }}>RELATO</span>
-            </div>
             <textarea
               rows={5}
               placeholder="Descreva informações sobre o relacionamento bancário..."
@@ -236,9 +234,10 @@ export default function BankReferenceModal({ onClose, onAdd, initialData }: Bank
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label style={labelStyle}>Informações coletadas em</label>
             <input
-              type="date"
+              type="text"
+              placeholder="dd/mm/aaaa"
               value={form.informacoesData}
-              onChange={(e) => handleChange('informacoesData', e.target.value)}
+              onChange={(e) => handleChange('informacoesData', formatDate(e.target.value))}
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
               style={inputStyle}
             />
