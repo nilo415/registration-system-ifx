@@ -5,6 +5,7 @@ import type { RegistrationPayload } from '../services/api';
 interface RegistrationContextProps {
   formData: RegistrationPayload;
   updateFormData: (partialData: Partial<RegistrationPayload>) => void;
+  loadFormData: (data: RegistrationPayload) => void;
   resetForm: () => void;
 }
 
@@ -100,12 +101,17 @@ export const RegistrationProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
+  // Carrega o formulário completo direto do servidor, sem acionar regras de negócio
+  const loadFormData = useCallback((data: RegistrationPayload) => {
+    setFormData((prev) => ({ ...prev, ...data }));
+  }, []);
+
   const resetForm = useCallback(() => {
     setFormData(initialFormData);
   }, []);
 
   return (
-    <RegistrationContext.Provider value={{ formData, updateFormData, resetForm }}>
+    <RegistrationContext.Provider value={{ formData, updateFormData, loadFormData, resetForm }}>
       {children}
     </RegistrationContext.Provider>
   );

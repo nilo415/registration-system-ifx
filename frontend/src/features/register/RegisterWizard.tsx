@@ -38,7 +38,9 @@ export default function RegisterWizard() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [finalizedCnpj, setFinalizedCnpj] = useState<string | null>(null);
 
-  const { formData, updateFormData, resetForm } = useRegistration();
+  const { formData, updateFormData, loadFormData, resetForm } = useRegistration();
+
+  const SESSION_RESET_KEY = 'reg_user_reset';
 
   const showToast = (type: Toast['type'], message: string) => {
     setToast({ type, message });
@@ -49,12 +51,15 @@ export default function RegisterWizard() {
 
   // Carregar dados existentes no backend ao montar o componente
   useEffect(() => {
+    // Se o usuário resetou explicitamente nesta sessão, não recarregar
+    if (sessionStorage.getItem(SESSION_RESET_KEY) === '1') return;
+
     let isMounted = true;
     const loadDraft = async () => {
       try {
         const existingData = await fetchCurrentRegistration();
         if (existingData && isMounted) {
-          updateFormData(existingData);
+          loadFormData(existingData);
           showToast('info', 'Dados recuperados do servidor local.');
         }
       } catch (error) {
@@ -65,7 +70,8 @@ export default function RegisterWizard() {
     return () => {
       isMounted = false;
     };
-  }, [updateFormData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handlePreview = async () => {
     setIsPreviewing(true);
@@ -122,6 +128,7 @@ export default function RegisterWizard() {
 
   const handleReset = () => {
     if (window.confirm('Deseja reiniciar o formulário? Todos os dados atuais serão apagados da tela.')) {
+      sessionStorage.setItem(SESSION_RESET_KEY, '1');
       resetForm();
       setCurrentStep(0);
       showToast('info', 'Formulário reiniciado.');
@@ -129,6 +136,7 @@ export default function RegisterWizard() {
   };
 
   const handleNewRegistration = () => {
+    sessionStorage.setItem(SESSION_RESET_KEY, '1');
     setShowSuccessModal(false);
     resetForm();
     setCurrentStep(0);
