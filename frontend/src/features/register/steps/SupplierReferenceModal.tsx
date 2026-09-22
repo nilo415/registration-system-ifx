@@ -13,6 +13,7 @@ export interface SupplierReference {
   nomeFantasia: string;
   cnpj: string;
   contato?: string;
+  fone?: string;
   clienteDesde: string;
   maiorFaturaData: string;
   maiorFaturaValor: string;
@@ -44,6 +45,7 @@ const defaultForm: Omit<SupplierReference, 'id'> = {
   nomeFantasia: '',
   cnpj: '',
   contato: '',
+  fone: '',
   clienteDesde: '',
   maiorFaturaData: '',
   maiorFaturaValor: '',
@@ -216,12 +218,20 @@ export default function SupplierReferenceModal({ onClose, onAdd, initialData }: 
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle} />
           </div>
 
-          {/* Contato / Responsável */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label style={labelStyle}>Contato / Responsável pelas Informações</label>
-            <input type="text" placeholder="Nome do contato no fornecedor" value={form.contato || ''}
-              onChange={(e) => handleChange('contato', e.target.value)}
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle} />
+          {/* Contato / Fone */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={labelStyle}>Contato / Responsável</label>
+              <input type="text" placeholder="Nome do contato" value={form.contato || ''}
+                onChange={(e) => handleChange('contato', e.target.value)}
+                className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={labelStyle}>Telefone</label>
+              <input type="text" placeholder="(00) 0000-0000" value={form.fone || ''}
+                onChange={(e) => handleChange('fone', e.target.value)}
+                className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle} />
+            </div>
           </div>
 
           {/* Datas e Faturas */}
