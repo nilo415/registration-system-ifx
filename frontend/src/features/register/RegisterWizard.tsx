@@ -100,9 +100,15 @@ export default function RegisterWizard() {
       return;
     }
 
+    // Limpar campos condicionais que não devem ir para o PDF se desabilitados
+    const payload = {
+      ...formData,
+      suframaNumber: formData.suframaDiscount ? formData.suframaNumber : '',
+    };
+
     setIsFinalizing(true);
     try {
-      const response = await finalizeRegistration(formData);
+      const response = await finalizeRegistration(payload);
       setFinalizedCnpj(response?.cnpj ?? formData.cnpj ?? null);
       setShowSuccessModal(true);
     } catch (error) {
@@ -112,6 +118,7 @@ export default function RegisterWizard() {
       setIsFinalizing(false);
     }
   };
+
 
   const handleReset = () => {
     if (window.confirm('Deseja reiniciar o formulário? Todos os dados atuais serão apagados da tela.')) {

@@ -1034,7 +1034,7 @@
             <td class="data-cell" colspan="2">
                 <div class="field-label">Insc. de SUFRAMA</div>
                 <div class="field-value"
-                    th:text="${payload.suframaNumber != null ? payload.suframaNumber : ''}"></div>
+                    th:text="${payload.suframaDiscount == true and payload.suframaNumber != null ? payload.suframaNumber : ''}"></div>
             </td>
             <td class="data-cell" colspan="2">
                 <div class="field-label">Desc. para SUFRAMA</div>
