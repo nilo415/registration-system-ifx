@@ -38,7 +38,7 @@ export default function RegisterWizard() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [finalizedCnpj, setFinalizedCnpj] = useState<string | null>(null);
 
-  const { formData, updateFormData, loadFormData, resetForm } = useRegistration();
+  const { formData, loadFormData, resetForm } = useRegistration();
 
   const SESSION_RESET_KEY = 'reg_user_reset';
 

@@ -58,7 +58,7 @@ export default function Step1Operation() {
           type="text"
           className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
           style={inputStyle}
-          placeholder="Ex: Venda a Prazo, Venda a Vista, Amostra..."
+          placeholder="Tipo de Cadastro"
           value={formData.operationType ?? ''}
           onChange={(e) => updateFormData({ operationType: e.target.value })}
         />

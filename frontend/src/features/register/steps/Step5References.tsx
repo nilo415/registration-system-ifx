@@ -28,17 +28,6 @@ export default function Step5References() {
     updateFormData({ commercialReferences: suppliers.filter((s) => s.id !== id) });
   };
 
-  // Dados da empresa para pré-preencher os modais
-  const companyInitialData: Partial<BankReference> = {
-    empresa: (formData as any).companyName || '',
-    nomeFantasia: (formData as any).tradeName || '',
-    cnpj: (formData as any).cnpj || '',
-  };
-
-  const supplierInitialData: Partial<SupplierReference> = {
-    informacoesData: '',
-  };
-
   const cardStyle = {
     background: 'var(--bg-page)',
     border: '1px solid var(--border-color)',
@@ -353,14 +342,12 @@ export default function Step5References() {
         <BankReferenceModal
           onClose={() => setShowBankModal(false)}
           onAdd={handleAddBank}
-          initialData={companyInitialData}
         />
       )}
       {showSupplierModal && (
         <SupplierReferenceModal
           onClose={() => setShowSupplierModal(false)}
           onAdd={handleAddSupplier}
-          initialData={supplierInitialData}
         />
       )}
     </div>

@@ -157,7 +157,7 @@ export default function BankReferenceModal({ onClose, onAdd, initialData }: Bank
             <label style={labelStyle}>Banco <span style={{ color: '#ef4444' }}>*</span></label>
             <input
               type="text"
-              placeholder="Ex: Banco do Brasil, Itaú, Bradesco..."
+              placeholder="Nome da instituição financeira"
               value={form.banco}
               onChange={(e) => handleChange('banco', e.target.value)}
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"

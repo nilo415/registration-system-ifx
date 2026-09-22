@@ -143,7 +143,7 @@ export default function Step2Company() {
           </label>
           <input
             type="text"
-            placeholder="Empresa Fictícia S/A"
+            placeholder="Razão Social"
             className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
             style={inputStyle}
             value={formData.companyName ?? ''}
@@ -158,7 +158,7 @@ export default function Step2Company() {
           </label>
           <input
             type="text"
-            placeholder="Nome Comercial"
+            placeholder="Nome Fantasia"
             className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
             style={inputStyle}
             value={formData.tradeName ?? ''}
@@ -250,7 +250,7 @@ export default function Step2Company() {
           </label>
           <input
             type="text"
-            placeholder="Digite o código da TES padrão (ex: 501, 502...)"
+            placeholder="Código da TES padrão"
             className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
             style={inputStyle}
             value={currentTes}

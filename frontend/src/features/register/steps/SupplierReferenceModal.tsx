@@ -76,7 +76,7 @@ export default function SupplierReferenceModal({ onClose, onAdd, initialData }: 
     clienteDesde: formatDate(initialData?.clienteDesde || ''),
     maiorFaturaData: formatDate(initialData?.maiorFaturaData || ''),
     ultimaFaturaData: formatDate(initialData?.ultimaFaturaData || ''),
-    informacoesData: formatDate(initialData?.informacoesData) || formatDate(new Date().toISOString()),
+    informacoesData: formatDate(initialData?.informacoesData) || '',
     mediasMensalValor: formatCurrency(initialData?.mediasMensalValor || ''),
     maiorFaturaValor: formatCurrency(initialData?.maiorFaturaValor || ''),
     ultimaFaturaValor: formatCurrency(initialData?.ultimaFaturaValor || ''),

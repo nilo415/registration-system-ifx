@@ -51,21 +51,21 @@ export default function Step3Address() {
 
           <div className="flex flex-col gap-2 md:col-span-4">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Bairro</label>
-            <input type="text" placeholder="Centro"
+            <input type="text" placeholder="Bairro"
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
               value={formData.neighborhood ?? ''}
               onChange={(e) => updateFormData({ neighborhood: e.target.value })} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-6">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Cidade</label>
-            <input type="text" placeholder="São Paulo"
+            <input type="text" placeholder="Cidade"
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
               value={formData.city ?? ''}
               onChange={(e) => updateFormData({ city: e.target.value })} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-2">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Estado (UF)</label>
-            <input type="text" placeholder="SP"
+            <input type="text" placeholder="UF"
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
               value={formData.state ?? ''}
               onChange={(e) => updateFormData({ state: e.target.value })} />
@@ -89,7 +89,7 @@ export default function Step3Address() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Nome do Contato</label>
-              <input type="text" placeholder="João Silva"
+              <input type="text" placeholder="Nome do contato"
                 className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
                 value={formData.contactPerson ?? ''}
                 onChange={(e) => updateFormData({ contactPerson: e.target.value })} />
@@ -110,14 +110,14 @@ export default function Step3Address() {
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>E-mail (NF eletrônica)</label>
-              <input type="email" placeholder="nfe@empresa.com.br"
+              <input type="email" placeholder="E-mail (NF eletrônica)"
                 className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
                 value={formData.email ?? ''}
                 onChange={(e) => updateFormData({ email: e.target.value })} />
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>E-mail (Compras)</label>
-              <input type="email" placeholder="compras@empresa.com.br"
+              <input type="email" placeholder="E-mail (Compras)"
                 className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
                 value={formData.purchasingEmail ?? ''}
                 onChange={(e) => updateFormData({ purchasingEmail: e.target.value })} />
@@ -204,7 +204,7 @@ export default function Step3Address() {
           </div>
           <div className="flex flex-col gap-2 md:col-span-4">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>E-mail Financeiro</label>
-            <input type="email" placeholder="financeiro@empresa.com.br"
+            <input type="email" placeholder="E-mail financeiro"
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
               value={formData.financialEmail ?? ''}
               onChange={(e) => updateFormData({ financialEmail: e.target.value })} />
