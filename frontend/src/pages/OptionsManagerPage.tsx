@@ -4,6 +4,7 @@ import AppLayout from '../components/layout/AppLayout';
 import {
   fetchOptionsByCategory,
   addOptionByCategory,
+  updateOptionById,
   deleteOptionById,
   type FormOption,
 } from '../services/api';
@@ -137,9 +138,51 @@ export default function OptionsManagerPage() {
     }
   };
 
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingText, setEditingText] = useState<string>('');
+
+  const handleStartEdit = (item: FormOption) => {
+    setEditingId(item.id);
+    setEditingText(item.label);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditingText('');
+  };
+
+  const handleSaveEdit = async (catKey: string, id: number) => {
+    const trimmed = editingText.trim();
+    if (!trimmed) {
+      setErrorMap((prev) => ({ ...prev, [catKey]: 'O nome da opção não pode ser vazio.' }));
+      return;
+    }
+
+    setLoadingMap((prev) => ({ ...prev, [catKey]: true }));
+    try {
+      const updated = await updateOptionById(id, trimmed);
+      setOptionsMap((prev) => ({
+        ...prev,
+        [catKey]: (prev[catKey] || []).map((item) => (item.id === id ? updated : item)),
+      }));
+      setEditingId(null);
+      setEditingText('');
+      setErrorMap((prev) => ({ ...prev, [catKey]: '' }));
+    } catch (err: any) {
+      const msg = err.response?.data?.error || 'Erro ao atualizar opção.';
+      setErrorMap((prev) => ({ ...prev, [catKey]: msg }));
+    } finally {
+      setLoadingMap((prev) => ({ ...prev, [catKey]: false }));
+    }
+  };
+
   const handleDelete = async (catKey: string, id: number) => {
     try {
       await deleteOptionById(id);
+      if (editingId === id) {
+        setEditingId(null);
+        setEditingText('');
+      }
       setOptionsMap((prev) => ({
         ...prev,
         [catKey]: (prev[catKey] || []).filter((item) => item.id !== id),
@@ -303,34 +346,108 @@ export default function OptionsManagerPage() {
                       <span className="text-xs">Nenhuma opção cadastrada ainda. Digite acima para adicionar.</span>
                     </div>
                   ) : (
-                    list.map((item) => (
-                      <div
-                        key={item.id}
-                        className="group flex items-center justify-between p-2.5 px-3.5 rounded-xl border transition-colors hover:border-red-500/30"
-                        style={{
-                          background: 'var(--bg-item)',
-                          borderColor: 'var(--border-color)',
-                        }}
-                      >
-                        <span className="text-sm font-medium pr-2 truncate" style={{ color: 'var(--text-main)' }}>
-                          {item.label}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(cat.key, item.id)}
-                          title="Remover opção"
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-colors opacity-80 group-hover:opacity-100 cursor-pointer"
+                    list.map((item) => {
+                      const isEditing = editingId === item.id;
+
+                      if (isEditing) {
+                        return (
+                          <div
+                            key={item.id}
+                            className="flex items-center gap-2 p-2 px-3 rounded-xl border"
+                            style={{
+                              background: 'var(--bg-item)',
+                              borderColor: 'var(--primary)',
+                            }}
+                          >
+                            <input
+                              type="text"
+                              autoFocus
+                              className="flex-1 h-8 px-2.5 rounded-lg text-sm outline-none transition-colors border"
+                              style={{
+                                background: 'transparent',
+                                color: 'var(--text-main)',
+                                borderColor: 'var(--border-color)',
+                              }}
+                              value={editingText}
+                              onChange={(e) => setEditingText(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleSaveEdit(cat.key, item.id);
+                                } else if (e.key === 'Escape') {
+                                  e.preventDefault();
+                                  handleCancelEdit();
+                                }
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleSaveEdit(cat.key, item.id)}
+                              disabled={isLoading || !editingText.trim()}
+                              title="Salvar alteração (Enter)"
+                              className="p-1.5 rounded-lg text-emerald-500 hover:bg-emerald-500/10 transition-colors disabled:opacity-50 cursor-pointer"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleCancelEdit}
+                              title="Cancelar edição (Esc)"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18" />
+                                <line x1="6" y1="6" x2="18" y2="18" />
+                              </svg>
+                            </button>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div
+                          key={item.id}
+                          className="group flex items-center justify-between p-2.5 px-3.5 rounded-xl border transition-colors hover:border-blue-500/30"
+                          style={{
+                            background: 'var(--bg-item)',
+                            borderColor: 'var(--border-color)',
+                          }}
                         >
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M3 6h18" />
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                            <line x1="10" y1="11" x2="10" y2="17" />
-                            <line x1="14" y1="11" x2="14" y2="17" />
-                          </svg>
-                        </button>
-                      </div>
-                    ))
+                          <span className="text-sm font-medium pr-2 truncate" style={{ color: 'var(--text-main)' }}>
+                            {item.label}
+                          </span>
+                          <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => handleStartEdit(item)}
+                              title="Editar opção"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 transition-colors cursor-pointer"
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                                <path d="m15 5 4 4" />
+                              </svg>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDelete(cat.key, item.id)}
+                              title="Remover opção"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 6h18" />
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                <line x1="10" y1="11" x2="10" y2="17" />
+                                <line x1="14" y1="11" x2="14" y2="17" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })
                   )}
                 </div>
               </div>

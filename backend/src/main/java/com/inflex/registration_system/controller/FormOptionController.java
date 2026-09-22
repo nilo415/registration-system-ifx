@@ -46,6 +46,21 @@ public class FormOptionController {
         }
     }
 
+    @Operation(summary = "Atualiza uma opção por ID")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateOption(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String label = body != null ? body.get("label") : null;
+        if (label == null || label.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "O campo 'label' é obrigatório."));
+        }
+        try {
+            FormOptionEntity updated = formOptionService.updateOption(id, label);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @Operation(summary = "Deleta uma opção por ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOption(@PathVariable Long id) {

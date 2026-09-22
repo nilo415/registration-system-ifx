@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Stepper from '../../components/ui/Stepper';
-import { saveDraft, finalizeRegistration, fetchCurrentRegistration } from '../../services/api';
+import { finalizeRegistration, fetchCurrentRegistration, previewRegistrationPdf } from '../../services/api';
 import { useRegistration } from '../../contexts/RegistrationContext';
 import WizardFooter from './components/WizardFooter';
 import Step1Operation from './steps/Step1Operation';
@@ -32,8 +32,8 @@ interface Toast {
 
 export default function RegisterWizard() {
   const [currentStep, setCurrentStep] = useState(0);
-  const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
+  const [isPreviewing, setIsPreviewing] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [finalizedCnpj, setFinalizedCnpj] = useState<string | null>(null);
@@ -47,7 +47,7 @@ export default function RegisterWizard() {
     }, 5000);
   };
 
-  // Carregar rascunho existente no backend ao montar o componente
+  // Carregar dados existentes no backend ao montar o componente
   useEffect(() => {
     let isMounted = true;
     const loadDraft = async () => {
@@ -55,7 +55,7 @@ export default function RegisterWizard() {
         const existingData = await fetchCurrentRegistration();
         if (existingData && isMounted) {
           updateFormData(existingData);
-          showToast('info', 'Rascunho recuperado do servidor local.');
+          showToast('info', 'Dados recuperados do servidor local.');
         }
       } catch (error) {
         console.warn('Nenhum cadastro prévio ou backend offline:', error);
@@ -67,16 +67,18 @@ export default function RegisterWizard() {
     };
   }, [updateFormData]);
 
-  const handleSaveDraft = async () => {
-    setIsSavingDraft(true);
+  const handlePreview = async () => {
+    setIsPreviewing(true);
     try {
-      await saveDraft(formData);
-      showToast('success', 'Rascunho salvo com sucesso no servidor local!');
+      const blob = await previewRegistrationPdf(formData);
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
     } catch (error) {
-      console.error('Erro ao salvar rascunho:', error);
-      showToast('error', 'Falha ao salvar rascunho. Verifique se o backend está em execução.');
+      console.error('Erro ao gerar prévia da impressão:', error);
+      // Fallback para abrir o PDF existente em disco
+      window.open('http://localhost:8080/api/registration/pdf', '_blank');
     } finally {
-      setIsSavingDraft(false);
+      setIsPreviewing(false);
     }
   };
 
@@ -254,10 +256,10 @@ export default function RegisterWizard() {
           totalSteps={STEPS.length}
           onBack={() => setCurrentStep((s) => Math.max(s - 1, 0))}
           onNext={() => setCurrentStep((s) => Math.min(s + 1, STEPS.length - 1))}
-          onSaveDraft={handleSaveDraft}
           onFinalize={handleFinalize}
-          isSavingDraft={isSavingDraft}
+          onPreview={handlePreview}
           isFinalizing={isFinalizing}
+          isPreviewing={isPreviewing}
         />
       </div>
 
@@ -265,12 +267,25 @@ export default function RegisterWizard() {
       {showSuccessModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
           <div
-            className="w-full max-w-md rounded-2xl p-8 flex flex-col items-center text-center shadow-2xl border"
+            className="w-full max-w-md rounded-2xl p-8 flex flex-col items-center text-center shadow-2xl border relative"
             style={{
               background: 'var(--bg-surface)',
               borderColor: 'var(--border-color)',
             }}
           >
+            {/* Botão fechar */}
+            <button
+              type="button"
+              onClick={() => setShowSuccessModal(false)}
+              title="Fechar"
+              className="absolute top-4 right-4 p-1.5 rounded-lg transition-colors cursor-pointer hover:bg-black/10"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
             <div className="w-16 h-16 rounded-full bg-green-500/15 flex items-center justify-center text-green-500 mb-5">
               <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -292,7 +307,7 @@ export default function RegisterWizard() {
                 className="flex-1 py-3 px-4 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer"
                 style={{ background: 'var(--primary)' }}
               >
-                Visualizar Cadastro
+                Visualizar Impressão
               </button>
               <button
                 type="button"

@@ -188,6 +188,19 @@ export const finalizeRegistration = async (payload: RegistrationPayload) => {
   }
 };
 
+export const previewRegistrationPdf = async (payload: RegistrationPayload): Promise<Blob> => {
+  try {
+    const sanitized = sanitizePayloadForBackend(payload);
+    const response = await api.post('/preview-pdf', sanitized, {
+      responseType: 'blob',
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao gerar prévia do PDF:', error);
+    throw error;
+  }
+};
+
 export const uploadFile = async (file: File, cnpj: string) => {
   try {
     const formData = new FormData();
@@ -231,6 +244,11 @@ export const fetchAllOptions = async (): Promise<FormOption[]> => {
 
 export const addOptionByCategory = async (category: string, label: string): Promise<FormOption> => {
   const response = await optionsApi.post(`/${category}`, { label });
+  return response.data;
+};
+
+export const updateOptionById = async (id: number, label: string): Promise<FormOption> => {
+  const response = await optionsApi.put(`/${id}`, { label });
   return response.data;
 };
 

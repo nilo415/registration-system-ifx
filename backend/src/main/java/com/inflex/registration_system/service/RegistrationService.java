@@ -63,27 +63,38 @@ public class RegistrationService {
      */
     @Transactional
     public void saveRegistration(RegistrationPayloadDTO payload) throws JsonProcessingException {
+        String rawCnpj = payload.getCnpj();
         sanitizePayload(payload);
+        String cleanCnpj = payload.getCnpj();
 
         // Stamp the server-side save time
         payload.setSavedAt(Instant.now().toString());
 
         String json = objectMapper.writeValueAsString(payload);
 
-        // Upsert: update existing row for this CNPJ or create a new one
-        RegistrationEntity entity = repository
-                .findTopByCnpjOrderByUpdatedAtDesc(payload.getCnpj())
-                .orElse(new RegistrationEntity());
+        // Upsert: localiza registro existente por CNPJ limpo ou pelo formato original com máscara
+        Optional<RegistrationEntity> existing = repository.findTopByCnpjOrderByUpdatedAtDesc(cleanCnpj);
+        if (existing.isEmpty() && rawCnpj != null && !rawCnpj.equals(cleanCnpj)) {
+            existing = repository.findTopByCnpjOrderByUpdatedAtDesc(rawCnpj);
+        }
 
-        entity.setCnpj(payload.getCnpj());
+        RegistrationEntity entity = existing.orElseGet(RegistrationEntity::new);
+        boolean isNew = entity.getId() == null;
+
+        entity.setCnpj(cleanCnpj);
         entity.setStatus(payload.getStatus());
         entity.setSavedAt(payload.getSavedAt());
         entity.setPayloadJson(json);
 
         repository.save(entity);
 
-        log.info("Registration saved to DB → CNPJ: {} | Status: {} | id: {}",
-                payload.getCnpj(), payload.getStatus(), entity.getId());
+        if (isNew) {
+            log.info("Novo registro criado no SQLite → CNPJ: {} | Status: {} | id: {}",
+                    cleanCnpj, payload.getStatus(), entity.getId());
+        } else {
+            log.info("Registro existente ATUALIZADO no SQLite → CNPJ: {} | Status: {} | id: {}",
+                    cleanCnpj, payload.getStatus(), entity.getId());
+        }
 
         // Generate PDF when the registration is finalized
         if ("FINALIZED".equalsIgnoreCase(payload.getStatus())) {
