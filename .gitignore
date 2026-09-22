@@ -1,0 +1,67 @@
+# ==========================================
+# Dependencies
+# ==========================================
+node_modules/
+frontend/node_modules/
+package-lock.json
+
+# ==========================================
+# Local Data & Generated Runtime Files
+# ==========================================
+backend/local_data/*
+!backend/local_data/.gitkeep
+backend/local_data/*.db
+backend/local_data/*.db-journal
+backend/local_data/*.pdf
+backend/local_data/*.json
+backend/local_data/*.migrated
+
+# ==========================================
+# Build & Compilation Artifacts
+# ==========================================
+backend/target/
+frontend/dist/
+frontend/dist-ssr/
+*.jar
+*.class
+
+# ==========================================
+# IDE & Editor Configurations
+# ==========================================
+.idea/
+backend/.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.sts4-cache/
+
+# ==========================================
+# Environment Variables & Secrets
+# ==========================================
+.env
+.env.*
+!.env.example
+*.local
+
+# ==========================================
+# Logs & Caches
+# ==========================================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==========================================
+# OS Generated Files
+# ==========================================
+.DS_Store
+Thumbs.db
+Desktop.ini
