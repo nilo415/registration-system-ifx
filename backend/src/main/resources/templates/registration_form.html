@@ -596,8 +596,7 @@
                     class="logo-img" />
             </td>
             <td class="title-cell" style="width:auto;">
-                <span class="eyebrow">Documentos necessários para</span>
-                CADASTRO
+                <span th:text="${payload.operationType != null and !#strings.isEmpty(payload.operationType) ? payload.operationType : 'CADASTRO'}">CADASTRO</span>
             </td>
             <td class="meta-cell">
                 <table style="height: 100%;">
@@ -861,8 +860,7 @@
             </td>
             <td style="width:25%;">
                 <div class="approval-label">Data</div>
-                <div class="approval-value"
-                    th:text="${payload.approvedAtDate != null ? payload.approvedAtDate : '10/09/26'}">10/09/26</div>
+                <div class="approval-value">&#160;</div>
             </td>
         </tr>
     </table>
@@ -876,14 +874,13 @@
             </td>
             <td style="width:30%;">
                 <div class="footer-label">Preparado por</div>
-                <div class="footer-val" style="color:#1F2430;"
-                    th:text="${payload.preparedBy != null ? payload.preparedBy : 'Natasha Zaghi'}">Natasha Zaghi</div>
+                <div class="footer-val" style="color:#1F2430;">Danillo Mochi</div>
                 <div class="footer-sub" style="color:#767c88;">Assistente de Vendas</div>
             </td>
             <td style="width:14%;">
                 <div class="footer-label">Data</div>
                 <div class="footer-val" style="color:#1F2430;"
-                    th:text="${payload.preparedAtDate != null ? payload.preparedAtDate : '10/09/26'}">10/09/26</div>
+                    th:text="${todayDate != null ? todayDate : '22/09/2026'}">22/09/2026</div>
             </td>
             <td style="width:30%;">
                 <div class="footer-label">Aprovado por</div>
@@ -894,8 +891,7 @@
             </td>
             <td style="width:14%;">
                 <div class="footer-label">Data</div>
-                <div class="footer-val" style="color:#1F2430;"
-                    th:text="${payload.approvedAtDate != null ? payload.approvedAtDate : '10/09/26'}">10/09/26</div>
+                <div class="footer-val" style="color:#1F2430;">&#160;</div>
             </td>
         </tr>
     </table>
@@ -1347,7 +1343,7 @@
             </td>
             <td style="width:14%;">
                 <div class="footer-label">Data</div>
-                <div style="font-size:8.5pt; color:#1F2430;">12/08/2025</div>
+                <div style="font-size:8.5pt; color:#1F2430;">&#160;</div>
             </td>
         </tr>
     </table>
@@ -1822,7 +1818,7 @@
                 <!-- OBSERVAÇÕES IMPORTANTES -->
                 <table class="section-table" style="margin-bottom: 4px;">
                     <tr class="section-header">
-                        <td style="text-align: center;">OBSERVAÇÕES IMPORTANTES</td>
+                        <td style="text-align: left;">OBSERVAÇÕES IMPORTANTES</td>
                     </tr>
                     <tr>
                         <td class="obs-box">

@@ -127,3 +127,23 @@ body {
     color: var(--text-main);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
+
+/* ─── Sidebar PNGs and Logos (Global Dark Mode Filter) ─── */
+.sidebar-logo-card {
+    background: #ffffff;
+    transition: background 0.2s ease;
+}
+
+.dark .sidebar-logo-card {
+    background: var(--bg-sidebar);
+}
+
+.sidebar-png-brand {
+    filter: none;
+    mix-blend-mode: normal;
+}
+
+.dark .sidebar-png-brand {
+    filter: invert(1) hue-rotate(180deg);
+    mix-blend-mode: screen;
+}

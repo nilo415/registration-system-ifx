@@ -52,6 +52,7 @@ public class PdfGeneratorService {
 
             Context context = new Context();
             context.setVariable("payload", payload);
+            context.setVariable("todayDate", LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 
             String htmlContent = templateEngine.process("registration_form", context);
             htmlContent = embedLogoIfAvailable(htmlContent);
@@ -75,16 +76,15 @@ public class PdfGeneratorService {
             payload.setPreparedAt(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         }
 
-        // Formatação visual dos dados principais
-        if (payload.getCnpj() != null) payload.setCnpj(formatCnpj(payload.getCnpj()));
-        if (payload.getZipCode() != null) payload.setZipCode(formatCep(payload.getZipCode()));
-        if (payload.getFinancialZipCode() != null) payload.setFinancialZipCode(formatCep(payload.getFinancialZipCode()));
-        if (payload.getDeliveryZipCode() != null) payload.setDeliveryZipCode(formatCep(payload.getDeliveryZipCode()));
-        if (payload.getPhone() != null) payload.setPhone(formatPhone(payload.getPhone()));
-        if (payload.getMobilePhone() != null) payload.setMobilePhone(formatPhone(payload.getMobilePhone()));
-        if (payload.getFinancialPhone() != null) payload.setFinancialPhone(formatPhone(payload.getFinancialPhone()));
-        if (payload.getFinancialMobilePhone() != null) payload.setFinancialMobilePhone(formatPhone(payload.getFinancialMobilePhone()));
-        if (payload.getDeliveryPhone() != null) payload.setDeliveryPhone(formatPhone(payload.getDeliveryPhone()));
+        // Data de classificação formatada como dd/MM/yyyy
+        if (payload.getSavedAt() != null && !payload.getSavedAt().isBlank()) {
+            payload.setSavedAt(formatDate(payload.getSavedAt()));
+        } else {
+            payload.setSavedAt(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        }
+        payload.setPreparedAtDate(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
+        // CNPJ, CEP, Telefone e Celular permanecem puras como digitadas pelo usuário (sem formatação forçada)
 
         // Mapear propriedades bancárias vindas em português do formulário
         if (payload.getBankReferences() != null) {
@@ -146,10 +146,7 @@ public class PdfGeneratorService {
                     bank.put("dataExtenso", "Dourados-MS, " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                 }
 
-                // Formatações visuais dos dados bancários
-                bank.put("cnpj", formatCnpj(bank.get("cnpj")));
-                bank.put("phone", formatPhone(bank.get("phone")));
-                bank.put("fone", formatPhone(bank.get("fone")));
+                // Formatações visuais dos dados bancários (CNPJ e telefone mantidos como digitados)
                 bank.put("informacoesData", formatDate(bank.get("informacoesData")));
             }
         }
@@ -226,9 +223,7 @@ public class PdfGeneratorService {
                 }
                 ref.put("responsavelInfo", resp != null ? resp.toString() : "Responsável");
 
-                // Formatações visuais dos dados comerciais
-                ref.put("cnpj", formatCnpj(ref.get("cnpj")));
-                ref.put("phone", formatPhone(ref.get("phone")));
+                // Formatações visuais dos dados comerciais (CNPJ e telefone mantidos como digitados)
                 ref.put("clienteDesde", formatDate(ref.get("clienteDesde")));
                 ref.put("maiorFaturaData", formatDate(ref.get("maiorFaturaData")));
                 ref.put("ultimaFaturaData", formatDate(ref.get("ultimaFaturaData")));

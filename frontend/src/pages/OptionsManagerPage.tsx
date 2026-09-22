@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import AppLayout from '../components/layout/AppLayout';
 import {
   fetchOptionsByCategory,
   addOptionByCategory,
@@ -194,8 +193,7 @@ export default function OptionsManagerPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="max-w-7xl mx-auto p-6 md:p-8 flex flex-col gap-8">
+    <div className="max-w-7xl mx-auto p-6 md:p-8 flex flex-col gap-8">
         {/* Header */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
@@ -455,6 +453,5 @@ export default function OptionsManagerPage() {
           })}
         </div>
       </div>
-    </AppLayout>
   );
 }

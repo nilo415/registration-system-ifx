@@ -136,22 +136,22 @@ public class RegistrationService {
 
     private void sanitizePayload(RegistrationPayloadDTO payload) {
         if (payload == null) return;
-        payload.setCnpj(digitsOnly(payload.getCnpj()));
-        payload.setZipCode(digitsOnly(payload.getZipCode()));
-        payload.setFinancialZipCode(digitsOnly(payload.getFinancialZipCode()));
-        payload.setDeliveryZipCode(digitsOnly(payload.getDeliveryZipCode()));
+        if (payload.getCnpj() != null) payload.setCnpj(payload.getCnpj().trim());
+        if (payload.getZipCode() != null) payload.setZipCode(payload.getZipCode().trim());
+        if (payload.getFinancialZipCode() != null) payload.setFinancialZipCode(payload.getFinancialZipCode().trim());
+        if (payload.getDeliveryZipCode() != null) payload.setDeliveryZipCode(payload.getDeliveryZipCode().trim());
 
-        payload.setPhone(digitsOnly(payload.getPhone()));
-        payload.setMobilePhone(digitsOnly(payload.getMobilePhone()));
-        payload.setFinancialPhone(digitsOnly(payload.getFinancialPhone()));
-        payload.setFinancialMobilePhone(digitsOnly(payload.getFinancialMobilePhone()));
-        payload.setDeliveryPhone(digitsOnly(payload.getDeliveryPhone()));
+        if (payload.getPhone() != null) payload.setPhone(payload.getPhone().trim());
+        if (payload.getMobilePhone() != null) payload.setMobilePhone(payload.getMobilePhone().trim());
+        if (payload.getFinancialPhone() != null) payload.setFinancialPhone(payload.getFinancialPhone().trim());
+        if (payload.getFinancialMobilePhone() != null) payload.setFinancialMobilePhone(payload.getFinancialMobilePhone().trim());
+        if (payload.getDeliveryPhone() != null) payload.setDeliveryPhone(payload.getDeliveryPhone().trim());
 
         if (payload.getRepresentatives() != null) {
             for (RegistrationPayloadDTO.RepresentativeDTO rep : payload.getRepresentatives()) {
                 if (rep != null) {
-                    rep.setCpf(digitsOnly(rep.getCpf()));
-                    rep.setPhone(digitsOnly(rep.getPhone()));
+                    if (rep.getCpf() != null) rep.setCpf(rep.getCpf().trim());
+                    if (rep.getPhone() != null) rep.setPhone(rep.getPhone().trim());
                 }
             }
         }
@@ -159,9 +159,6 @@ public class RegistrationService {
         if (payload.getBankReferences() != null) {
             for (Map<String, Object> bank : payload.getBankReferences()) {
                 if (bank != null) {
-                    cleanMapFieldDigits(bank, "cnpj");
-                    cleanMapFieldDigits(bank, "fone");
-                    cleanMapFieldDigits(bank, "phone");
                     cleanMapFieldDate(bank, "informacoesData");
                 }
             }
@@ -170,8 +167,6 @@ public class RegistrationService {
         if (payload.getCommercialReferences() != null) {
             for (Map<String, Object> ref : payload.getCommercialReferences()) {
                 if (ref != null) {
-                    cleanMapFieldDigits(ref, "cnpj");
-                    cleanMapFieldDigits(ref, "phone");
                     cleanMapFieldDate(ref, "clienteDesde");
                     cleanMapFieldDate(ref, "maiorFaturaData");
                     cleanMapFieldDate(ref, "ultimaFaturaData");

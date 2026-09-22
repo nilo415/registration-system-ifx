@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import inflexLogo from '../../assets/images/inflex-logo.png';
 import certFssc from '../../assets/images/certificado-fssc22000.png';
@@ -60,32 +59,6 @@ const navItems = [
 
 /* ── Main Sidebar Component ─────────────────── */
 export default function Sidebar() {
-  const [isDark, setIsDark] = useState(false);
-
-  /* Sync with the dark class on <html> so we can apply the right filter */
-  useEffect(() => {
-    const update = () =>
-      setIsDark(document.documentElement.classList.contains('dark'));
-
-    update();
-
-    /* Watch for class changes triggered by the Header toggle */
-    const observer = new MutationObserver(update);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class'],
-    });
-    return () => observer.disconnect();
-  }, []);
-
-  /*
-   * Dark-mode filter strategy:
-   *  - invert(1)           → white ↔ black swap
-   *  - hue-rotate(180deg)  → compensates hue so brand colors stay correct
-   *  Net result: dark background + legible graphics, brand colors preserved.
-   */
-  const certFilter = isDark ? 'invert(1) hue-rotate(180deg)' : 'none';
-
   return (
     <aside
       className="flex flex-col h-full w-[240px] shrink-0"
@@ -96,20 +69,11 @@ export default function Sidebar() {
     >
       {/* ── Logo ── */}
       <div className="flex items-center justify-center py-6 px-4">
-        <div
-          className="p-2 rounded flex items-center justify-center w-full max-w-[144px]"
-          style={{
-            background: isDark ? 'var(--bg-sidebar)' : '#ffffff',
-          }}
-        >
+        <div className="p-2 rounded flex items-center justify-center w-full max-w-[144px] sidebar-logo-card">
           <img
             src={inflexLogo}
             alt="Inflex – Indústria de Embalagens Flexíveis"
-            className="w-full object-contain transition-all duration-300"
-            style={{
-              filter: certFilter,
-              mixBlendMode: isDark ? 'screen' : 'normal',
-            }}
+            className="w-full object-contain sidebar-png-brand"
             draggable={false}
           />
         </div>
@@ -152,11 +116,7 @@ export default function Sidebar() {
             <img
               src={src}
               alt={alt}
-              className="w-full h-full object-contain transition-all duration-300"
-              style={{
-                filter: certFilter,
-                mixBlendMode: isDark ? 'screen' : 'normal',
-              }}
+              className="w-full h-full object-contain sidebar-png-brand"
               draggable={false}
               title={alt}
             />

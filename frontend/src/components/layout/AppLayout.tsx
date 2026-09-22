@@ -1,4 +1,5 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
 
@@ -22,7 +23,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           className="flex-1 overflow-y-auto"
           style={{ background: 'var(--bg-base)' }}
         >
-          {children}
+          {children || <Outlet />}
         </main>
       </div>
     </div>
