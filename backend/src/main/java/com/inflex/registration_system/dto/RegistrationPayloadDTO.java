@@ -68,6 +68,8 @@ public class RegistrationPayloadDTO {
     private String financialContact;
     private String financialZipCode;
     private String financialStreet;
+    private String financialNumber;
+    private String financialComplement;
     private String financialNeighborhood;
     private String financialCity;
     private String financialState;
@@ -80,6 +82,7 @@ public class RegistrationPayloadDTO {
     private String deliveryZipCode;
     private String deliveryStreet;
     private String deliveryNumber;
+    private String deliveryComplement;
     private String deliveryNeighborhood;
     private String deliveryCity;
     private String deliveryState;
@@ -91,6 +94,12 @@ public class RegistrationPayloadDTO {
     private String taxRegime;               // e.g. "Simples Nacional", "Lucro Real"
     private String stateRegistration;       // Inscrição Estadual
     private String municipalRegistration;   // Inscrição Municipal
+    private Boolean brasilApiSimplesOption;
+    private Boolean brasilApiMeiOption;
+    private String brasilApiSimplesOptionDate;
+    private String brasilApiSimplesExclusionDate;
+    private String brasilApiMeiOptionDate;
+    private String brasilApiMeiExclusionDate;
     private Boolean simplesNacional = false;
     private Boolean ipiExemption = false;
     private Boolean ipiSuspension = false;

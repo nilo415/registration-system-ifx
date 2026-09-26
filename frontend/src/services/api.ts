@@ -73,6 +73,12 @@ export interface RegistrationPayload {
   informacoesObtidasPor?: string;
 
   cnpj?: string;
+  brasilApiSimplesOption?: boolean | null;
+  brasilApiMeiOption?: boolean | null;
+  brasilApiSimplesOptionDate?: string | null;
+  brasilApiSimplesExclusionDate?: string | null;
+  brasilApiMeiOptionDate?: string | null;
+  brasilApiMeiExclusionDate?: string | null;
   companyName?: string;
   tradeName?: string;
   commercialRegistry?: string;
@@ -88,6 +94,8 @@ export interface RegistrationPayload {
   // Step 3 - Principal
   zipCode?: string;
   street?: string;
+  number?: string;
+  complement?: string;
   neighborhood?: string;
   city?: string;
   state?: string;
@@ -104,6 +112,8 @@ export interface RegistrationPayload {
   financialContact?: string;
   financialZipCode?: string;
   financialStreet?: string;
+  financialNumber?: string;
+  financialComplement?: string;
   financialNeighborhood?: string;
   financialCity?: string;
   financialState?: string;
@@ -115,6 +125,8 @@ export interface RegistrationPayload {
   // Step 3 - Endereço de Entrega
   deliveryZipCode?: string;
   deliveryStreet?: string;
+  deliveryNumber?: string;
+  deliveryComplement?: string;
   deliveryNeighborhood?: string;
   deliveryCity?: string;
   deliveryState?: string;

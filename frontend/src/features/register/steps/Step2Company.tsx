@@ -1,13 +1,66 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRegistration } from '../../../contexts/RegistrationContext';
 import { fetchOptionsByCategory, type FormOption } from '../../../services/api';
+import { fetchCompanyByCnpj } from '../../../services/cnpj';
 
-export default function Step2Company() {
+interface Step2CompanyProps {
+  autoFilledFields: string[];
+  markAutoFilled: (fields: string[]) => void;
+  clearAutoFilled: (field: string) => void;
+}
+
+export default function Step2Company({ autoFilledFields, markAutoFilled, clearAutoFilled }: Step2CompanyProps) {
   const { formData, updateFormData } = useRegistration();
   const [tipoOptions, setTipoOptions] = useState<FormOption[]>([]);
   const [grupoOptions, setGrupoOptions] = useState<FormOption[]>([]);
   const [segmentoOptions, setSegmentoOptions] = useState<FormOption[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSearchingCompany, setIsSearchingCompany] = useState(false);
+  const successfulCompanyLookups = useRef(new Set<string>());
+  const companyLookupsInProgress = useRef(new Set<string>());
+  const latestCnpj = useRef((formData.cnpj ?? '').replace(/\D/g, ''));
+
+  const searchCompany = async (cnpjValue = formData.cnpj ?? '') => {
+    const cleanCnpj = cnpjValue.replace(/\D/g, '');
+    if (cleanCnpj.length !== 14 || successfulCompanyLookups.current.has(cleanCnpj) || companyLookupsInProgress.current.has(cleanCnpj)) return;
+
+    companyLookupsInProgress.current.add(cleanCnpj);
+    setIsSearchingCompany(true);
+    try {
+      const company = await fetchCompanyByCnpj(cleanCnpj);
+      if (latestCnpj.current !== cleanCnpj) return;
+
+      const keepAvailableValue = (fetchedValue: string | null | undefined, currentValue: string | undefined) =>
+        fetchedValue?.trim() || currentValue || '';
+      const fields = {
+        companyName: keepAvailableValue(company.razao_social, formData.companyName),
+        tradeName: keepAvailableValue(company.nome_fantasia, formData.tradeName),
+        businessActivity: keepAvailableValue(company.cnae_fiscal_descricao, formData.businessActivity),
+        segmentoMercado: keepAvailableValue(company.cnae_fiscal_descricao, formData.segmentoMercado),
+        zipCode: keepAvailableValue(company.cep, formData.zipCode),
+        financialZipCode: keepAvailableValue(company.cep, formData.financialZipCode),
+        deliveryZipCode: keepAvailableValue(company.cep, formData.deliveryZipCode),
+        email: keepAvailableValue(company.email, formData.email),
+        phone: keepAvailableValue(company.ddd_telefone_1, formData.phone),
+        brasilApiSimplesOption: company.opcao_pelo_simples,
+        brasilApiMeiOption: company.opcao_pelo_mei,
+        brasilApiSimplesOptionDate: company.data_opcao_pelo_simples,
+        brasilApiSimplesExclusionDate: company.data_exclusao_do_simples,
+        brasilApiMeiOptionDate: company.data_opcao_pelo_mei,
+        brasilApiMeiExclusionDate: company.data_exclusao_do_mei,
+      };
+      updateFormData({
+        ...fields,
+      });
+      markAutoFilled(Object.keys(fields).filter((field) => fields[field as keyof typeof fields] !== (formData[field as keyof typeof formData] ?? '')));
+      successfulCompanyLookups.current.add(cleanCnpj);
+    } catch {
+      return;
+    } finally {
+      companyLookupsInProgress.current.delete(cleanCnpj);
+      setIsSearchingCompany(companyLookupsInProgress.current.size > 0);
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -103,7 +156,7 @@ export default function Step2Company() {
           <label className="text-xs font-bold uppercase tracking-wide" style={labelStyle}>
             CNPJ <span className="text-red-500">*</span>
           </label>
-          <div className="flex gap-3">
+          <div className="flex">
             <div className="relative flex-1">
               <div className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -119,21 +172,17 @@ export default function Step2Company() {
                 className="w-full h-10 pl-10 pr-3 rounded-md text-sm outline-none transition-colors"
                 style={inputStyle}
                 value={formData.cnpj ?? ''}
-                onChange={(e) => updateFormData({ cnpj: e.target.value })}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  latestCnpj.current = value.replace(/\D/g, '');
+                  clearAutoFilled('cnpj');
+                  updateFormData({ cnpj: value });
+                  if (value.replace(/\D/g, '').length === 14) void searchCompany(value);
+                }}
               />
             </div>
-            <button
-              type="button"
-              className="px-5 py-2 rounded-md text-sm font-semibold flex items-center gap-2 transition-opacity hover:opacity-90"
-              style={{ background: 'var(--tertiary)', color: 'var(--primary)' }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-              Buscar Dados
-            </button>
           </div>
+          {isSearchingCompany && <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Loading company data...</span>}
         </div>
 
         {/* Razão Social */}
@@ -145,9 +194,9 @@ export default function Step2Company() {
             type="text"
             placeholder="Razão Social"
             className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
-            style={inputStyle}
+            style={{ ...inputStyle, ...(autoFilledFields.includes('companyName') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
             value={formData.companyName ?? ''}
-            onChange={(e) => updateFormData({ companyName: e.target.value })}
+            onChange={(e) => { clearAutoFilled('companyName'); updateFormData({ companyName: e.target.value }); }}
           />
         </div>
 
@@ -160,9 +209,9 @@ export default function Step2Company() {
             type="text"
             placeholder="Nome Fantasia"
             className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
-            style={inputStyle}
+            style={{ ...inputStyle, ...(autoFilledFields.includes('tradeName') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
             value={formData.tradeName ?? ''}
-            onChange={(e) => updateFormData({ tradeName: e.target.value })}
+            onChange={(e) => { clearAutoFilled('tradeName'); updateFormData({ tradeName: e.target.value }); }}
           />
         </div>
 
@@ -218,13 +267,13 @@ export default function Step2Company() {
           </label>
           <select
             className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors cursor-pointer"
-            style={inputStyle}
+            style={{ ...inputStyle, ...(autoFilledFields.includes('businessActivity') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
             value={currentSegmento}
             onChange={(e) =>
-              updateFormData({
+              { clearAutoFilled('businessActivity'); clearAutoFilled('segmentoMercado'); updateFormData({
                 businessActivity: e.target.value,
                 segmentoMercado: e.target.value,
-              })
+              }); }
             }
           >
             <option value="" style={optionItemStyle}>

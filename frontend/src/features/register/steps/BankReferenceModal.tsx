@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatDate } from '../../../utils/formatters';
 
 interface BankReferenceModalProps {
@@ -22,6 +22,18 @@ export interface BankReference {
 }
 
 export default function BankReferenceModal({ onClose, onAdd, initialData }: BankReferenceModalProps) {
+  const [autoFilledFields, setAutoFilledFields] = useState<string[]>(() => [
+    ...(initialData?.empresa ? ['empresa'] : []),
+    ...(initialData?.nomeFantasia ? ['nomeFantasia'] : []),
+    ...(initialData?.cnpj ? ['cnpj'] : []),
+  ]);
+
+  useEffect(() => {
+    if (autoFilledFields.length === 0) return;
+    const timeoutId = window.setTimeout(() => setAutoFilledFields([]), 2600);
+    return () => window.clearTimeout(timeoutId);
+  }, [autoFilledFields.length]);
+
   const [form, setForm] = useState<Omit<BankReference, 'id'>>({
     empresa: initialData?.empresa || '',
     nomeFantasia: initialData?.nomeFantasia || '',
@@ -122,7 +134,7 @@ export default function BankReferenceModal({ onClose, onAdd, initialData }: Bank
               value={form.empresa}
               onChange={(e) => handleChange('empresa', e.target.value)}
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
-              style={inputStyle}
+              style={{ ...inputStyle, ...(autoFilledFields.includes('empresa') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
             />
           </div>
 
@@ -135,7 +147,7 @@ export default function BankReferenceModal({ onClose, onAdd, initialData }: Bank
               value={form.nomeFantasia}
               onChange={(e) => handleChange('nomeFantasia', e.target.value)}
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
-              style={inputStyle}
+              style={{ ...inputStyle, ...(autoFilledFields.includes('nomeFantasia') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
             />
           </div>
 
@@ -148,7 +160,7 @@ export default function BankReferenceModal({ onClose, onAdd, initialData }: Bank
               value={form.cnpj}
               onChange={(e) => handleChange('cnpj', e.target.value)}
               className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors"
-              style={inputStyle}
+              style={{ ...inputStyle, ...(autoFilledFields.includes('cnpj') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
             />
           </div>
 

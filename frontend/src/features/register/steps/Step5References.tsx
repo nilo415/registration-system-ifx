@@ -342,6 +342,11 @@ export default function Step5References() {
         <BankReferenceModal
           onClose={() => setShowBankModal(false)}
           onAdd={handleAddBank}
+          initialData={{
+            empresa: formData.companyName ?? '',
+            nomeFantasia: formData.tradeName ?? '',
+            cnpj: formData.cnpj ?? '',
+          }}
         />
       )}
       {showSupplierModal && (

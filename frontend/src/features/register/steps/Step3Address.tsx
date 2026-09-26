@@ -1,8 +1,64 @@
+import { useRef, useState } from 'react';
 import { useRegistration } from '../../../contexts/RegistrationContext';
+import { fetchAddressByCep } from '../../../services/viacep';
 
+interface Step3AddressProps {
+  autoFilledFields: string[];
+  markAutoFilled: (fields: string[]) => void;
+  clearAutoFilled: (field: string) => void;
+}
 
-export default function Step3Address() {
+export default function Step3Address({ autoFilledFields, markAutoFilled, clearAutoFilled }: Step3AddressProps) {
   const { formData, updateFormData } = useRegistration();
+  const [isSearchingAddress, setIsSearchingAddress] = useState(false);
+  const hasSuccessfulAddressLookup = useRef(false);
+  const isAddressLookupInProgress = useRef(false);
+
+  const searchAddress = async () => {
+    const cepValue = formData.zipCode ?? '';
+    const cleanCep = cepValue.replace(/\D/g, '');
+    if (cleanCep.length !== 8 || hasSuccessfulAddressLookup.current || isAddressLookupInProgress.current) return;
+
+    isAddressLookupInProgress.current = true;
+    setIsSearchingAddress(true);
+    try {
+      const address = await fetchAddressByCep(cleanCep);
+      const postalComplement = address.complemento?.trim() ?? '';
+      const postalNumber = postalComplement.match(/^(?:n(?:º|°|o)?\.?\s*)?(\d+[a-z]?(?:\/\d+[a-z]?)?)$/i)?.[1] ?? '';
+      const complement = postalNumber ? '' : postalComplement;
+      const fields = {
+        zipCode: address.cep || cleanCep,
+        financialZipCode: address.cep || cleanCep,
+        deliveryZipCode: address.cep || cleanCep,
+        street: address.logradouro,
+        financialStreet: address.logradouro,
+        deliveryStreet: address.logradouro,
+        neighborhood: address.bairro,
+        financialNeighborhood: address.bairro,
+        deliveryNeighborhood: address.bairro,
+        city: address.localidade,
+        financialCity: address.localidade,
+        deliveryCity: address.localidade,
+        state: address.uf,
+        financialState: address.uf,
+        deliveryState: address.uf,
+        number: postalNumber || formData.number || '',
+        financialNumber: postalNumber || formData.financialNumber || '',
+        deliveryNumber: postalNumber || formData.deliveryNumber || '',
+        complement: complement || formData.complement || '',
+        financialComplement: complement || formData.financialComplement || '',
+        deliveryComplement: complement || formData.deliveryComplement || '',
+      };
+      updateFormData(fields);
+      markAutoFilled(Object.keys(fields).filter((field) => fields[field as keyof typeof fields] !== (formData[field as keyof typeof formData] ?? '')));
+      hasSuccessfulAddressLookup.current = true;
+    } catch {
+      return;
+    } finally {
+      isAddressLookupInProgress.current = false;
+      setIsSearchingAddress(false);
+    }
+  };
 
   const inputStyle = {
     background: 'transparent',
@@ -29,17 +85,40 @@ export default function Step3Address() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
           <div className="flex flex-col gap-2 md:col-span-3">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>CEP</label>
-            <input type="text" placeholder="00000-000"
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
-              value={formData.zipCode ?? ''}
-              onChange={(e) => updateFormData({ zipCode: e.target.value })} />
+            <div className="flex gap-2">
+              <input type="text" placeholder="00000-000"
+                className="min-w-0 flex-1 h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('zipCode') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
+                value={formData.zipCode ?? ''}
+                onChange={(e) => { clearAutoFilled('zipCode'); updateFormData({ zipCode: e.target.value }); }}
+                aria-busy={isSearchingAddress} />
+              <button type="button" onClick={() => void searchAddress()} disabled={isSearchingAddress || hasSuccessfulAddressLookup.current}
+                aria-label="Search address by postal code" title="Search address by postal code"
+                className="w-10 h-10 shrink-0 rounded-md flex items-center justify-center transition-opacity hover:opacity-80 disabled:opacity-50"
+                style={{ background: 'var(--primary)', color: '#ffffff' }}>
+                {isSearchingAddress ? (
+                  <span className="text-xs">...</span>
+                ) : (
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line x1="16" y1="16" x2="21" y2="21"></line>
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
-          <div className="flex flex-col gap-2 md:col-span-7">
+          <div className="flex flex-col gap-2 md:col-span-5">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Endereço</label>
             <input type="text" placeholder="Rua, Avenida, etc."
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('street') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
               value={formData.street ?? ''}
-              onChange={(e) => updateFormData({ street: e.target.value })} />
+              onChange={(e) => { clearAutoFilled('street'); updateFormData({ street: e.target.value }); }} />
+          </div>
+          <div className="flex flex-col gap-2 md:col-span-2">
+            <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Número</label>
+            <input type="text" placeholder="Número"
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('number') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
+              value={formData.number ?? ''}
+              onChange={(e) => { clearAutoFilled('number'); updateFormData({ number: e.target.value }); }} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-2">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Cx. Postal</label>
@@ -48,27 +127,34 @@ export default function Step3Address() {
               value={formData.poBox ?? ''}
               onChange={(e) => updateFormData({ poBox: e.target.value })} />
           </div>
+          <div className="flex flex-col gap-2 md:col-span-12">
+            <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Complemento</label>
+            <input type="text" placeholder="Complemento"
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('complement') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
+              value={formData.complement ?? ''}
+              onChange={(e) => { clearAutoFilled('complement'); updateFormData({ complement: e.target.value }); }} />
+          </div>
 
           <div className="flex flex-col gap-2 md:col-span-4">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Bairro</label>
             <input type="text" placeholder="Bairro"
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('neighborhood') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
               value={formData.neighborhood ?? ''}
-              onChange={(e) => updateFormData({ neighborhood: e.target.value })} />
+              onChange={(e) => { clearAutoFilled('neighborhood'); updateFormData({ neighborhood: e.target.value }); }} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-6">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Cidade</label>
             <input type="text" placeholder="Cidade"
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('city') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
               value={formData.city ?? ''}
-              onChange={(e) => updateFormData({ city: e.target.value })} />
+              onChange={(e) => { clearAutoFilled('city'); updateFormData({ city: e.target.value }); }} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-2">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Estado (UF)</label>
             <input type="text" placeholder="UF"
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('state') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
               value={formData.state ?? ''}
-              onChange={(e) => updateFormData({ state: e.target.value })} />
+              onChange={(e) => { clearAutoFilled('state'); updateFormData({ state: e.target.value }); }} />
           </div>
         </div>
 
@@ -149,37 +235,51 @@ export default function Step3Address() {
           <div className="flex flex-col gap-2 md:col-span-3">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>CEP</label>
             <input type="text" placeholder="00000-000"
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('financialZipCode') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
               value={formData.financialZipCode ?? ''}
-              onChange={(e) => updateFormData({ financialZipCode: e.target.value })} />
+              onChange={(e) => { clearAutoFilled('financialZipCode'); updateFormData({ financialZipCode: e.target.value }); }} />
           </div>
-          <div className="flex flex-col gap-2 md:col-span-9">
+          <div className="flex flex-col gap-2 md:col-span-6">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Endereço</label>
             <input type="text" placeholder="Rua, Avenida, etc."
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('financialStreet') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
               value={formData.financialStreet ?? ''}
-              onChange={(e) => updateFormData({ financialStreet: e.target.value })} />
+              onChange={(e) => { clearAutoFilled('financialStreet'); updateFormData({ financialStreet: e.target.value }); }} />
+          </div>
+          <div className="flex flex-col gap-2 md:col-span-3">
+            <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Número</label>
+            <input type="text" placeholder="Número"
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('financialNumber') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
+              value={formData.financialNumber ?? ''}
+              onChange={(e) => { clearAutoFilled('financialNumber'); updateFormData({ financialNumber: e.target.value }); }} />
+          </div>
+          <div className="flex flex-col gap-2 md:col-span-12">
+            <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Complemento</label>
+            <input type="text" placeholder="Complemento"
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('financialComplement') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
+              value={formData.financialComplement ?? ''}
+              onChange={(e) => { clearAutoFilled('financialComplement'); updateFormData({ financialComplement: e.target.value }); }} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-3">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Bairro</label>
             <input type="text" placeholder="Bairro"
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('financialNeighborhood') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
               value={formData.financialNeighborhood ?? ''}
-              onChange={(e) => updateFormData({ financialNeighborhood: e.target.value })} />
+              onChange={(e) => { clearAutoFilled('financialNeighborhood'); updateFormData({ financialNeighborhood: e.target.value }); }} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-4">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Cidade</label>
             <input type="text" placeholder="Cidade"
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('financialCity') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
               value={formData.financialCity ?? ''}
-              onChange={(e) => updateFormData({ financialCity: e.target.value })} />
+              onChange={(e) => { clearAutoFilled('financialCity'); updateFormData({ financialCity: e.target.value }); }} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-3">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Estado</label>
             <input type="text" placeholder="UF"
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('financialState') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
               value={formData.financialState ?? ''}
-              onChange={(e) => updateFormData({ financialState: e.target.value })} />
+              onChange={(e) => { clearAutoFilled('financialState'); updateFormData({ financialState: e.target.value }); }} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-2">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Cx. Postal</label>
@@ -230,37 +330,51 @@ export default function Step3Address() {
           <div className="flex flex-col gap-2 md:col-span-3">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>CEP</label>
             <input type="text" placeholder="00000-000"
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('deliveryZipCode') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
               value={formData.deliveryZipCode ?? ''}
-              onChange={(e) => updateFormData({ deliveryZipCode: e.target.value })} />
+              onChange={(e) => { clearAutoFilled('deliveryZipCode'); updateFormData({ deliveryZipCode: e.target.value }); }} />
           </div>
-          <div className="flex flex-col gap-2 md:col-span-9">
+          <div className="flex flex-col gap-2 md:col-span-6">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Endereço</label>
             <input type="text" placeholder="Rua, Avenida, etc."
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('deliveryStreet') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
               value={formData.deliveryStreet ?? ''}
-              onChange={(e) => updateFormData({ deliveryStreet: e.target.value })} />
+              onChange={(e) => { clearAutoFilled('deliveryStreet'); updateFormData({ deliveryStreet: e.target.value }); }} />
+          </div>
+          <div className="flex flex-col gap-2 md:col-span-3">
+            <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Número</label>
+            <input type="text" placeholder="Número"
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('deliveryNumber') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
+              value={formData.deliveryNumber ?? ''}
+              onChange={(e) => { clearAutoFilled('deliveryNumber'); updateFormData({ deliveryNumber: e.target.value }); }} />
+          </div>
+          <div className="flex flex-col gap-2 md:col-span-12">
+            <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Complemento</label>
+            <input type="text" placeholder="Complemento"
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('deliveryComplement') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
+              value={formData.deliveryComplement ?? ''}
+              onChange={(e) => { clearAutoFilled('deliveryComplement'); updateFormData({ deliveryComplement: e.target.value }); }} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-4">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Bairro</label>
             <input type="text" placeholder="Bairro"
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('deliveryNeighborhood') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
               value={formData.deliveryNeighborhood ?? ''}
-              onChange={(e) => updateFormData({ deliveryNeighborhood: e.target.value })} />
+              onChange={(e) => { clearAutoFilled('deliveryNeighborhood'); updateFormData({ deliveryNeighborhood: e.target.value }); }} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-5">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Cidade</label>
             <input type="text" placeholder="Cidade"
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('deliveryCity') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
               value={formData.deliveryCity ?? ''}
-              onChange={(e) => updateFormData({ deliveryCity: e.target.value })} />
+              onChange={(e) => { clearAutoFilled('deliveryCity'); updateFormData({ deliveryCity: e.target.value }); }} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-3">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Estado</label>
             <input type="text" placeholder="UF"
-              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={inputStyle}
+              className="w-full h-10 px-3 rounded-md text-sm outline-none transition-colors" style={{ ...inputStyle, ...(autoFilledFields.includes('deliveryState') ? { boxShadow: '0 0 0 3px color-mix(in srgb, var(--secondary) 42%, transparent)' } : {}) }}
               value={formData.deliveryState ?? ''}
-              onChange={(e) => updateFormData({ deliveryState: e.target.value })} />
+              onChange={(e) => { clearAutoFilled('deliveryState'); updateFormData({ deliveryState: e.target.value }); }} />
           </div>
           <div className="flex flex-col gap-2 md:col-span-6">
             <label className="text-[10px] font-bold uppercase tracking-wide" style={labelStyle}>Nome do Contato</label>

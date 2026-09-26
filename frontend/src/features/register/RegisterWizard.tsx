@@ -32,9 +32,11 @@ interface Toast {
 
 export default function RegisterWizard() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [lookupSession, setLookupSession] = useState(0);
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
+  const [autoFilledFields, setAutoFilledFields] = useState<string[]>([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [finalizedCnpj, setFinalizedCnpj] = useState<string | null>(null);
 
@@ -47,6 +49,17 @@ export default function RegisterWizard() {
     setTimeout(() => {
       setToast(null);
     }, 5000);
+  };
+
+  const markAutoFilled = (fields: string[]) => {
+    setAutoFilledFields((current) => [...new Set([...current, ...fields])]);
+    window.setTimeout(() => {
+      setAutoFilledFields((current) => current.filter((field) => !fields.includes(field)));
+    }, 2600);
+  };
+
+  const clearAutoFilled = (field: string) => {
+    setAutoFilledFields((current) => current.filter((item) => item !== field));
   };
 
   // Carregar dados existentes no backend ao montar o componente
@@ -130,6 +143,8 @@ export default function RegisterWizard() {
     if (window.confirm('Deseja reiniciar o formulário? Todos os dados atuais serão apagados da tela.')) {
       sessionStorage.setItem(SESSION_RESET_KEY, '1');
       resetForm();
+      setLookupSession((session) => session + 1);
+      setAutoFilledFields([]);
       setCurrentStep(0);
       showToast('info', 'Formulário reiniciado.');
     }
@@ -139,6 +154,8 @@ export default function RegisterWizard() {
     sessionStorage.setItem(SESSION_RESET_KEY, '1');
     setShowSuccessModal(false);
     resetForm();
+    setLookupSession((session) => session + 1);
+    setAutoFilledFields([]);
     setCurrentStep(0);
   };
 
@@ -257,8 +274,8 @@ export default function RegisterWizard() {
         {/* Step Content */}
         <div className="px-8 py-8 flex-1">
           <div style={{ display: currentStep === 0 ? 'block' : 'none' }}><Step1Operation /></div>
-          <div style={{ display: currentStep === 1 ? 'block' : 'none' }}><Step2Company /></div>
-          <div style={{ display: currentStep === 2 ? 'block' : 'none' }}><Step3Address /></div>
+          <div style={{ display: currentStep === 1 ? 'block' : 'none' }}><Step2Company key={lookupSession} autoFilledFields={autoFilledFields} markAutoFilled={markAutoFilled} clearAutoFilled={clearAutoFilled} /></div>
+          <div style={{ display: currentStep === 2 ? 'block' : 'none' }}><Step3Address key={lookupSession} autoFilledFields={autoFilledFields} markAutoFilled={markAutoFilled} clearAutoFilled={clearAutoFilled} /></div>
           <div style={{ display: currentStep === 3 ? 'block' : 'none' }}><Step4Tax /></div>
           <div style={{ display: currentStep === 4 ? 'block' : 'none' }}><Step5References /></div>
         </div>
